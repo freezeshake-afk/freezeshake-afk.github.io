@@ -467,6 +467,96 @@
             margin-top: 15px;
         }
 
+        /* Botões de navegação flutuantes */
+        .float-nav {
+            position: fixed;
+            right: 20px;
+            bottom: 80px;
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .float-nav.active {
+            display: flex;
+        }
+
+        .float-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: #2a5298;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .float-btn:hover {
+            background: #1e3c72;
+            transform: scale(1.1);
+        }
+
+        .float-btn .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        .float-btn-top {
+            background: #28a745;
+        }
+
+        .float-btn-top:hover {
+            background: #218838;
+        }
+
+        .float-btn-vale {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .float-btn-vale:hover {
+            background: #e0a800;
+        }
+
+        @media (max-width: 768px) {
+            .float-nav {
+                right: 10px;
+                bottom: 70px;
+            }
+
+            .float-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+
+            .float-btn .badge-count {
+                width: 20px;
+                height: 20px;
+                font-size: 0.65em;
+            }
+        }
+
         /* Filtro de letras */
         .letter-filter {
             display: flex;
@@ -607,6 +697,7 @@
 
         <!-- VALE -->
         <div id="vale" class="content">
+            <div id="topoVale"></div>
             <h2 style="margin-bottom: 20px; color: #2a5298;">Registrar Vale de Paiol</h2>
             
             <div class="grid-2">
@@ -627,7 +718,12 @@
             </div>
 
             <div class="section-divider">
-                <h3 style="color: #2a5298; margin-bottom: 15px;">🔍 Selecionar Itens</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                    <h3 style="color: #2a5298; margin: 0;">🔍 Selecionar Itens</h3>
+                    <button class="btn btn-warning btn-small" onclick="scrollToVale()">
+                        📦 Ver Itens do Vale (<span id="countItensVale">0</span>)
+                    </button>
+                </div>
                 
                 <!-- Filtros -->
                 <div class="grid-2" style="margin-bottom: 15px;">
@@ -678,7 +774,13 @@
             </div>
 
             <div class="section-divider">
-                <h3 style="color: #2a5298; margin-bottom: 15px;">📦 Itens do Vale</h3>
+                <div id="itensDoVale"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                    <h3 style="color: #2a5298; margin: 0;">📦 Itens do Vale</h3>
+                    <button class="btn btn-success btn-small" onclick="scrollToTopo()">
+                        ⬆️ Voltar ao Topo
+                    </button>
+                </div>
                 <div id="itensVale"></div>
             </div>
 
@@ -764,6 +866,17 @@
 
             <div id="listaHistorico"></div>
         </div>
+    </div>
+
+    <!-- Botões Flutuantes de Navegação (apenas na aba Vale) -->
+    <div id="floatNav" class="float-nav">
+        <button class="float-btn float-btn-top" onclick="scrollToTopo()" title="Voltar ao Topo">
+            ⬆️
+        </button>
+        <button class="float-btn float-btn-vale" onclick="scrollToVale()" title="Ver Itens do Vale">
+            🛒
+            <span class="badge-count" id="floatBadgeCount">0</span>
+        </button>
     </div>
 
     <!-- MODAL EXTRATO -->
@@ -1075,8 +1188,14 @@
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
             
+            // Controlar botões flutuantes
+            toggleFloatNav();
+            
             if (tabName === 'dashboard') updateDashboard();
-            if (tabName === 'vale') renderItensDisponiveis();
+            if (tabName === 'vale') {
+                renderItensDisponiveis();
+                renderItensVale();
+            }
             if (tabName === 'estoque') renderEstoque();
             if (tabName === 'validade') renderValidades();
             if (tabName === 'historico') renderHistorico();
@@ -1284,6 +1403,10 @@
         function renderItensVale() {
             const container = document.getElementById('itensVale');
             
+            // Atualizar contadores
+            document.getElementById('countItensVale').textContent = valesAtual.length;
+            document.getElementById('floatBadgeCount').textContent = valesAtual.length;
+            
             if (valesAtual.length === 0) {
                 container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">Nenhum item adicionado ao vale</p>';
                 return;
@@ -1314,6 +1437,33 @@
             `;
 
             container.innerHTML = html;
+        }
+
+        // Funções de navegação por scroll
+        function scrollToTopo() {
+            const topo = document.getElementById('topoVale');
+            if (topo) {
+                topo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function scrollToVale() {
+            const vale = document.getElementById('itensDoVale');
+            if (vale) {
+                vale.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Mostrar/ocultar botões flutuantes baseado na aba ativa
+        function toggleFloatNav() {
+            const valeTab = document.getElementById('vale');
+            const floatNav = document.getElementById('floatNav');
+            
+            if (valeTab && valeTab.classList.contains('active')) {
+                floatNav.classList.add('active');
+            } else {
+                floatNav.classList.remove('active');
+            }
         }
 
         function removerDoVale(idx) {
@@ -2520,6 +2670,7 @@
 
         // Inicializar
         updateDashboard();
+        toggleFloatNav(); // Inicializar controle de botões flutuantes
     </script>
 </body>
 </html>
