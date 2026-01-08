@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Paiol - 5º BtlOpFuzNav</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            color: #495057;
+            transition: all 0.3s;
+            white-space: nowrap;
+            min-width: 120px;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #2a5298;
+            font-weight: bold;
+            border-bottom: 3px solid #2a5298;
+        }
+
+        .content {
+            padding: 20px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: #2a5298;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42,82,152,0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .btn-small {
+            padding: 5px 15px;
+            font-size: 0.9em;
+        }
+
+        .item-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .item-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #2a5298;
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #2a5298;
+            font-size: 1.1em;
+        }
+
+        .item-stock {
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .item-stock.low {
+            background: #ffc107;
+        }
+
+        .item-stock.empty {
+            background: #dc3545;
+        }
+
+        .item-details {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin: 5px 0;
+        }
+
+        .validades {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .validade-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .validade-item.vencido {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .validade-item.proximo {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .validade-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .vale-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid #2a5298;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23495057" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>') no-repeat 12px center;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            color: #2a5298;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .validade-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .validade-input-group input {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .badge-entrada {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-saida {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-ajuste {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .section-divider {
+            border-top: 2px solid #dee2e6;
+            margin: 25px 0;
+            padding-top: 25px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.4em;
+            }
+            
+            .tab {
+                padding: 12px 8px;
+                font-size: 0.85em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .validade-actions {
+                width: 100%;
+            }
+
+            .validade-actions button {
+                flex: 1;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .tabs, .btn, .search-box {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚓ CONTROLE DE PAIOL</h1>
+            <p>5º Batalhão de Operações Litorâneas de Fuzileiros Navais</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('dashboard')">📊 Dashboard</button>
+            <button class="tab" onclick="openTab('vale')">📝 Vale</button>
+            <button class="tab" onclick="openTab('estoque')">📦 Estoque</button>
+            <button class="tab" onclick="openTab('validade')">⏰ Validades</button>
+            <button class="tab" onclick="openTab('historico')">📜 Histórico</button>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="content active">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Dashboard</h2>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalItens">0</div>
+                    <div class="stat-label">Total de Itens</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="stat-value" id="valesHoje">0</div>
+                    <div class="stat-label">Vales Hoje</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="stat-value" id="itensProxVenc">0</div>
+                    <div class="stat-label">Próximo Vencimento</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <div class="stat-value" id="valorEstoque">R$ 0,00</div>
+                    <div class="stat-label">Valor em Estoque</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <div class="stat-value" id="movimentacoesHoje">0</div>
+                    <div class="stat-label">Movimentações Hoje</div>
+                </div>
+            </div>
+
+            <div id="alertasValidade"></div>
+        </div>
+
+        <!-- VALE -->
+        <div id="vale" class="content">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Registrar Vale de Paiol</h2>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Responsável pelo Vale *</label>
+                    <input type="text" id="responsavelVale" placeholder="Nome do cozinheiro/responsável">
+                </div>
+
+                <div class="form-group">
+                    <label>Número do Vale</label>
+                    <input type="text" id="numeroVale" placeholder="Ex: 001/2026">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Observações</label>
+                <textarea id="obsVale" rows="2" placeholder="Observações gerais do vale"></textarea>
+            </div>
+
+            <div class="section-divider">
+                <h3 style="color: #2a5298; margin-bottom: 15px;">🔍 Selecionar Itens</h3>
+                <div class="search-box">
+                    <input type="text" id="searchItem" placeholder="Buscar item..." onkeyup="filterItems()">
+                </div>
+
+                <div id="itensDisponiveis" class="item-list"></div>
+            </div>
+
+            <div class="section-divider">
+                <h3 style="color: #2a5298; margin-bottom: 15px;">📦 Itens do Vale</h3>
+                <div id="itensVale"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="finalizarVale()">✅ Finalizar Vale</button>
+                <button class="btn btn-danger" onclick="limparVale()">🗑️ Limpar</button>
+            </div>
+        </div>
+
+        <!-- ESTOQUE -->
+        <div id="estoque" class="content">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Gestão de Estoque</h2>
+            
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="abrirAdicionarItem()">➕ Adicionar Novo Item</button>
+                <button class="btn btn-info" onclick="abrirEntradaEstoque()">📥 Entrada de Estoque</button>
+            </div>
+
+            <div class="section-divider">
+                <div class="grid-2">
+                    <div class="search-box">
+                        <input type="text" id="searchEstoque" placeholder="Buscar no estoque..." onkeyup="filterEstoque()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Filtrar por:</label>
+                        <select id="filtroEstoque" onchange="filterEstoque()">
+                            <option value="todos">Todos os itens</option>
+                            <option value="baixo">Estoque baixo (&lt; 50)</option>
+                            <option value="zerado">Estoque zerado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="listaEstoque" class="item-list"></div>
+            </div>
+        </div>
+
+        <!-- VALIDADES -->
+        <div id="validade" class="content">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Controle de Validades</h2>
+            
+            <div id="alertasValidadeCompleto"></div>
+
+            <div class="search-box">
+                <input type="text" id="searchValidade" placeholder="Buscar item..." onkeyup="filterValidades()">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label>Ordenar por:</label>
+                <select id="ordenarValidade" onchange="filterValidades()">
+                    <option value="vencimento">Data de Vencimento</option>
+                    <option value="nome">Nome do Item</option>
+                    <option value="status">Status (Vencidos primeiro)</option>
+                </select>
+            </div>
+
+            <div id="listaValidades" class="item-list"></div>
+        </div>
+
+        <!-- HISTÓRICO -->
+        <div id="historico" class="content">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Histórico Completo de Movimentações</h2>
+            
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Filtrar por Data</label>
+                    <input type="date" id="filtroData" onchange="filterHistorico()">
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Movimentação</label>
+                    <select id="filtroTipo" onchange="filterHistorico()">
+                        <option value="todos">Todas</option>
+                        <option value="saida">Saídas (Vales)</option>
+                        <option value="entrada">Entradas</option>
+                        <option value="ajuste">Ajustes</option>
+                        <option value="exclusao">Exclusões</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Buscar</label>
+                    <input type="text" id="searchHistorico" placeholder="Buscar..." onkeyup="filterHistorico()">
+                </div>
+            </div>
+
+            <div id="listaHistorico"></div>
+        </div>
+    </div>
+
+    <!-- MODAL EXTRATO -->
+    <div id="extratoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Extrato do Vale</h2>
+                <button class="close-modal" onclick="closeModal('extratoModal')">&times;</button>
+            </div>
+            <div id="extratoContent"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="imprimirExtrato()">🖨️ Imprimir</button>
+                <button class="btn btn-success" onclick="baixarExtrato()">💾 Baixar PDF</button>
+                <button class="btn btn-secondary" onclick="closeModal('extratoModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GERENCIAR VALIDADES -->
+    <div id="validadeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Gerenciar Validades</h2>
+                <button class="close-modal" onclick="closeModal('validadeModal')">&times;</button>
+            </div>
+            <div id="validadeModalContent">
+                <h3 style="color: #2a5298; margin-bottom: 15px;" id="nomeItemValidade"></h3>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <strong>Validades Cadastradas:</strong>
+                    <div id="listaValidadesItem" style="margin-top: 10px;"></div>
+                </div>
+
+                <div class="section-divider">
+                    <h4 style="color: #2a5298; margin-bottom: 15px;">➕ Adicionar Nova Validade</h4>
+                    <div class="validade-input-group">
+                        <input type="date" id="novaValidadeData" placeholder="Data de validade">
+                        <button class="btn btn-success" onclick="adicionarValidade()">Adicionar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADICIONAR ITEM -->
+    <div id="adicionarItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ Adicionar Novo Item</h2>
+                <button class="close-modal" onclick="closeModal('adicionarItemModal')">&times;</button>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Nome do Item *</label>
+                    <input type="text" id="novoItemNome" placeholder="Ex: ARROZ TIPO 1">
+                </div>
+
+                <div class="form-group">
+                    <label>Unidade de Medida *</label>
+                    <select id="novoItemUnidade">
+                        <option value="QUIL">QUIL (Quilograma)</option>
+                        <option value="UNID">UNID (Unidade)</option>
+                        <option value="LITR">LITR (Litro)</option>
+                        <option value="PACO">PACO (Pacote)</option>
+                        <option value="LATA">LATA</option>
+                        <option value="CAIX">CAIX (Caixa)</option>
+                        <option value="GRA">GRA (Grama)</option>
+                        <option value="COP">COP (Copo)</option>
+                        <option value="DUZI">DUZI (Dúzia)</option>
+                        <option value="BALD">BALD (Balde)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Quantidade Inicial *</label>
+                    <input type="number" id="novoItemQuantidade" step="0.001" min="0" placeholder="0.000">
+                </div>
+
+                <div class="form-group">
+                    <label>Preço Unitário (R$) *</label>
+                    <input type="number" id="novoItemPreco" step="0.01" min="0" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="salvarNovoItem()">✅ Adicionar Item</button>
+                <button class="btn btn-secondary" onclick="closeModal('adicionarItemModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ENTRADA ESTOQUE -->
+    <div id="entradaEstoqueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📥 Entrada de Estoque</h2>
+                <button class="close-modal" onclick="closeModal('entradaEstoqueModal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Selecionar Item *</label>
+                <select id="entradaItemSelect" onchange="selecionarItemEntrada()">
+                    <option value="">Selecione um item...</option>
+                </select>
+            </div>
+
+            <div id="entradaDetalhes" style="display: none;">
+                <div class="alert alert-info">
+                    <strong>Item Selecionado:</strong> <span id="entradaNomeItem"></span><br>
+                    <strong>Estoque Atual:</strong> <span id="entradaEstoqueAtual"></span>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Quantidade a Adicionar *</label>
+                        <input type="number" id="entradaQuantidade" step="0.001" min="0.001" placeholder="0.000">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Motivo da Entrada *</label>
+                        <select id="entradaMotivo">
+                            <option value="compra">Compra</option>
+                            <option value="doacao">Doação</option>
+                            <option value="transferencia">Transferência</option>
+                            <option value="correcao">Correção de Estoque</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Observações</label>
+                    <textarea id="entradaObs" rows="2" placeholder="Observações sobre a entrada..."></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="confirmarEntrada()">✅ Confirmar Entrada</button>
+                    <button class="btn btn-secondary" onclick="closeModal('entradaEstoqueModal')">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR ITEM -->
+    <div id="editarItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Editar Item</h2>
+                <button class="close-modal" onclick="closeModal('editarItemModal')">&times;</button>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Nome do Item *</label>
+                    <input type="text" id="editItemNome">
+                </div>
+
+                <div class="form-group">
+                    <label>Unidade de Medida *</label>
+                    <select id="editItemUnidade">
+                        <option value="QUIL">QUIL (Quilograma)</option>
+                        <option value="UNID">UNID (Unidade)</option>
+                        <option value="LITR">LITR (Litro)</option>
+                        <option value="PACO">PACO (Pacote)</option>
+                        <option value="LATA">LATA</option>
+                        <option value="CAIX">CAIX (Caixa)</option>
+                        <option value="GRA">GRA (Grama)</option>
+                        <option value="COP">COP (Copo)</option>
+                        <option value="DUZI">DUZI (Dúzia)</option>
+                        <option value="BALD">BALD (Balde)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Preço Unitário (R$) *</label>
+                    <input type="number" id="editItemPreco" step="0.01" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Estoque Atual</label>
+                    <input type="number" id="editItemEstoque" step="0.001" disabled>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="salvarEdicaoItem()">✅ Salvar Alterações</button>
+                <button class="btn btn-secondary" onclick="closeModal('editarItemModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Dados do sistema
+        let estoque = [
+            {nome: "ABACAXI EM CALDA LATA", unidade: "UNID", estoque: 5, preco: 9.98, validades: ["24/04/2027"]},
+            {nome: "ABOBRINHA", unidade: "QUIL", estoque: 36, preco: 5.46, validades: []},
+            {nome: "ACEM BOVINO", unidade: "QUIL", estoque: 718.425, preco: 26.00, validades: ["26/05/2026"]},
+            {nome: "ACHOCOLATADO LÍQUIDO 200 ML", unidade: "UNID", estoque: 263, preco: 1.10, validades: ["17/01/2026", "08/04/2026"]},
+            {nome: "AÇUCAR REFINADO 1 KG", unidade: "QUIL", estoque: 248.5, preco: 4.17, validades: ["22/05/2026"]},
+            {nome: "CAFE TORRADO 0,5 A 1 KG", unidade: "QUIL", estoque: 715, preco: 31.98, validades: ["08/08/2026"]},
+        ];
+
+        let valesAtual = [];
+        let historicoVales = JSON.parse(localStorage.getItem('historicoVales')) || [];
+        let historicoMovimentacoes = JSON.parse(localStorage.getItem('historicoMovimentacoes')) || [];
+        let itemValidadeAtual = null;
+        let itemEditarAtual = null;
+        let valeAtualParaBaixar = null;
+
+        // Carregar dados salvos
+        if (localStorage.getItem('estoque')) {
+            estoque = JSON.parse(localStorage.getItem('estoque'));
+        }
+
+        function salvarDados() {
+            localStorage.setItem('estoque', JSON.stringify(estoque));
+            localStorage.setItem('historicoVales', JSON.stringify(historicoVales));
+            localStorage.setItem('historicoMovimentacoes', JSON.stringify(historicoMovimentacoes));
+        }
+
+        function registrarMovimentacao(tipo, item, quantidade, detalhes = {}) {
+            const movimentacao = {
+                data: new Date().toISOString(),
+                tipo: tipo, // 'saida', 'entrada', 'ajuste', 'exclusao', 'novo_item'
+                item: item,
+                quantidade: quantidade,
+                ...detalhes
+            };
+            historicoMovimentacoes.push(movimentacao);
+            salvarDados();
+        }
+
+        // NAVEGAÇÃO
+        function openTab(tabName) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'dashboard') updateDashboard();
+            if (tabName === 'vale') renderItensDisponiveis();
+            if (tabName === 'estoque') renderEstoque();
+            if (tabName === 'validade') renderValidades();
+            if (tabName === 'historico') renderHistorico();
+        }
+
+        // DASHBOARD
+        function updateDashboard() {
+            const hoje = new Date();
+            const proximos30Dias = new Date(hoje);
+            proximos30Dias.setDate(proximos30Dias.getDate() + 30);
+
+            let itensProxVenc = 0;
+            let valorTotal = 0;
+            
+            estoque.forEach(item => {
+                valorTotal += item.estoque * item.preco;
+                
+                item.validades.forEach(val => {
+                    const dataVal = parseDate(val);
+                    if (dataVal && dataVal <= proximos30Dias && dataVal >= hoje) {
+                        itensProxVenc++;
+                    }
+                });
+            });
+
+            const valesHoje = historicoVales.filter(v => {
+                const dataVale = new Date(v.data);
+                return dataVale.toDateString() === hoje.toDateString();
+            }).length;
+
+            const movimentacoesHoje = historicoMovimentacoes.filter(m => {
+                const dataM = new Date(m.data);
+                return dataM.toDateString() === hoje.toDateString();
+            }).length;
+
+            document.getElementById('totalItens').textContent = estoque.length;
+            document.getElementById('valesHoje').textContent = valesHoje;
+            document.getElementById('itensProxVenc').textContent = itensProxVenc;
+            document.getElementById('valorEstoque').textContent = `R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('movimentacoesHoje').textContent = movimentacoesHoje;
+
+            renderAlertasValidade();
+        }
+
+        function renderAlertasValidade() {
+            const hoje = new Date();
+            const proximos7Dias = new Date(hoje);
+            proximos7Dias.setDate(proximos7Dias.getDate() + 7);
+
+            let alertas = [];
+            let vencidos = [];
+
+            estoque.forEach(item => {
+                item.validades.forEach(val => {
+                    const dataVal = parseDate(val);
+                    if (dataVal) {
+                        if (dataVal < hoje) {
+                            vencidos.push({item: item.nome, data: val});
+                        } else if (dataVal <= proximos7Dias) {
+                            alertas.push({item: item.nome, data: val, dias: Math.ceil((dataVal - hoje) / (1000 * 60 * 60 * 24))});
+                        }
+                    }
+                });
+            });
+
+            let html = '';
+            
+            if (vencidos.length > 0) {
+                html += '<div class="alert alert-danger">';
+                html += '<strong>⚠️ ITENS VENCIDOS (Ação Imediata Necessária):</strong><br>';
+                vencidos.forEach(v => {
+                    html += `${v.item} - Venceu em ${v.data}<br>`;
+                });
+                html += '</div>';
+            }
+
+            if (alertas.length > 0) {
+                html += '<div class="alert alert-warning">';
+                html += '<strong>⏰ ATENÇÃO - Vencimento próximo (7 dias):</strong><br>';
+                alertas.forEach(a => {
+                    html += `${a.item} - Vence em ${a.dias} dia(s) (${a.data})<br>`;
+                });
+                html += '</div>';
+            }
+
+            if (vencidos.length === 0 && alertas.length === 0) {
+                html = '<div class="alert alert-success"><strong>✅ Todas as validades sob controle!</strong></div>';
+            }
+
+            document.getElementById('alertasValidade').innerHTML = html;
+        }
+
+        // VALE
+        function renderItensDisponiveis() {
+            const container = document.getElementById('itensDisponiveis');
+            let html = '';
+
+            estoque.forEach((item, idx) => {
+                let estoqueClass = item.estoque > 50 ? '' : (item.estoque > 0 ? 'low' : 'empty');
+                
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-name">${item.nome}</div>
+                            <div class="item-stock ${estoqueClass}">${item.estoque} ${item.unidade}</div>
+                        </div>
+                        <div class="item-details">
+                            Preço unitário: R$ ${item.preco.toFixed(2)}
+                        </div>
+                        <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" id="qtd_${idx}" placeholder="Quantidade" style="flex: 1; min-width: 150px; padding: 8px;" step="0.001" min="0" max="${item.estoque}">
+                            <button class="btn btn-primary" onclick="adicionarAoVale(${idx})" style="padding: 8px 20px;">+ Adicionar</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function filterItems() {
+            const search = document.getElementById('searchItem').value.toLowerCase();
+            const items = document.querySelectorAll('#itensDisponiveis .item-card');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(search) ? 'block' : 'none';
+            });
+        }
+
+        function adicionarAoVale(idx) {
+            const qtdInput = document.getElementById(`qtd_${idx}`);
+            const qtd = parseFloat(qtdInput.value);
+
+            if (!qtd || qtd <= 0) {
+                alert('Digite uma quantidade válida!');
+                return;
+            }
+
+            if (qtd > estoque[idx].estoque) {
+                alert('Quantidade maior que o estoque disponível!');
+                return;
+            }
+
+            const itemExiste = valesAtual.find(v => v.indice === idx);
+            if (itemExiste) {
+                itemExiste.quantidade += qtd;
+            } else {
+                valesAtual.push({
+                    indice: idx,
+                    nome: estoque[idx].nome,
+                    quantidade: qtd,
+                    unidade: estoque[idx].unidade,
+                    preco: estoque[idx].preco
+                });
+            }
+
+            qtdInput.value = '';
+            renderItensVale();
+        }
+
+        function renderItensVale() {
+            const container = document.getElementById('itensVale');
+            
+            if (valesAtual.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">Nenhum item adicionado ao vale</p>';
+                return;
+            }
+
+            let html = '';
+            let valorTotal = 0;
+
+            valesAtual.forEach((item, idx) => {
+                const valorItem = item.quantidade * item.preco;
+                valorTotal += valorItem;
+                
+                html += `
+                    <div class="vale-item">
+                        <div style="flex: 1;">
+                            <strong>${item.nome}</strong><br>
+                            <small>${item.quantidade} ${item.unidade} × R$ ${item.preco.toFixed(2)} = R$ ${valorItem.toFixed(2)}</small>
+                        </div>
+                        <button class="btn btn-danger btn-small" onclick="removerDoVale(${idx})">Remover</button>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: right;">
+                    <strong style="font-size: 1.3em; color: #2a5298;">Valor Total: R$ ${valorTotal.toFixed(2)}</strong>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function removerDoVale(idx) {
+            valesAtual.splice(idx, 1);
+            renderItensVale();
+        }
+
+        function limparVale() {
+            if (valesAtual.length === 0) return;
+            
+            if (confirm('Deseja limpar todos os itens do vale?')) {
+                valesAtual = [];
+                document.getElementById('responsavelVale').value = '';
+                document.getElementById('obsVale').value = '';
+                document.getElementById('numeroVale').value = '';
+                renderItensVale();
+            }
+        }
+
+        function finalizarVale() {
+            const responsavel = document.getElementById('responsavelVale').value.trim();
+            const numeroVale = document.getElementById('numeroVale').value.trim();
+            
+            if (!responsavel) {
+                alert('Informe o responsável pelo vale!');
+                return;
+            }
+
+            if (valesAtual.length === 0) {
+                alert('Adicione pelo menos um item ao vale!');
+                return;
+            }
+
+            const valorTotal = valesAtual.reduce((sum, item) => sum + (item.quantidade * item.preco), 0);
+
+            // Atualizar estoque e registrar movimentações
+            valesAtual.forEach(item => {
+                estoque[item.indice].estoque -= item.quantidade;
+                
+                // Registrar movimentação
+                registrarMovimentacao('saida', estoque[item.indice].nome, item.quantidade, {
+                    responsavel: responsavel,
+                    numeroVale: numeroVale,
+                    valorUnitario: item.preco,
+                    valorTotal: item.quantidade * item.preco
+                });
+            });
+
+            // Salvar no histórico de vales
+            const vale = {
+                data: new Date().toISOString(),
+                responsavel: responsavel,
+                numeroVale: numeroVale,
+                observacoes: document.getElementById('obsVale').value,
+                itens: [...valesAtual],
+                valorTotal: valorTotal
+            };
+
+            historicoVales.push(vale);
+            salvarDados();
+
+            // Mostrar extrato
+            valeAtualParaBaixar = vale;
+            mostrarExtrato(vale);
+
+            // Limpar formulário
+            valesAtual = [];
+            document.getElementById('responsavelVale').value = '';
+            document.getElementById('obsVale').value = '';
+            document.getElementById('numeroVale').value = '';
+            renderItensVale();
+            renderItensDisponiveis();
+            updateDashboard();
+
+            alert('Vale registrado com sucesso!\nEstoque atualizado automaticamente.');
+        }
+
+        function mostrarExtrato(vale) {
+            const dataFormatada = new Date(vale.data).toLocaleString('pt-BR');
+            
+            let html = `
+                <div style="text-align: center; border-bottom: 2px solid #dee2e6; padding-bottom: 20px; margin-bottom: 20px;">
+                    <h3>5º BtlOpFuzNav</h3>
+                    <h4>Extrato de Vale de Paiol</h4>
+                    ${vale.numeroVale ? `<p><strong>Nº Vale:</strong> ${vale.numeroVale}</p>` : ''}
+                    <p><strong>Data:</strong> ${dataFormatada}</p>
+                    <p><strong>Responsável:</strong> ${vale.responsavel}</p>
+                    ${vale.observacoes ? `<p><strong>Observações:</strong> ${vale.observacoes}</p>` : ''}
+                </div>
+            `;
+
+            vale.itens.forEach(item => {
+                const valorItem = item.quantidade * item.preco;
+                html += `
+                    <div style="padding: 10px; border-bottom: 1px solid #dee2e6;">
+                        <strong>${item.nome}</strong><br>
+                        Quantidade: ${item.quantidade} ${item.unidade} × R$ ${item.preco.toFixed(2)} = <strong>R$ ${valorItem.toFixed(2)}</strong>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: right;">
+                    <strong style="font-size: 1.3em;">Valor Total: R$ ${vale.valorTotal.toFixed(2)}</strong>
+                </div>
+                <div style="margin-top: 40px; text-align: center; color: #6c757d; font-size: 0.9em;">
+                    <p style="margin-top: 30px;">_____________________________________</p>
+                    <p>Assinatura do Responsável</p>
+                </div>
+            `;
+
+            document.getElementById('extratoContent').innerHTML = html;
+            document.getElementById('extratoModal').classList.add('active');
+        }
+
+        function baixarExtrato() {
+            if (!valeAtualParaBaixar) {
+                alert('Nenhum vale disponível para download!');
+                return;
+            }
+
+            const vale = valeAtualParaBaixar;
+            const dataFormatada = new Date(vale.data).toLocaleString('pt-BR');
+            
+            // Criar conteúdo HTML para download
+            let html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Extrato Vale ${vale.numeroVale || ''}</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+        h2, h3 { color: #2a5298; text-align: center; }
+        .header { text-align: center; border-bottom: 2px solid #2a5298; padding-bottom: 20px; margin-bottom: 30px; }
+        .info { margin: 10px 0; }
+        .item { padding: 15px; border-bottom: 1px solid #ddd; }
+        .total { background: #f8f9fa; padding: 20px; margin-top: 30px; text-align: right; font-size: 1.3em; font-weight: bold; }
+        .assinatura { margin-top: 60px; text-align: center; }
+        .linha { border-top: 1px solid #000; width: 300px; margin: 0 auto; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>5º BATALHÃO DE OPERAÇÕES LITORÂNEAS DE FUZILEIROS NAVAIS</h2>
+        <h3>EXTRATO DE VALE DE PAIOL</h3>
+    </div>
+    
+    <div class="info"><strong>Nº Vale:</strong> ${vale.numeroVale || 'N/A'}</div>
+    <div class="info"><strong>Data:</strong> ${dataFormatada}</div>
+    <div class="info"><strong>Responsável:</strong> ${vale.responsavel}</div>
+    ${vale.observacoes ? `<div class="info"><strong>Observações:</strong> ${vale.observacoes}</div>` : ''}
+    
+    <h3 style="margin-top: 30px;">Itens</h3>
+`;
+
+            vale.itens.forEach(item => {
+                const valorItem = item.quantidade * item.preco;
+                html += `
+    <div class="item">
+        <strong>${item.nome}</strong><br>
+        Quantidade: ${item.quantidade} ${item.unidade} × R$ ${item.preco.toFixed(2)} = <strong>R$ ${valorItem.toFixed(2)}</strong>
+    </div>
+`;
+            });
+
+            html += `
+    <div class="total">
+        VALOR TOTAL: R$ ${vale.valorTotal.toFixed(2)}
+    </div>
+    
+    <div class="assinatura">
+        <div class="linha">Assinatura do Responsável</div>
+    </div>
+</body>
+</html>
+`;
+
+            // Criar blob e fazer download
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Vale_${vale.numeroVale || new Date().getTime()}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            alert('Extrato baixado com sucesso!\nVocê pode abrir o arquivo no navegador e salvar como PDF.');
+        }
+
+        // ESTOQUE - ADICIONAR ITEM
+        function abrirAdicionarItem() {
+            document.getElementById('novoItemNome').value = '';
+            document.getElementById('novoItemUnidade').value = 'QUIL';
+            document.getElementById('novoItemQuantidade').value = '';
+            document.getElementById('novoItemPreco').value = '';
+            document.getElementById('adicionarItemModal').classList.add('active');
+        }
+
+        function salvarNovoItem() {
+            const nome = document.getElementById('novoItemNome').value.trim().toUpperCase();
+            const unidade = document.getElementById('novoItemUnidade').value;
+            const quantidade = parseFloat(document.getElementById('novoItemQuantidade').value) || 0;
+            const preco = parseFloat(document.getElementById('novoItemPreco').value) || 0;
+
+            if (!nome) {
+                alert('Informe o nome do item!');
+                return;
+            }
+
+            if (quantidade < 0 || preco < 0) {
+                alert('Quantidade e preço devem ser positivos!');
+                return;
+            }
+
+            // Verificar se já existe
+            if (estoque.find(item => item.nome === nome)) {
+                alert('Já existe um item com este nome!');
+                return;
+            }
+
+            const novoItem = {
+                nome: nome,
+                unidade: unidade,
+                estoque: quantidade,
+                preco: preco,
+                validades: []
+            };
+
+            estoque.push(novoItem);
+            
+            // Registrar movimentação
+            registrarMovimentacao('novo_item', nome, quantidade, {
+                preco: preco,
+                unidade: unidade
+            });
+
+            salvarDados();
+            closeModal('adicionarItemModal');
+            renderEstoque();
+            updateDashboard();
+            alert('Item adicionado com sucesso!');
+        }
+
+        // ESTOQUE - ENTRADA
+        function abrirEntradaEstoque() {
+            const select = document.getElementById('entradaItemSelect');
+            select.innerHTML = '<option value="">Selecione um item...</option>';
+            
+            estoque.forEach((item, idx) => {
+                select.innerHTML += `<option value="${idx}">${item.nome} (${item.estoque} ${item.unidade})</option>`;
+            });
+
+            document.getElementById('entradaDetalhes').style.display = 'none';
+            document.getElementById('entradaEstoqueModal').classList.add('active');
+        }
+
+        function selecionarItemEntrada() {
+            const idx = document.getElementById('entradaItemSelect').value;
+            
+            if (idx === '') {
+                document.getElementById('entradaDetalhes').style.display = 'none';
+                return;
+            }
+
+            const item = estoque[idx];
+            document.getElementById('entradaNomeItem').textContent = item.nome;
+            document.getElementById('entradaEstoqueAtual').textContent = `${item.estoque} ${item.unidade}`;
+            document.getElementById('entradaQuantidade').value = '';
+            document.getElementById('entradaMotivo').value = 'compra';
+            document.getElementById('entradaObs').value = '';
+            document.getElementById('entradaDetalhes').style.display = 'block';
+        }
+
+        function confirmarEntrada() {
+            const idx = parseInt(document.getElementById('entradaItemSelect').value);
+            const quantidade = parseFloat(document.getElementById('entradaQuantidade').value);
+            const motivo = document.getElementById('entradaMotivo').value;
+            const obs = document.getElementById('entradaObs').value;
+
+            if (isNaN(quantidade) || quantidade <= 0) {
+                alert('Digite uma quantidade válida!');
+                return;
+            }
+
+            const item = estoque[idx];
+            item.estoque += quantidade;
+
+            // Registrar movimentação
+            registrarMovimentacao('entrada', item.nome, quantidade, {
+                motivo: motivo,
+                observacoes: obs,
+                estoqueAnterior: item.estoque - quantidade,
+                estoqueNovo: item.estoque
+            });
+
+            salvarDados();
+            closeModal('entradaEstoqueModal');
+            renderEstoque();
+            updateDashboard();
+            alert(`Entrada registrada com sucesso!\n\n${item.nome}\n+${quantidade} ${item.unidade}\nNovo estoque: ${item.estoque} ${item.unidade}`);
+        }
+
+        // ESTOQUE - EDITAR
+        function abrirEditarItem(idx) {
+            itemEditarAtual = idx;
+            const item = estoque[idx];
+            
+            document.getElementById('editItemNome').value = item.nome;
+            document.getElementById('editItemUnidade').value = item.unidade;
+            document.getElementById('editItemPreco').value = item.preco;
+            document.getElementById('editItemEstoque').value = item.estoque;
+            
+            document.getElementById('editarItemModal').classList.add('active');
+        }
+
+        function salvarEdicaoItem() {
+            const item = estoque[itemEditarAtual];
+            const nomeAntigo = item.nome;
+            
+            const novoNome = document.getElementById('editItemNome').value.trim().toUpperCase();
+            const novaUnidade = document.getElementById('editItemUnidade').value;
+            const novoPreco = parseFloat(document.getElementById('editItemPreco').value);
+
+            if (!novoNome) {
+                alert('Informe o nome do item!');
+                return;
+            }
+
+            if (novoPreco < 0) {
+                alert('O preço deve ser positivo!');
+                return;
+            }
+
+            // Verificar se o novo nome já existe em outro item
+            if (novoNome !== nomeAntigo && estoque.find(i => i.nome === novoNome)) {
+                alert('Já existe um item com este nome!');
+                return;
+            }
+
+            item.nome = novoNome;
+            item.unidade = novaUnidade;
+            item.preco = novoPreco;
+
+            // Registrar movimentação
+            registrarMovimentacao('ajuste', item.nome, 0, {
+                tipo: 'edicao',
+                nomeAntigo: nomeAntigo,
+                alteracoes: 'Nome, unidade ou preço'
+            });
+
+            salvarDados();
+            closeModal('editarItemModal');
+            renderEstoque();
+            alert('Item atualizado com sucesso!');
+        }
+
+        // ESTOQUE - EXCLUIR
+        function excluirItem(idx) {
+            const item = estoque[idx];
+            
+            if (!confirm(`Deseja realmente EXCLUIR o item:\n\n${item.nome}\n\nEsta ação não pode ser desfeita!`)) {
+                return;
+            }
+
+            // Registrar movimentação
+            registrarMovimentacao('exclusao', item.nome, item.estoque, {
+                preco: item.preco,
+                unidade: item.unidade
+            });
+
+            estoque.splice(idx, 1);
+            salvarDados();
+            renderEstoque();
+            updateDashboard();
+            alert('Item excluído com sucesso!');
+        }
+
+        // ESTOQUE - RENDERIZAR
+        function renderEstoque() {
+            const container = document.getElementById('listaEstoque');
+            let items = [...estoque];
+
+            const search = document.getElementById('searchEstoque').value.toLowerCase();
+            const filtro = document.getElementById('filtroEstoque').value;
+
+            if (search) {
+                items = items.filter(item => item.nome.toLowerCase().includes(search));
+            }
+
+            if (filtro === 'baixo') {
+                items = items.filter(item => item.estoque > 0 && item.estoque < 50);
+            } else if (filtro === 'zerado') {
+                items = items.filter(item => item.estoque === 0);
+            }
+
+            let html = '';
+
+            items.forEach((item, idx) => {
+                const itemIdx = estoque.findIndex(i => i.nome === item.nome);
+                let estoqueClass = item.estoque > 50 ? '' : (item.estoque > 0 ? 'low' : 'empty');
+                const valorTotal = item.estoque * item.preco;
+                
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-name">${item.nome}</div>
+                            <div class="item-stock ${estoqueClass}">${item.estoque} ${item.unidade}</div>
+                        </div>
+                        <div class="item-details">
+                            Preço unitário: R$ ${item.preco.toFixed(2)}<br>
+                            Valor em estoque: R$ ${valorTotal.toFixed(2)}
+                        </div>
+                        ${renderValidadesItem(item, itemIdx)}
+                        <div class="action-buttons" style="margin-top: 15px;">
+                            <button class="btn btn-warning btn-small" onclick="abrirGerenciarValidades(${itemIdx})">📝 Validades</button>
+                            <button class="btn btn-info btn-small" onclick="abrirEditarItem(${itemIdx})">✏️ Editar</button>
+                            <button class="btn btn-danger btn-small" onclick="excluirItem(${itemIdx})">🗑️ Excluir</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<p style="text-align: center; color: #6c757d;">Nenhum item encontrado</p>';
+        }
+
+        function filterEstoque() {
+            renderEstoque();
+        }
+
+        function renderValidadesItem(item, itemIdx) {
+            const hoje = new Date();
+            const proximos30Dias = new Date(hoje);
+            proximos30Dias.setDate(proximos30Dias.getDate() + 30);
+
+            let html = '<div class="validades" style="margin-top: 10px;">';
+            
+            if (item.validades.length === 0) {
+                html += `<div style="text-align: center; padding: 10px; color: #6c757d; font-size: 0.9em;">Sem validades</div>`;
+            } else {
+                item.validades.slice(0, 3).forEach(val => {
+                    const dataVal = parseDate(val);
+                    let classe = '';
+                    
+                    if (dataVal) {
+                        if (dataVal < hoje) {
+                            classe = 'vencido';
+                        } else if (dataVal <= proximos30Dias) {
+                            classe = 'proximo';
+                        }
+                    }
+                    
+                    html += `
+                        <div class="validade-item ${classe}" style="font-size: 0.85em; padding: 5px 10px;">
+                            <span>📅 ${val}</span>
+                            ${classe === 'vencido' ? '<span style="color: #dc3545;">❌</span>' : ''}
+                            ${classe === 'proximo' ? '<span style="color: #ffc107;">⚠️</span>' : ''}
+                        </div>
+                    `;
+                });
+                
+                if (item.validades.length > 3) {
+                    html += `<div style="text-align: center; font-size: 0.85em; color: #6c757d; padding: 5px;">+${item.validades.length - 3} mais...</div>`;
+                }
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        // VALIDADES (mantém a lógica anterior)
+        function abrirGerenciarValidades(itemIdx) {
+            itemValidadeAtual = itemIdx;
+            const item = estoque[itemIdx];
+            
+            document.getElementById('nomeItemValidade').textContent = item.nome;
+            renderListaValidadesModal();
+            document.getElementById('validadeModal').classList.add('active');
+        }
+
+        function renderListaValidadesModal() {
+            const item = estoque[itemValidadeAtual];
+            const container = document.getElementById('listaValidadesItem');
+            
+            if (item.validades.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 10px;">Nenhuma validade cadastrada</p>';
+                return;
+            }
+
+            const hoje = new Date();
+            const proximos30Dias = new Date(hoje);
+            proximos30Dias.setDate(proximos30Dias.getDate() + 30);
+
+            let html = '';
+            
+            item.validades.forEach((val, idx) => {
+                const dataVal = parseDate(val);
+                let classe = '';
+                let status = '';
+                
+                if (dataVal) {
+                    if (dataVal < hoje) {
+                        classe = 'vencido';
+                        status = '❌ VENCIDO';
+                    } else if (dataVal <= proximos30Dias) {
+                        classe = 'proximo';
+                        status = '⚠️ PRÓXIMO';
+                    } else {
+                        status = '✅ OK';
+                    }
+                }
+                
+                html += `
+                    <div class="validade-item ${classe}" style="margin-bottom: 10px;">
+                        <div style="flex: 1;">
+                            <strong>📅 ${val}</strong>
+                            <div style="font-size: 0.9em; margin-top: 5px;">${status}</div>
+                        </div>
+                        <div class="validade-actions">
+                            <button class="btn btn-warning btn-small" onclick="editarValidade(${idx})">✏️ Editar</button>
+                            <button class="btn btn-danger btn-small" onclick="excluirValidade(${idx})">🗑️ Excluir</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function adicionarValidade() {
+            const dataInput = document.getElementById('novaValidadeData');
+            const data = dataInput.value;
+            
+            if (!data) {
+                alert('Selecione uma data de validade!');
+                return;
+            }
+
+            const [ano, mes, dia] = data.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+            
+            const item = estoque[itemValidadeAtual];
+            
+            if (item.validades.includes(dataFormatada)) {
+                alert('Esta validade já está cadastrada!');
+                return;
+            }
+
+            item.validades.push(dataFormatada);
+            item.validades.sort((a, b) => {
+                const dateA = parseDate(a);
+                const dateB = parseDate(b);
+                return dateA - dateB;
+            });
+
+            salvarDados();
+            dataInput.value = '';
+            renderListaValidadesModal();
+            renderEstoque();
+            renderValidades();
+            updateDashboard();
+        }
+
+        function editarValidade(idx) {
+            const item = estoque[itemValidadeAtual];
+            const validadeAtual = item.validades[idx];
+            
+            const novaData = prompt('Digite a nova data de validade (formato DD/MM/AAAA):', validadeAtual);
+            
+            if (novaData && novaData !== validadeAtual) {
+                const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+                if (!regex.test(novaData)) {
+                    alert('Formato inválido! Use DD/MM/AAAA');
+                    return;
+                }
+                
+                item.validades[idx] = novaData;
+                item.validades.sort((a, b) => {
+                    const dateA = parseDate(a);
+                    const dateB = parseDate(b);
+                    return dateA - dateB;
+                });
+                
+                salvarDados();
+                renderListaValidadesModal();
+                renderEstoque();
+                renderValidades();
+                updateDashboard();
+            }
+        }
+
+        function excluirValidade(idx) {
+            if (!confirm('Deseja realmente excluir esta validade?')) return;
+            
+            const item = estoque[itemValidadeAtual];
+            item.validades.splice(idx, 1);
+            
+            salvarDados();
+            renderListaValidadesModal();
+            renderEstoque();
+            renderValidades();
+            updateDashboard();
+        }
+
+        function renderValidades() {
+            const hoje = new Date();
+            const proximos30Dias = new Date(hoje);
+            proximos30Dias.setDate(proximos30Dias.getDate() + 30);
+
+            let vencidos = [];
+            let proximos = [];
+            let normais = [];
+
+            estoque.forEach((item, itemIdx) => {
+                if (item.validades.length === 0) return;
+
+                item.validades.forEach(val => {
+                    const dataVal = parseDate(val);
+                    if (dataVal) {
+                        const obj = {item: item.nome, itemIdx: itemIdx, data: val, dataObj: dataVal};
+                        
+                        if (dataVal < hoje) {
+                            vencidos.push(obj);
+                        } else if (dataVal <= proximos30Dias) {
+                            proximos.push(obj);
+                        } else {
+                            normais.push(obj);
+                        }
+                    }
+                });
+            });
+
+            let alertasHtml = '';
+            
+            if (vencidos.length > 0) {
+                alertasHtml += '<div class="alert alert-danger">';
+                alertasHtml += `<strong>❌ ${vencidos.length} VALIDADE(S) VENCIDA(S)</strong>`;
+                alertasHtml += '</div>';
+            }
+
+            if (proximos.length > 0) {
+                alertasHtml += '<div class="alert alert-warning">';
+                alertasHtml += `<strong>⚠️ ${proximos.length} VALIDADE(S) PRÓXIMA(S) (30 dias)</strong>`;
+                alertasHtml += '</div>';
+            }
+
+            if (vencidos.length === 0 && proximos.length === 0) {
+                alertasHtml = '<div class="alert alert-success"><strong>✅ Todas as validades sob controle!</strong></div>';
+            }
+
+            document.getElementById('alertasValidadeCompleto').innerHTML = alertasHtml;
+
+            const search = document.getElementById('searchValidade').value.toLowerCase();
+            const ordenacao = document.getElementById('ordenarValidade').value;
+            let items = [...vencidos, ...proximos, ...normais];
+
+            if (search) {
+                items = items.filter(item => item.item.toLowerCase().includes(search));
+            }
+
+            if (ordenacao === 'vencimento') {
+                items.sort((a, b) => a.dataObj - b.dataObj);
+            } else if (ordenacao === 'nome') {
+                items.sort((a, b) => a.item.localeCompare(b.item));
+            }
+
+            let html = '';
+            
+            items.forEach(item => {
+                let classe = '';
+                let status = '';
+                if (item.dataObj < hoje) {
+                    classe = 'vencido';
+                    status = '❌ VENCIDO';
+                } else if (item.dataObj <= proximos30Dias) {
+                    classe = 'proximo';
+                    status = '⚠️ VENCE EM BREVE';
+                } else {
+                    status = '✅ OK';
+                }
+                
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-name">${item.item}</div>
+                        </div>
+                        <div class="validade-item ${classe}">
+                            <div style="flex: 1;">
+                                <strong>📅 Validade: ${item.data}</strong>
+                                <div style="font-size: 1em; margin-top: 5px; font-weight: bold;">${status}</div>
+                            </div>
+                            <button class="btn btn-warning btn-small" onclick="abrirGerenciarValidades(${item.itemIdx})">📝 Gerenciar</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('listaValidades').innerHTML = html || '<p style="text-align: center; color: #6c757d;">Nenhum item com validade cadastrada</p>';
+        }
+
+        function filterValidades() {
+            renderValidades();
+        }
+
+        // HISTÓRICO
+        function renderHistorico() {
+            const filtroData = document.getElementById('filtroData').value;
+            const filtroTipo = document.getElementById('filtroTipo').value;
+            const search = document.getElementById('searchHistorico').value.toLowerCase();
+            
+            let movimentacoes = [...historicoMovimentacoes].reverse();
+
+            if (filtroData) {
+                const dataFiltro = new Date(filtroData);
+                movimentacoes = movimentacoes.filter(m => {
+                    const dataM = new Date(m.data);
+                    return dataM.toDateString() === dataFiltro.toDateString();
+                });
+            }
+
+            if (filtroTipo !== 'todos') {
+                movimentacoes = movimentacoes.filter(m => m.tipo === filtroTipo);
+            }
+
+            if (search) {
+                movimentacoes = movimentacoes.filter(m => 
+                    m.item.toLowerCase().includes(search) ||
+                    (m.responsavel && m.responsavel.toLowerCase().includes(search)) ||
+                    (m.numeroVale && m.numeroVale.toLowerCase().includes(search))
+                );
+            }
+
+            let html = '';
+
+            if (movimentacoes.length === 0) {
+                html = '<p style="text-align: center; color: #6c757d;">Nenhuma movimentação registrada</p>';
+            } else {
+                movimentacoes.forEach((mov, idx) => {
+                    const dataFormatada = new Date(mov.data).toLocaleString('pt-BR');
+                    
+                    let badgeClass = '';
+                    let tipoNome = '';
+                    let icone = '';
+                    
+                    switch(mov.tipo) {
+                        case 'saida':
+                            badgeClass = 'badge-saida';
+                            tipoNome = 'SAÍDA (Vale)';
+                            icone = '📤';
+                            break;
+                        case 'entrada':
+                            badgeClass = 'badge-entrada';
+                            tipoNome = 'ENTRADA';
+                            icone = '📥';
+                            break;
+                        case 'ajuste':
+                            badgeClass = 'badge-ajuste';
+                            tipoNome = 'AJUSTE';
+                            icone = '✏️';
+                            break;
+                        case 'exclusao':
+                            badgeClass = 'badge-saida';
+                            tipoNome = 'EXCLUSÃO';
+                            icone = '🗑️';
+                            break;
+                        case 'novo_item':
+                            badgeClass = 'badge-entrada';
+                            tipoNome = 'NOVO ITEM';
+                            icone = '➕';
+                            break;
+                    }
+                    
+                    html += `
+                        <div class="item-card">
+                            <div class="item-header">
+                                <div>
+                                    <div class="item-name">${icone} ${mov.item}</div>
+                                    <span class="badge ${badgeClass}">${tipoNome}</span>
+                                </div>
+                                <div style="text-align: right; font-size: 0.9em; color: #6c757d;">
+                                    ${dataFormatada}
+                                </div>
+                            </div>
+                            <div class="item-details" style="margin-top: 10px;">
+                                ${mov.tipo === 'saida' || mov.tipo === 'entrada' || mov.tipo === 'novo_item' ? `<strong>Quantidade:</strong> ${mov.quantidade}<br>` : ''}
+                                ${mov.responsavel ? `<strong>Responsável:</strong> ${mov.responsavel}<br>` : ''}
+                                ${mov.numeroVale ? `<strong>Nº Vale:</strong> ${mov.numeroVale}<br>` : ''}
+                                ${mov.motivo ? `<strong>Motivo:</strong> ${mov.motivo}<br>` : ''}
+                                ${mov.observacoes ? `<strong>Obs:</strong> ${mov.observacoes}<br>` : ''}
+                                ${mov.valorTotal ? `<strong>Valor Total:</strong> R$ ${mov.valorTotal.toFixed(2)}<br>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('listaHistorico').innerHTML = html;
+        }
+
+        function filterHistorico() {
+            renderHistorico();
+        }
+
+        // UTILITÁRIOS
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            
+            let parts;
+            if (dateStr.includes('/')) {
+                parts = dateStr.split('/');
+                if (parts.length === 3) {
+                    let day, month, year;
+                    if (parts[2].length === 4) {
+                        day = parseInt(parts[0]);
+                        month = parseInt(parts[1]) - 1;
+                        year = parseInt(parts[2]);
+                    } else {
+                        month = parseInt(parts[0]) - 1;
+                        day = parseInt(parts[1]);
+                        year = parseInt(parts[2]);
+                        if (year < 100) year += 2000;
+                    }
+                    return new Date(year, month, day);
+                }
+            }
+            return null;
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'validadeModal') {
+                itemValidadeAtual = null;
+            }
+            if (modalId === 'editarItemModal') {
+                itemEditarAtual = null;
+            }
+        }
+
+        function imprimirExtrato() {
+            window.print();
+        }
+
+        // Inicializar
+        updateDashboard();
+    </script>
+</body>
+</html>
