@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2a5298">
+    <link rel="manifest" href="manifest.json">
     <title>Controle de Paiol - 5º BtlOpFuzNav</title>
     <style>
         * {
@@ -465,6 +467,37 @@
             margin-top: 15px;
         }
 
+        /* Filtro de letras */
+        .letter-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+
+        .letter-btn {
+            padding: 8px 12px;
+            border: 2px solid #2a5298;
+            background: white;
+            color: #2a5298;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .letter-btn:hover {
+            background: #e9ecef;
+        }
+
+        .letter-btn.active {
+            background: #2a5298;
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.4em;
@@ -502,6 +535,16 @@
             .action-buttons button {
                 width: 100%;
             }
+
+            .letter-filter {
+                gap: 3px;
+            }
+
+            .letter-btn {
+                padding: 6px 10px;
+                min-width: 35px;
+                font-size: 0.9em;
+            }
         }
 
         @media print {
@@ -511,7 +554,7 @@
             .container {
                 box-shadow: none;
             }
-            .tabs, .btn, .search-box {
+            .tabs, .btn, .search-box, .letter-filter {
                 display: none !important;
             }
         }
@@ -585,8 +628,50 @@
 
             <div class="section-divider">
                 <h3 style="color: #2a5298; margin-bottom: 15px;">🔍 Selecionar Itens</h3>
-                <div class="search-box">
-                    <input type="text" id="searchItem" placeholder="Buscar item..." onkeyup="filterItems()">
+                
+                <!-- Filtros -->
+                <div class="grid-2" style="margin-bottom: 15px;">
+                    <div class="search-box">
+                        <input type="text" id="searchItem" placeholder="Buscar item..." onkeyup="filterItems()">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <select id="filtroItensVale" onchange="filterItems()">
+                            <option value="todos">Todos os itens</option>
+                            <option value="selecionados">Apenas itens selecionados</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Filtro por Letra -->
+                <div class="letter-filter">
+                    <button class="letter-btn active" onclick="filterByLetter('TODOS')">TODOS</button>
+                    <button class="letter-btn" onclick="filterByLetter('A')">A</button>
+                    <button class="letter-btn" onclick="filterByLetter('B')">B</button>
+                    <button class="letter-btn" onclick="filterByLetter('C')">C</button>
+                    <button class="letter-btn" onclick="filterByLetter('D')">D</button>
+                    <button class="letter-btn" onclick="filterByLetter('E')">E</button>
+                    <button class="letter-btn" onclick="filterByLetter('F')">F</button>
+                    <button class="letter-btn" onclick="filterByLetter('G')">G</button>
+                    <button class="letter-btn" onclick="filterByLetter('H')">H</button>
+                    <button class="letter-btn" onclick="filterByLetter('I')">I</button>
+                    <button class="letter-btn" onclick="filterByLetter('J')">J</button>
+                    <button class="letter-btn" onclick="filterByLetter('K')">K</button>
+                    <button class="letter-btn" onclick="filterByLetter('L')">L</button>
+                    <button class="letter-btn" onclick="filterByLetter('M')">M</button>
+                    <button class="letter-btn" onclick="filterByLetter('N')">N</button>
+                    <button class="letter-btn" onclick="filterByLetter('O')">O</button>
+                    <button class="letter-btn" onclick="filterByLetter('P')">P</button>
+                    <button class="letter-btn" onclick="filterByLetter('Q')">Q</button>
+                    <button class="letter-btn" onclick="filterByLetter('R')">R</button>
+                    <button class="letter-btn" onclick="filterByLetter('S')">S</button>
+                    <button class="letter-btn" onclick="filterByLetter('T')">T</button>
+                    <button class="letter-btn" onclick="filterByLetter('U')">U</button>
+                    <button class="letter-btn" onclick="filterByLetter('V')">V</button>
+                    <button class="letter-btn" onclick="filterByLetter('W')">W</button>
+                    <button class="letter-btn" onclick="filterByLetter('X')">X</button>
+                    <button class="letter-btn" onclick="filterByLetter('Y')">Y</button>
+                    <button class="letter-btn" onclick="filterByLetter('Z')">Z</button>
                 </div>
 
                 <div id="itensDisponiveis" class="item-list"></div>
@@ -610,6 +695,8 @@
             <div class="action-buttons">
                 <button class="btn btn-success" onclick="abrirAdicionarItem()">➕ Adicionar Novo Item</button>
                 <button class="btn btn-info" onclick="abrirEntradaEstoque()">📥 Entrada de Estoque</button>
+                <button class="btn btn-primary" onclick="abrirRelatorioBalanco()">📊 Relatório de Balanço</button>
+                <button class="btn btn-secondary" onclick="baixarEstoqueCompleto()">💾 Baixar Estoque Completo</button>
             </div>
 
             <div class="section-divider">
@@ -656,7 +743,7 @@
 
         <!-- HISTÓRICO -->
         <div id="historico" class="content">
-            <h2 style="margin-bottom: 20px; color: #2a5298;">Histórico Completo de Movimentações</h2>
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Histórico de Vales</h2>
             
             <div class="grid-3">
                 <div class="form-group">
@@ -665,19 +752,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Tipo de Movimentação</label>
-                    <select id="filtroTipo" onchange="filterHistorico()">
-                        <option value="todos">Todas</option>
-                        <option value="saida">Saídas (Vales)</option>
-                        <option value="entrada">Entradas</option>
-                        <option value="ajuste">Ajustes</option>
-                        <option value="exclusao">Exclusões</option>
-                    </select>
+                    <label>Buscar</label>
+                    <input type="text" id="searchHistorico" placeholder="Responsável ou nº vale..." onkeyup="filterHistorico()">
                 </div>
 
                 <div class="form-group">
-                    <label>Buscar</label>
-                    <input type="text" id="searchHistorico" placeholder="Buscar..." onkeyup="filterHistorico()">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-secondary" onclick="limparFiltrosHistorico()" style="width: 100%;">🔄 Limpar Filtros</button>
                 </div>
             </div>
 
@@ -695,7 +776,7 @@
             <div id="extratoContent"></div>
             <div class="action-buttons">
                 <button class="btn btn-primary" onclick="imprimirExtrato()">🖨️ Imprimir</button>
-                <button class="btn btn-success" onclick="baixarExtrato()">💾 Baixar PDF</button>
+                <button class="btn btn-success" onclick="baixarVale()">💾 Baixar Vale</button>
                 <button class="btn btn-secondary" onclick="closeModal('extratoModal')">Fechar</button>
             </div>
         </div>
@@ -742,7 +823,7 @@
 
                 <div class="form-group">
                     <label>Unidade de Medida *</label>
-                    <select id="novoItemUnidade">
+                    <select id="novoItemUnidade" onchange="toggleUnidadePersonalizada('novo')">
                         <option value="QUIL">QUIL (Quilograma)</option>
                         <option value="UNID">UNID (Unidade)</option>
                         <option value="LITR">LITR (Litro)</option>
@@ -753,7 +834,14 @@
                         <option value="COP">COP (Copo)</option>
                         <option value="DUZI">DUZI (Dúzia)</option>
                         <option value="BALD">BALD (Balde)</option>
+                        <option value="PERSONALIZADA">✏️ Outra (Digite)</option>
                     </select>
+                </div>
+
+                <div class="form-group" id="novoItemUnidadePersonalizadaDiv" style="display: none;">
+                    <label>Digite a Unidade de Medida</label>
+                    <input type="text" id="novoItemUnidadePersonalizada" placeholder="Ex: SACO, FARDO, etc" maxlength="10" style="text-transform: uppercase;">
+                    <small style="color: #6c757d;">Máximo 10 caracteres</small>
                 </div>
 
                 <div class="form-group">
@@ -841,7 +929,7 @@
 
                 <div class="form-group">
                     <label>Unidade de Medida *</label>
-                    <select id="editItemUnidade">
+                    <select id="editItemUnidade" onchange="toggleUnidadePersonalizada('edit')">
                         <option value="QUIL">QUIL (Quilograma)</option>
                         <option value="UNID">UNID (Unidade)</option>
                         <option value="LITR">LITR (Litro)</option>
@@ -852,7 +940,14 @@
                         <option value="COP">COP (Copo)</option>
                         <option value="DUZI">DUZI (Dúzia)</option>
                         <option value="BALD">BALD (Balde)</option>
+                        <option value="PERSONALIZADA">✏️ Outra (Digite)</option>
                     </select>
+                </div>
+
+                <div class="form-group" id="editItemUnidadePersonalizadaDiv" style="display: none;">
+                    <label>Digite a Unidade de Medida</label>
+                    <input type="text" id="editItemUnidadePersonalizada" placeholder="Ex: SACO, FARDO, etc" maxlength="10" style="text-transform: uppercase;">
+                    <small style="color: #6c757d;">Máximo 10 caracteres</small>
                 </div>
 
                 <div class="form-group">
@@ -873,7 +968,60 @@
         </div>
     </div>
 
+    <!-- MODAL RELATÓRIO DE BALANÇO -->
+    <div id="relatorioBalancoModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h2>📊 Relatório de Balanço de Paiol</h2>
+                <button class="close-modal" onclick="closeModal('relatorioBalancoModal')">&times;</button>
+            </div>
+
+            <div class="grid-3" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Tipo de Relatório</label>
+                    <select id="tipoRelatorioBalanco" onchange="atualizarPreviewRelatorio()">
+                        <option value="completo">Relatório Completo</option>
+                        <option value="validades">Apenas com Validades</option>
+                        <option value="quantidade">Apenas Quantidade</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Ordenar por</label>
+                    <select id="ordenarRelatorio" onchange="atualizarPreviewRelatorio()">
+                        <option value="nome">Nome (A-Z)</option>
+                        <option value="estoque">Quantidade</option>
+                        <option value="valor">Valor Total</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Filtrar Estoque</label>
+                    <select id="filtroEstoqueRelatorio" onchange="atualizarPreviewRelatorio()">
+                        <option value="todos">Todos</option>
+                        <option value="comEstoque">Apenas com estoque</option>
+                        <option value="semEstoque">Apenas sem estoque</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 400px; overflow-y: auto; margin-bottom: 20px;" id="previewRelatorio">
+                <!-- Preview será gerado aqui -->
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="exportarRelatorio('excel')">📊 Baixar Excel (.xlsx)</button>
+                <button class="btn btn-info" onclick="exportarRelatorio('ods')">📋 Baixar ODS</button>
+                <button class="btn btn-danger" onclick="exportarRelatorio('pdf')">📄 Baixar PDF</button>
+                <button class="btn btn-secondary" onclick="closeModal('relatorioBalancoModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
     <script>
         // Dados do sistema
         let estoque = [
@@ -891,6 +1039,7 @@
         let itemValidadeAtual = null;
         let itemEditarAtual = null;
         let valeAtualParaBaixar = null;
+        let letraAtiva = 'TODOS';
 
         // Carregar dados salvos
         if (localStorage.getItem('estoque')) {
@@ -906,7 +1055,7 @@
         function registrarMovimentacao(tipo, item, quantidade, detalhes = {}) {
             const movimentacao = {
                 data: new Date().toISOString(),
-                tipo: tipo, // 'saida', 'entrada', 'ajuste', 'exclusao', 'novo_item'
+                tipo: tipo,
                 item: item,
                 quantidade: quantidade,
                 ...detalhes
@@ -997,7 +1146,7 @@
             
             if (vencidos.length > 0) {
                 html += '<div class="alert alert-danger">';
-                html += '<strong>⚠️ ITENS VENCIDOS (Ação Imediata Necessária):</strong><br>';
+                html += '<strong>⚠️ ITENS VENCIDOS:</strong><br>';
                 vencidos.forEach(v => {
                     html += `${v.item} - Venceu em ${v.data}<br>`;
                 });
@@ -1020,25 +1169,74 @@
             document.getElementById('alertasValidade').innerHTML = html;
         }
 
+        // FILTRO POR LETRA
+        function filterByLetter(letra) {
+            letraAtiva = letra;
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.letter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            filterItems();
+        }
+
         // VALE
         function renderItensDisponiveis() {
             const container = document.getElementById('itensDisponiveis');
+            const search = document.getElementById('searchItem').value.toLowerCase();
+            const filtroVale = document.getElementById('filtroItensVale').value;
+            
+            let itensParaMostrar = [...estoque];
+
+            // Filtro por letra
+            if (letraAtiva !== 'TODOS') {
+                itensParaMostrar = itensParaMostrar.filter(item => 
+                    item.nome.charAt(0) === letraAtiva
+                );
+            }
+
+            // Filtro de busca
+            if (search) {
+                itensParaMostrar = itensParaMostrar.filter(item => 
+                    item.nome.toLowerCase().includes(search)
+                );
+            }
+
+            // Filtro apenas selecionados
+            if (filtroVale === 'selecionados') {
+                const indicesSelecionados = valesAtual.map(v => v.indice);
+                itensParaMostrar = itensParaMostrar.filter((item, idx) => {
+                    const indexOriginal = estoque.findIndex(i => i.nome === item.nome);
+                    return indicesSelecionados.includes(indexOriginal);
+                });
+            }
+
+            if (itensParaMostrar.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">Nenhum item encontrado</p>';
+                return;
+            }
+
             let html = '';
 
-            estoque.forEach((item, idx) => {
+            itensParaMostrar.forEach(item => {
+                const idx = estoque.findIndex(i => i.nome === item.nome);
                 let estoqueClass = item.estoque > 50 ? '' : (item.estoque > 0 ? 'low' : 'empty');
+                const itemNoVale = valesAtual.find(v => v.indice === idx);
                 
                 html += `
-                    <div class="item-card">
+                    <div class="item-card" ${itemNoVale ? 'style="border-left: 4px solid #28a745;"' : ''}>
                         <div class="item-header">
                             <div class="item-name">${item.nome}</div>
                             <div class="item-stock ${estoqueClass}">${item.estoque} ${item.unidade}</div>
                         </div>
                         <div class="item-details">
                             Preço unitário: R$ ${item.preco.toFixed(2)}
+                            ${itemNoVale ? `<br><strong style="color: #28a745;">✓ ${itemNoVale.quantidade} ${item.unidade} no vale</strong>` : ''}
                         </div>
                         <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <input type="number" id="qtd_${idx}" placeholder="Quantidade" style="flex: 1; min-width: 150px; padding: 8px;" step="0.001" min="0" max="${item.estoque}">
+                            <input type="number" id="qtd_${idx}" placeholder="Quantidade" style="flex: 1; min-width: 150px; padding: 8px;" step="0.001" min="0" max="${item.estoque}" ${itemNoVale ? `value="${itemNoVale.quantidade}"` : ''}>
                             <button class="btn btn-primary" onclick="adicionarAoVale(${idx})" style="padding: 8px 20px;">+ Adicionar</button>
                         </div>
                     </div>
@@ -1049,13 +1247,7 @@
         }
 
         function filterItems() {
-            const search = document.getElementById('searchItem').value.toLowerCase();
-            const items = document.querySelectorAll('#itensDisponiveis .item-card');
-            
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(search) ? 'block' : 'none';
-            });
+            renderItensDisponiveis();
         }
 
         function adicionarAoVale(idx) {
@@ -1074,7 +1266,7 @@
 
             const itemExiste = valesAtual.find(v => v.indice === idx);
             if (itemExiste) {
-                itemExiste.quantidade += qtd;
+                itemExiste.quantidade = qtd; // Atualiza a quantidade
             } else {
                 valesAtual.push({
                     indice: idx,
@@ -1085,8 +1277,8 @@
                 });
             }
 
-            qtdInput.value = '';
             renderItensVale();
+            renderItensDisponiveis(); // Atualiza para mostrar item selecionado
         }
 
         function renderItensVale() {
@@ -1127,6 +1319,7 @@
         function removerDoVale(idx) {
             valesAtual.splice(idx, 1);
             renderItensVale();
+            renderItensDisponiveis(); // Atualiza lista de itens
         }
 
         function limparVale() {
@@ -1138,6 +1331,7 @@
                 document.getElementById('obsVale').value = '';
                 document.getElementById('numeroVale').value = '';
                 renderItensVale();
+                renderItensDisponiveis();
             }
         }
 
@@ -1161,7 +1355,6 @@
             valesAtual.forEach(item => {
                 estoque[item.indice].estoque -= item.quantidade;
                 
-                // Registrar movimentação
                 registrarMovimentacao('saida', estoque[item.indice].nome, item.quantidade, {
                     responsavel: responsavel,
                     numeroVale: numeroVale,
@@ -1189,9 +1382,20 @@
 
             // Limpar formulário
             valesAtual = [];
+            letraAtiva = 'TODOS';
             document.getElementById('responsavelVale').value = '';
             document.getElementById('obsVale').value = '';
             document.getElementById('numeroVale').value = '';
+            document.getElementById('filtroItensVale').value = 'todos';
+            
+            // Resetar filtro de letra
+            document.querySelectorAll('.letter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === 'TODOS') {
+                    btn.classList.add('active');
+                }
+            });
+            
             renderItensVale();
             renderItensDisponiveis();
             updateDashboard();
@@ -1237,7 +1441,7 @@
             document.getElementById('extratoModal').classList.add('active');
         }
 
-        function baixarExtrato() {
+        function baixarVale() {
             if (!valeAtualParaBaixar) {
                 alert('Nenhum vale disponível para download!');
                 return;
@@ -1245,11 +1449,11 @@
 
             const vale = valeAtualParaBaixar;
             const dataFormatada = new Date(vale.data).toLocaleString('pt-BR');
+            const nomeArquivo = `Vale_${vale.numeroVale || new Date().getTime()}.html`;
             
-            // Criar conteúdo HTML para download
             let html = `
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Extrato Vale ${vale.numeroVale || ''}</title>
@@ -1305,16 +1509,16 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Vale_${vale.numeroVale || new Date().getTime()}.html`;
+            a.download = nomeArquivo;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
 
-            alert('Extrato baixado com sucesso!\nVocê pode abrir o arquivo no navegador e salvar como PDF.');
+            alert('Vale baixado com sucesso!\nVocê pode abrir o arquivo no navegador e salvar como PDF.');
         }
 
-        // ESTOQUE - ADICIONAR ITEM
+        // ESTOQUE
         function abrirAdicionarItem() {
             document.getElementById('novoItemNome').value = '';
             document.getElementById('novoItemUnidade').value = 'QUIL';
@@ -1325,7 +1529,22 @@
 
         function salvarNovoItem() {
             const nome = document.getElementById('novoItemNome').value.trim().toUpperCase();
-            const unidade = document.getElementById('novoItemUnidade').value;
+            let unidade = document.getElementById('novoItemUnidade').value;
+            
+            // Verificar se é unidade personalizada
+            if (unidade === 'PERSONALIZADA') {
+                const unidadePersonalizada = document.getElementById('novoItemUnidadePersonalizada').value.trim().toUpperCase();
+                if (!unidadePersonalizada) {
+                    alert('Digite a unidade de medida personalizada!');
+                    return;
+                }
+                if (unidadePersonalizada.length > 10) {
+                    alert('Unidade de medida deve ter no máximo 10 caracteres!');
+                    return;
+                }
+                unidade = unidadePersonalizada;
+            }
+            
             const quantidade = parseFloat(document.getElementById('novoItemQuantidade').value) || 0;
             const preco = parseFloat(document.getElementById('novoItemPreco').value) || 0;
 
@@ -1339,7 +1558,6 @@
                 return;
             }
 
-            // Verificar se já existe
             if (estoque.find(item => item.nome === nome)) {
                 alert('Já existe um item com este nome!');
                 return;
@@ -1354,8 +1572,8 @@
             };
 
             estoque.push(novoItem);
+            estoque.sort((a, b) => a.nome.localeCompare(b.nome));
             
-            // Registrar movimentação
             registrarMovimentacao('novo_item', nome, quantidade, {
                 preco: preco,
                 unidade: unidade
@@ -1368,7 +1586,6 @@
             alert('Item adicionado com sucesso!');
         }
 
-        // ESTOQUE - ENTRADA
         function abrirEntradaEstoque() {
             const select = document.getElementById('entradaItemSelect');
             select.innerHTML = '<option value="">Selecione um item...</option>';
@@ -1412,7 +1629,6 @@
             const item = estoque[idx];
             item.estoque += quantidade;
 
-            // Registrar movimentação
             registrarMovimentacao('entrada', item.nome, quantidade, {
                 motivo: motivo,
                 observacoes: obs,
@@ -1424,20 +1640,352 @@
             closeModal('entradaEstoqueModal');
             renderEstoque();
             updateDashboard();
-            alert(`Entrada registrada com sucesso!\n\n${item.nome}\n+${quantidade} ${item.unidade}\nNovo estoque: ${item.estoque} ${item.unidade}`);
+            alert(`Entrada registrada!\n\n${item.nome}\n+${quantidade} ${item.unidade}\nNovo estoque: ${item.estoque} ${item.unidade}`);
         }
 
-        // ESTOQUE - EDITAR
         function abrirEditarItem(idx) {
             itemEditarAtual = idx;
             const item = estoque[idx];
             
             document.getElementById('editItemNome').value = item.nome;
-            document.getElementById('editItemUnidade').value = item.unidade;
+            
+            // Verificar se a unidade existe nas opções padrão
+            const selectUnidade = document.getElementById('editItemUnidade');
+            const opcaoPadrao = Array.from(selectUnidade.options).find(opt => opt.value === item.unidade);
+            
+            if (opcaoPadrao) {
+                selectUnidade.value = item.unidade;
+                document.getElementById('editItemUnidadePersonalizadaDiv').style.display = 'none';
+            } else {
+                selectUnidade.value = 'PERSONALIZADA';
+                document.getElementById('editItemUnidadePersonalizada').value = item.unidade;
+                document.getElementById('editItemUnidadePersonalizadaDiv').style.display = 'block';
+            }
+            
             document.getElementById('editItemPreco').value = item.preco;
             document.getElementById('editItemEstoque').value = item.estoque;
             
             document.getElementById('editarItemModal').classList.add('active');
+        }
+
+        function toggleUnidadePersonalizada(tipo) {
+            const select = document.getElementById(tipo + 'ItemUnidade');
+            const divPersonalizada = document.getElementById(tipo + 'ItemUnidadePersonalizadaDiv');
+            
+            if (select.value === 'PERSONALIZADA') {
+                divPersonalizada.style.display = 'block';
+            } else {
+                divPersonalizada.style.display = 'none';
+            }
+        }
+
+        // RELATÓRIO DE BALANÇO
+        function abrirRelatorioBalanco() {
+            document.getElementById('tipoRelatorioBalanco').value = 'completo';
+            document.getElementById('ordenarRelatorio').value = 'nome';
+            document.getElementById('filtroEstoqueRelatorio').value = 'todos';
+            atualizarPreviewRelatorio();
+            document.getElementById('relatorioBalancoModal').classList.add('active');
+        }
+
+        function atualizarPreviewRelatorio() {
+            const tipo = document.getElementById('tipoRelatorioBalanco').value;
+            const ordenacao = document.getElementById('ordenarRelatorio').value;
+            const filtroEstoque = document.getElementById('filtroEstoqueRelatorio').value;
+            
+            let items = [...estoque];
+            
+            // Filtrar estoque
+            if (filtroEstoque === 'comEstoque') {
+                items = items.filter(i => i.estoque > 0);
+            } else if (filtroEstoque === 'semEstoque') {
+                items = items.filter(i => i.estoque === 0);
+            }
+            
+            // Ordenar
+            if (ordenacao === 'nome') {
+                items.sort((a, b) => a.nome.localeCompare(b.nome));
+            } else if (ordenacao === 'estoque') {
+                items.sort((a, b) => b.estoque - a.estoque);
+            } else if (ordenacao === 'valor') {
+                items.sort((a, b) => (b.estoque * b.preco) - (a.estoque * a.preco));
+            }
+            
+            let html = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #2a5298;">5º BtlOpFuzNav - Relatório de Balanço de Paiol</h3>
+                    <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                    <p><strong>Total de itens:</strong> ${items.length}</p>
+                </div>
+                <table style="width: 100%; font-size: 0.9em;">
+                    <thead>
+                        <tr style="background: #2a5298; color: white;">
+                            <th style="padding: 10px; text-align: left;">Item</th>
+                            ${tipo !== 'validades' ? '<th style="padding: 10px; text-align: center;">UF</th>' : ''}
+                            ${tipo !== 'validades' ? '<th style="padding: 10px; text-align: right;">Quantidade</th>' : ''}
+                            ${tipo === 'completo' ? '<th style="padding: 10px; text-align: right;">Preço Un.</th>' : ''}
+                            ${tipo === 'completo' ? '<th style="padding: 10px; text-align: right;">Valor Total</th>' : ''}
+                            ${tipo !== 'quantidade' ? '<th style="padding: 10px; text-align: left;">Validades</th>' : ''}
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            let valorTotal = 0;
+            
+            items.forEach(item => {
+                const valorItem = item.estoque * item.preco;
+                valorTotal += valorItem;
+                
+                html += `<tr style="border-bottom: 1px solid #dee2e6;">`;
+                html += `<td style="padding: 8px;">${item.nome}</td>`;
+                
+                if (tipo !== 'validades') {
+                    html += `<td style="padding: 8px; text-align: center;">${item.unidade}</td>`;
+                    html += `<td style="padding: 8px; text-align: right;">${item.estoque}</td>`;
+                }
+                
+                if (tipo === 'completo') {
+                    html += `<td style="padding: 8px; text-align: right;">R$ ${item.preco.toFixed(2)}</td>`;
+                    html += `<td style="padding: 8px; text-align: right;">R$ ${valorItem.toFixed(2)}</td>`;
+                }
+                
+                if (tipo !== 'quantidade') {
+                    const validades = item.validades.length > 0 ? item.validades.join(', ') : '-';
+                    html += `<td style="padding: 8px;">${validades}</td>`;
+                }
+                
+                html += `</tr>`;
+            });
+            
+            if (tipo === 'completo') {
+                html += `
+                    <tr style="background: #f8f9fa; font-weight: bold;">
+                        <td colspan="4" style="padding: 10px; text-align: right;">TOTAL GERAL:</td>
+                        <td style="padding: 10px; text-align: right;">R$ ${valorTotal.toFixed(2)}</td>
+                        <td></td>
+                    </tr>
+                `;
+            }
+            
+            html += `</tbody></table>`;
+            
+            document.getElementById('previewRelatorio').innerHTML = html;
+        }
+
+        function exportarRelatorio(formato) {
+            const tipo = document.getElementById('tipoRelatorioBalanco').value;
+            const ordenacao = document.getElementById('ordenarRelatorio').value;
+            const filtroEstoque = document.getElementById('filtroEstoqueRelatorio').value;
+            
+            let items = [...estoque];
+            
+            // Filtrar
+            if (filtroEstoque === 'comEstoque') {
+                items = items.filter(i => i.estoque > 0);
+            } else if (filtroEstoque === 'semEstoque') {
+                items = items.filter(i => i.estoque === 0);
+            }
+            
+            // Ordenar
+            if (ordenacao === 'nome') {
+                items.sort((a, b) => a.nome.localeCompare(b.nome));
+            } else if (ordenacao === 'estoque') {
+                items.sort((a, b) => b.estoque - a.estoque);
+            } else if (ordenacao === 'valor') {
+                items.sort((a, b) => (b.estoque * b.preco) - (a.estoque * a.preco));
+            }
+            
+            if (formato === 'excel' || formato === 'ods') {
+                exportarPlanilha(items, tipo, formato);
+            } else if (formato === 'pdf') {
+                exportarPDF(items, tipo);
+            }
+        }
+
+        function exportarPlanilha(items, tipo, formato) {
+            const wb = XLSX.utils.book_new();
+            
+            // Preparar dados
+            let dados = [];
+            
+            // Cabeçalho
+            let cabecalho = ['Item'];
+            if (tipo !== 'validades') {
+                cabecalho.push('UF', 'Quantidade');
+            }
+            if (tipo === 'completo') {
+                cabecalho.push('Preço Unitário', 'Valor Total');
+            }
+            if (tipo !== 'quantidade') {
+                cabecalho.push('Validades');
+            }
+            dados.push(cabecalho);
+            
+            // Dados
+            let valorTotal = 0;
+            items.forEach(item => {
+                let linha = [item.nome];
+                
+                if (tipo !== 'validades') {
+                    linha.push(item.unidade, item.estoque);
+                }
+                
+                if (tipo === 'completo') {
+                    const valorItem = item.estoque * item.preco;
+                    valorTotal += valorItem;
+                    linha.push(item.preco, valorItem);
+                }
+                
+                if (tipo !== 'quantidade') {
+                    linha.push(item.validades.join(', ') || '-');
+                }
+                
+                dados.push(linha);
+            });
+            
+            // Total
+            if (tipo === 'completo') {
+                let linhaTotal = ['', '', '', 'TOTAL GERAL:', valorTotal, ''];
+                dados.push(linhaTotal);
+            }
+            
+            const ws = XLSX.utils.aoa_to_sheet(dados);
+            
+            // Ajustar larguras
+            ws['!cols'] = [
+                {wch: 40}, // Item
+                {wch: 10}, // UF
+                {wch: 15}, // Quantidade
+                {wch: 15}, // Preço
+                {wch: 15}, // Valor
+                {wch: 30}  // Validades
+            ];
+            
+            XLSX.utils.book_append_sheet(wb, ws, 'Balanço Paiol');
+            
+            const nomeArquivo = `Balanco_Paiol_${new Date().getTime()}.${formato === 'excel' ? 'xlsx' : 'ods'}`;
+            XLSX.writeFile(wb, nomeArquivo, {bookType: formato === 'excel' ? 'xlsx' : 'ods'});
+            
+            alert('Relatório baixado com sucesso!');
+        }
+
+        function exportarPDF(items, tipo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            // Título
+            doc.setFontSize(16);
+            doc.text('5º BATALHÃO DE OPERAÇÕES LITORÂNEAS DE FUZILEIROS NAVAIS', 148, 15, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('RELATÓRIO DE BALANÇO DE PAIOL', 148, 22, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 148, 28, { align: 'center' });
+            
+            // Preparar colunas
+            let columns = ['Item'];
+            if (tipo !== 'validades') {
+                columns.push('UF', 'Quantidade');
+            }
+            if (tipo === 'completo') {
+                columns.push('Preço Un.', 'Valor Total');
+            }
+            if (tipo !== 'quantidade') {
+                columns.push('Validades');
+            }
+            
+            // Preparar linhas
+            let rows = [];
+            let valorTotal = 0;
+            
+            items.forEach(item => {
+                let row = [item.nome];
+                
+                if (tipo !== 'validades') {
+                    row.push(item.unidade, item.estoque.toString());
+                }
+                
+                if (tipo === 'completo') {
+                    const valorItem = item.estoque * item.preco;
+                    valorTotal += valorItem;
+                    row.push(`R$ ${item.preco.toFixed(2)}`, `R$ ${valorItem.toFixed(2)}`);
+                }
+                
+                if (tipo !== 'quantidade') {
+                    row.push(item.validades.join(', ') || '-');
+                }
+                
+                rows.push(row);
+            });
+            
+            // Adicionar total
+            if (tipo === 'completo') {
+                let rowTotal = ['', '', '', 'TOTAL GERAL:', `R$ ${valorTotal.toFixed(2)}`, ''];
+                rows.push(rowTotal);
+            }
+            
+            // Gerar tabela
+            doc.autoTable({
+                head: [columns],
+                body: rows,
+                startY: 35,
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [42, 82, 152], textColor: 255 },
+                alternateRowStyles: { fillColor: [245, 245, 245] },
+                margin: { top: 35, left: 10, right: 10 }
+            });
+            
+            const nomeArquivo = `Balanco_Paiol_${new Date().getTime()}.pdf`;
+            doc.save(nomeArquivo);
+            
+            alert('PDF gerado com sucesso!');
+        }
+
+        function baixarEstoqueCompleto() {
+            const wb = XLSX.utils.book_new();
+            
+            // Ordenar por nome
+            let items = [...estoque].sort((a, b) => a.nome.localeCompare(b.nome));
+            
+            // Preparar dados
+            let dados = [['Item', 'Unidade', 'Quantidade', 'Preço Unitário', 'Valor Total', 'Validades']];
+            
+            let valorTotal = 0;
+            items.forEach(item => {
+                const valorItem = item.estoque * item.preco;
+                valorTotal += valorItem;
+                
+                dados.push([
+                    item.nome,
+                    item.unidade,
+                    item.estoque,
+                    item.preco,
+                    valorItem,
+                    item.validades.join(', ') || '-'
+                ]);
+            });
+            
+            // Linha de total
+            dados.push(['', '', '', 'TOTAL GERAL:', valorTotal, '']);
+            
+            const ws = XLSX.utils.aoa_to_sheet(dados);
+            
+            // Ajustar larguras
+            ws['!cols'] = [
+                {wch: 40},
+                {wch: 10},
+                {wch: 15},
+                {wch: 15},
+                {wch: 15},
+                {wch: 30}
+            ];
+            
+            XLSX.utils.book_append_sheet(wb, ws, 'Estoque Completo');
+            
+            const nomeArquivo = `Estoque_Completo_${new Date().getTime()}.xlsx`;
+            XLSX.writeFile(wb, nomeArquivo);
+            
+            alert('Estoque completo baixado com sucesso!');
         }
 
         function salvarEdicaoItem() {
@@ -1445,7 +1993,22 @@
             const nomeAntigo = item.nome;
             
             const novoNome = document.getElementById('editItemNome').value.trim().toUpperCase();
-            const novaUnidade = document.getElementById('editItemUnidade').value;
+            let novaUnidade = document.getElementById('editItemUnidade').value;
+            
+            // Verificar se é unidade personalizada
+            if (novaUnidade === 'PERSONALIZADA') {
+                const unidadePersonalizada = document.getElementById('editItemUnidadePersonalizada').value.trim().toUpperCase();
+                if (!unidadePersonalizada) {
+                    alert('Digite a unidade de medida personalizada!');
+                    return;
+                }
+                if (unidadePersonalizada.length > 10) {
+                    alert('Unidade de medida deve ter no máximo 10 caracteres!');
+                    return;
+                }
+                novaUnidade = unidadePersonalizada;
+            }
+            
             const novoPreco = parseFloat(document.getElementById('editItemPreco').value);
 
             if (!novoNome) {
@@ -1458,7 +2021,6 @@
                 return;
             }
 
-            // Verificar se o novo nome já existe em outro item
             if (novoNome !== nomeAntigo && estoque.find(i => i.nome === novoNome)) {
                 alert('Já existe um item com este nome!');
                 return;
@@ -1468,20 +2030,19 @@
             item.unidade = novaUnidade;
             item.preco = novoPreco;
 
-            // Registrar movimentação
             registrarMovimentacao('ajuste', item.nome, 0, {
                 tipo: 'edicao',
                 nomeAntigo: nomeAntigo,
                 alteracoes: 'Nome, unidade ou preço'
             });
 
+            estoque.sort((a, b) => a.nome.localeCompare(b.nome));
             salvarDados();
             closeModal('editarItemModal');
             renderEstoque();
             alert('Item atualizado com sucesso!');
         }
 
-        // ESTOQUE - EXCLUIR
         function excluirItem(idx) {
             const item = estoque[idx];
             
@@ -1489,7 +2050,6 @@
                 return;
             }
 
-            // Registrar movimentação
             registrarMovimentacao('exclusao', item.nome, item.estoque, {
                 preco: item.preco,
                 unidade: item.unidade
@@ -1502,7 +2062,6 @@
             alert('Item excluído com sucesso!');
         }
 
-        // ESTOQUE - RENDERIZAR
         function renderEstoque() {
             const container = document.getElementById('listaEstoque');
             let items = [...estoque];
@@ -1594,7 +2153,7 @@
             return html;
         }
 
-        // VALIDADES (mantém a lógica anterior)
+        // VALIDADES
         function abrirGerenciarValidades(itemIdx) {
             itemValidadeAtual = itemIdx;
             const item = estoque[itemIdx];
@@ -1829,91 +2388,65 @@
         }
 
         // HISTÓRICO
+        function limparFiltrosHistorico() {
+            document.getElementById('filtroData').value = '';
+            document.getElementById('searchHistorico').value = '';
+            renderHistorico();
+        }
+
         function renderHistorico() {
-            const filtroData = document.getElementById('filtroData').value;
-            const filtroTipo = document.getElementById('filtroTipo').value;
+            const filtroDataInput = document.getElementById('filtroData').value;
             const search = document.getElementById('searchHistorico').value.toLowerCase();
             
-            let movimentacoes = [...historicoMovimentacoes].reverse();
+            let vales = [...historicoVales].reverse();
 
-            if (filtroData) {
-                const dataFiltro = new Date(filtroData);
-                movimentacoes = movimentacoes.filter(m => {
-                    const dataM = new Date(m.data);
-                    return dataM.toDateString() === dataFiltro.toDateString();
+            // Filtro por data - CORRIGIDO
+            if (filtroDataInput) {
+                vales = vales.filter(v => {
+                    const dataVale = new Date(v.data);
+                    const dataFiltro = new Date(filtroDataInput + 'T00:00:00');
+                    
+                    // Comparar apenas dia, mês e ano
+                    return dataVale.getDate() === dataFiltro.getDate() &&
+                           dataVale.getMonth() === dataFiltro.getMonth() &&
+                           dataVale.getFullYear() === dataFiltro.getFullYear();
                 });
             }
 
-            if (filtroTipo !== 'todos') {
-                movimentacoes = movimentacoes.filter(m => m.tipo === filtroTipo);
-            }
-
+            // Filtro de busca
             if (search) {
-                movimentacoes = movimentacoes.filter(m => 
-                    m.item.toLowerCase().includes(search) ||
-                    (m.responsavel && m.responsavel.toLowerCase().includes(search)) ||
-                    (m.numeroVale && m.numeroVale.toLowerCase().includes(search))
+                vales = vales.filter(v => 
+                    v.responsavel.toLowerCase().includes(search) ||
+                    (v.numeroVale && v.numeroVale.toLowerCase().includes(search))
                 );
             }
 
             let html = '';
 
-            if (movimentacoes.length === 0) {
-                html = '<p style="text-align: center; color: #6c757d;">Nenhuma movimentação registrada</p>';
+            if (vales.length === 0) {
+                html = '<p style="text-align: center; color: #6c757d; padding: 20px;">Nenhum vale encontrado</p>';
             } else {
-                movimentacoes.forEach((mov, idx) => {
-                    const dataFormatada = new Date(mov.data).toLocaleString('pt-BR');
-                    
-                    let badgeClass = '';
-                    let tipoNome = '';
-                    let icone = '';
-                    
-                    switch(mov.tipo) {
-                        case 'saida':
-                            badgeClass = 'badge-saida';
-                            tipoNome = 'SAÍDA (Vale)';
-                            icone = '📤';
-                            break;
-                        case 'entrada':
-                            badgeClass = 'badge-entrada';
-                            tipoNome = 'ENTRADA';
-                            icone = '📥';
-                            break;
-                        case 'ajuste':
-                            badgeClass = 'badge-ajuste';
-                            tipoNome = 'AJUSTE';
-                            icone = '✏️';
-                            break;
-                        case 'exclusao':
-                            badgeClass = 'badge-saida';
-                            tipoNome = 'EXCLUSÃO';
-                            icone = '🗑️';
-                            break;
-                        case 'novo_item':
-                            badgeClass = 'badge-entrada';
-                            tipoNome = 'NOVO ITEM';
-                            icone = '➕';
-                            break;
-                    }
+                vales.forEach((vale, idx) => {
+                    const dataFormatada = new Date(vale.data).toLocaleString('pt-BR');
+                    const valeIndex = historicoVales.length - 1 - idx;
                     
                     html += `
                         <div class="item-card">
                             <div class="item-header">
                                 <div>
-                                    <div class="item-name">${icone} ${mov.item}</div>
-                                    <span class="badge ${badgeClass}">${tipoNome}</span>
+                                    <div class="item-name">Vale #${valeIndex + 1}</div>
+                                    <div class="item-details">${dataFormatada}</div>
+                                    ${vale.numeroVale ? `<span class="badge badge-entrada">Nº ${vale.numeroVale}</span>` : ''}
                                 </div>
-                                <div style="text-align: right; font-size: 0.9em; color: #6c757d;">
-                                    ${dataFormatada}
+                                <div class="action-buttons" style="margin: 0;">
+                                    <button class="btn btn-primary btn-small" onclick="mostrarExtratoHistorico(${valeIndex})">👁️ Ver</button>
+                                    <button class="btn btn-success btn-small" onclick="baixarValeHistorico(${valeIndex})">💾 Baixar</button>
                                 </div>
                             </div>
                             <div class="item-details" style="margin-top: 10px;">
-                                ${mov.tipo === 'saida' || mov.tipo === 'entrada' || mov.tipo === 'novo_item' ? `<strong>Quantidade:</strong> ${mov.quantidade}<br>` : ''}
-                                ${mov.responsavel ? `<strong>Responsável:</strong> ${mov.responsavel}<br>` : ''}
-                                ${mov.numeroVale ? `<strong>Nº Vale:</strong> ${mov.numeroVale}<br>` : ''}
-                                ${mov.motivo ? `<strong>Motivo:</strong> ${mov.motivo}<br>` : ''}
-                                ${mov.observacoes ? `<strong>Obs:</strong> ${mov.observacoes}<br>` : ''}
-                                ${mov.valorTotal ? `<strong>Valor Total:</strong> R$ ${mov.valorTotal.toFixed(2)}<br>` : ''}
+                                <strong>Responsável:</strong> ${vale.responsavel}<br>
+                                <strong>Itens:</strong> ${vale.itens.length}<br>
+                                <strong>Valor Total:</strong> R$ ${vale.valorTotal.toFixed(2)}
                             </div>
                         </div>
                     `;
@@ -1921,6 +2454,16 @@
             }
 
             document.getElementById('listaHistorico').innerHTML = html;
+        }
+
+        function mostrarExtratoHistorico(idx) {
+            valeAtualParaBaixar = historicoVales[idx];
+            mostrarExtrato(historicoVales[idx]);
+        }
+
+        function baixarValeHistorico(idx) {
+            valeAtualParaBaixar = historicoVales[idx];
+            baixarVale();
         }
 
         function filterHistorico() {
@@ -1964,6 +2507,15 @@
 
         function imprimirExtrato() {
             window.print();
+        }
+
+        // PWA - Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker registrado!'))
+                    .catch(err => console.log('Service Worker não registrado:', err));
+            });
         }
 
         // Inicializar
