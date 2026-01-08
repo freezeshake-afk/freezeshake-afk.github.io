@@ -1,0 +1,30 @@
+{
+  "name": "Controle de Paiol - 5º BtlOpFuzNav",
+  "short_name": "Paiol",
+  "description": "Sistema de Controle de Paiol e Estoque",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2a5298",
+  "theme_color": "#2a5298",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%232a5298'/><text x='96' y='140' font-size='120' text-anchor='middle' fill='white'>⚓</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%232a5298'/><text x='256' y='380' font-size='320' text-anchor='middle' fill='white'>⚓</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect width='540' height='720' fill='%23f8f9fa'/><text x='270' y='360' font-size='48' text-anchor='middle' fill='%232a5298'>Controle de Paiol</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ]
+}

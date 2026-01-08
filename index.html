@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Paiol - 5º BtlOpFuzNav</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            color: #495057;
+            transition: all 0.3s;
+            white-space: nowrap;
+            min-width: 120px;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #2a5298;
+            font-weight: bold;
+            border-bottom: 3px solid #2a5298;
+        }
+
+        .content {
+            padding: 20px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #2a5298;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42,82,152,0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .item-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .item-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #2a5298;
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #2a5298;
+            font-size: 1.1em;
+        }
+
+        .item-stock {
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .item-stock.low {
+            background: #ffc107;
+        }
+
+        .item-stock.empty {
+            background: #dc3545;
+        }
+
+        .item-details {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin: 5px 0;
+        }
+
+        .validades {
+            display: grid;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .validade-item {
+            background: white;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .validade-item.vencido {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .validade-item.proximo {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .vale-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid #2a5298;
+        }
+
+        .vale-item button {
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23495057" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>') no-repeat 12px center;
+        }
+
+        .validade-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.4em;
+            }
+            
+            .tab {
+                padding: 12px 8px;
+                font-size: 0.85em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #2a5298;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .extrato-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .extrato-item {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .tabs, .btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ CONTROLE DE PAIOL</h1>
+            <p>5º Batalhão de Operações Litorâneas de Fuzileiros Navais</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('dashboard')">📊 Dashboard</button>
+            <button class="tab" onclick="openTab('vale')">📝 Registrar Vale</button>
+            <button class="tab" onclick="openTab('estoque')">📦 Estoque</button>
+            <button class="tab" onclick="openTab('validade')">⏰ Validades</button>
+            <button class="tab" onclick="openTab('historico')">📋 Histórico</button>
+        </div>
+
+        <div id="dashboard" class="content active">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Dashboard</h2>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalItens">0</div>
+                    <div class="stat-label">Total de Itens</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="stat-value" id="valesHoje">0</div>
+                    <div class="stat-label">Vales Hoje</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="stat-value" id="itensProxVenc">0</div>
+                    <div class="stat-label">Próximo ao Vencimento</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <div class="stat-value" id="valorEstoque">R$ 0,00</div>
+                    <div class="stat-label">Valor em Estoque</div>
+                </div>
+            </div>
+
+            <div id="alertasValidade"></div>
+        </div>
+
+        <div id="vale" class="content">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Registrar Vale</h2>
+            
+            <div class="form-group">
+                <label>Responsável pelo Vale</label>
+                <input type="text" id="responsavelVale" placeholder="Nome do cozinheiro/responsável">
+            </div>
+
+            <div class="form-group">
+                <label>Observações</label>
+                <textarea id="obsVale" rows="2" placeholder="Observações gerais do vale (opcional)"></textarea>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchItem" placeholder="Buscar item..." onkeyup="filterItems()">
+            </div>
+
+            <div id="itensDisponiveis" class="item-list"></div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px; color: #2a5298;">Itens do Vale</h3>
+            <div id="itensVale"></div>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="finalizarVale()">✅ Finalizar Vale</button>
+                <button class="btn btn-danger" onclick="limparVale()">🗑️ Limpar</button>
+            </div>
+        </div>
+
+        <div id="estoque" class="content">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Estoque Atual</h2>
+            
+            <div class="search-box">
+                <input type="text" id="searchEstoque" placeholder="Buscar no estoque..." onkeyup="filterEstoque()">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label>Filtrar por:</label>
+                <select id="filtroEstoque" onchange="filterEstoque()">
+                    <option value="todos">Todos os itens</option>
+                    <option value="baixo">Estoque baixo (&lt; 50)</option>
+                    <option value="zerado">Estoque zerado</option>
+                </select>
+            </div>
+
+            <div id="listaEstoque" class="item-list"></div>
+        </div>
+
+        <div id="validade" class="content">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Controle de Validades</h2>
+            
+            <div id="alertasValidadeCompleto"></div>
+
+            <div class="search-box">
+                <input type="text" id="searchValidade" placeholder="Buscar item..." onkeyup="filterValidades()">
+            </div>
+
+            <div id="listaValidades" class="item-list"></div>
+        </div>
+
+        <div id="historico" class="content">
+            <h2 style="margin-bottom: 20px; color: #2a5298;">Histórico de Vales</h2>
+            
+            <div class="form-group">
+                <label>Filtrar por Data</label>
+                <input type="date" id="filtroData" onchange="filterHistorico()">
+            </div>
+
+            <div id="listaHistorico"></div>
+        </div>
+    </div>
+
+    <div id="extratoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Extrato do Vale</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="extratoContent"></div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="imprimirExtrato()">🖨️ Imprimir</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados iniciais baseados no relatório
+        let estoque = [
+            {nome: "ABACAXI EM CALDA LATA", unidade: "UNID", estoque: 5, preco: 9.98, validades: ["24/04/2027"]},
+            {nome: "ABOBRINHA", unidade: "QUIL", estoque: 36, preco: 5.46, validades: []},
+            {nome: "ACEM BOVINO", unidade: "QUIL", estoque: 718.425, preco: 26.00, validades: ["26/05/2026"]},
+            {nome: "ACHOCOLATADO LÍQUIDO 200 ML", unidade: "UNID", estoque: 263, preco: 1.10, validades: ["17/01/2026", "08/04/2026"]},
+            {nome: "AÇUCAR REFINADO 1 KG", unidade: "QUIL", estoque: 248.5, preco: 4.17, validades: ["22/05/2026"]},
+            {nome: "ADOÇANTE EM GOTAS 100ML", unidade: "UNID", estoque: 15, preco: 2.99, validades: ["02/05/2027"]},
+            {nome: "AGUA MINERAL COPO 200ML", unidade: "COP", estoque: 1161, preco: 0.64, validades: ["19/08/2026"]},
+            {nome: "AGUA MINERAL SEM GÁS GARRAFA", unidade: "UNID", estoque: 97, preco: 0.95, validades: ["09/09/2026"]},
+            {nome: "ALCATRA", unidade: "QUIL", estoque: 727.88, preco: 36.92, validades: ["13/02/2026", "21/03/2026", "16/04/2026"]},
+            {nome: "ALFACE CRESPA", unidade: "UNID", estoque: 8, preco: 3.64, validades: []},
+            {nome: "ALHO", unidade: "GRA", estoque: 25, preco: 24.40, validades: []},
+            {nome: "AMACIANTE DE CARNE", unidade: "QUIL", estoque: 51, preco: 6.85, validades: ["16/05/2026"]},
+            {nome: "AMEIXA", unidade: "QUIL", estoque: 30, preco: 21.77, validades: []},
+            {nome: "AMENDOIM", unidade: "PACO", estoque: 50, preco: 3.54, validades: ["02/02/2026"]},
+            {nome: "AMIDO DE MILHO", unidade: "QUIL", estoque: 21, preco: 4.90, validades: ["15/04/2026"]},
+            {nome: "AMIDO DE MILHO PACOTE 1 KG", unidade: "PACO", estoque: 111, preco: 5.69, validades: ["15/04/2026"]},
+            {nome: "ARROZ ARBORIO", unidade: "QUIL", estoque: 24, preco: 23.40, validades: ["01/11/2025", "17/02/2027"]},
+            {nome: "ARROZ BRANCO TIPO 1", unidade: "QUIL", estoque: 978, preco: 5.29, validades: []},
+            {nome: "AVEIA", unidade: "PACO", estoque: 81, preco: 3.48, validades: ["01/01/2026"]},
+            {nome: "AVEIA EM FLOCOS", unidade: "QUIL", estoque: 237.5, preco: 3.48, validades: ["01/01/2026"]},
+            {nome: "AZEITE OLIVA", unidade: "LITR", estoque: 70, preco: 44.90, validades: ["23/12/2026"]},
+            {nome: "AZEITONA RECHEADA 200G", unidade: "UNID", estoque: 20, preco: 7.43, validades: ["01/12/2026"]},
+            {nome: "BANANA PRATA", unidade: "QUIL", estoque: 90, preco: 6.49, validades: []},
+            {nome: "BATATA DOCE", unidade: "QUIL", estoque: 110, preco: 4.67, validades: []},
+            {nome: "BATATA FRITA PALHA", unidade: "PACO", estoque: 163, preco: 12.90, validades: ["31/01/2026", "02/04/2026"]},
+            {nome: "BATATA INGLESA", unidade: "QUIL", estoque: 104.8, preco: 7.18, validades: []},
+            {nome: "BATATA PALHA ESPECIAL", unidade: "PACO", estoque: 10, preco: 12.90, validades: ["31/01/2026", "02/04/2026"]},
+            {nome: "BETERRABA", unidade: "QUIL", estoque: 40, preco: 4.81, validades: []},
+            {nome: "BISCOITO CREAM CRACKER", unidade: "QUIL", estoque: 11.4, preco: 2.00, validades: ["11/03/2026"]},
+            {nome: "BISCOITO PIT STOP", unidade: "PACO", estoque: 384, preco: 5.30, validades: ["03/04/2026", "21/05/2026"]},
+            {nome: "BISCOITO WAFER", unidade: "PACO", estoque: 60, preco: 3.49, validades: ["13/05/2026"]},
+            {nome: "BOLO CONFEITADO", unidade: "QUIL", estoque: 20.5, preco: 36.00, validades: []},
+            {nome: "BOMBA DE CHOCOLATE", unidade: "UNID", estoque: 86, preco: 2.97, validades: []},
+            {nome: "BOMBOM", unidade: "CAIX", estoque: 10, preco: 36.16, validades: ["01/07/2026"]},
+            {nome: "BRÓCOLIS CONGELADO", unidade: "UNID", estoque: 12, preco: 9.02, validades: ["16/06/2027"]},
+            {nome: "CAFE TORRADO 0,5 A 1 KG", unidade: "QUIL", estoque: 715, preco: 31.98, validades: ["08/08/2026"]},
+            {nome: "CALDO BACON", unidade: "UNID", estoque: 91, preco: 15.49, validades: []},
+            {nome: "CALDO DE CARNE", unidade: "QUIL", estoque: 53, preco: 12.34, validades: []},
+            {nome: "CALDO DE GALINHA", unidade: "QUIL", estoque: 10, preco: 6.24, validades: ["22/07/2026"]},
+            {nome: "CALDO DE LEGUMES", unidade: "QUIL", estoque: 29, preco: 6.08, validades: ["05/08/2026"]},
+            {nome: "CANJICA", unidade: "PACO", estoque: 590.83, preco: 4.87, validades: ["23/07/2026", "26/05/2026"]},
+            {nome: "CARRE SUINO", unidade: "QUIL", estoque: 234.34, preco: 13.69, validades: []},
+            {nome: "CEBOLA", unidade: "QUIL", estoque: 30.5, preco: 6.83, validades: []},
+            {nome: "CEBOLA ROXA", unidade: "QUIL", estoque: 10, preco: 10.46, validades: []},
+            {nome: "CENOURA", unidade: "QUIL", estoque: 22.5, preco: 5.09, validades: []},
+            {nome: "CEREAL MATINAL DE MILHO", unidade: "QUIL", estoque: 93, preco: 14.77, validades: ["01/04/2026"]},
+            {nome: "CEREJA EM CALDA", unidade: "UNID", estoque: 10, preco: 14.15, validades: ["11/10/2025", "10/04/2027"]},
+            {nome: "CEREJA EM CALDA VIDRO", unidade: "VIDR", estoque: 20, preco: 24.68, validades: ["11/10/2025", "10/04/2027"]},
+            {nome: "CHOCOLATE EM PÓ", unidade: "QUIL", estoque: 268, preco: 10.98, validades: ["18/02/2026"]},
+            {nome: "CHUCHU", unidade: "QUIL", estoque: 44, preco: 4.48, validades: []},
+            {nome: "COLORAU 100G", unidade: "UNID", estoque: 35, preco: 2.99, validades: ["22/05/2026", "09/09/2026"]},
+            {nome: "COLORAU", unidade: "QUIL", estoque: 52, preco: 2.99, validades: ["22/05/2026", "09/09/2026"]},
+            {nome: "COMINHO EM PÓ", unidade: "PACO", estoque: 33, preco: 2.38, validades: ["09/09/2025", "21/01/2026"]},
+            {nome: "CONTRA-FILÉ", unidade: "QUIL", estoque: 279.241, preco: 39.39, validades: ["20/02/2026"]},
+            {nome: "COSTELINHA SUÍNA SALGADA", unidade: "QUIL", estoque: 21, preco: 23.23, validades: ["31/12/2025"]},
+            {nome: "COUVE", unidade: "QUIL", estoque: 150, preco: 12.90, validades: []},
+            {nome: "COUVE FLOR", unidade: "UNID", estoque: 32, preco: 8.23, validades: []},
+            {nome: "COXA E SOBRECOXA", unidade: "QUIL", estoque: 2801, preco: 12.31, validades: ["22/04/2026", "24/04/2026", "11/11/2026"]},
+            {nome: "COXA FRANGO", unidade: "QUIL", estoque: 915.7, preco: 7.60, validades: []},
+            {nome: "CREME DE AVELÃ", unidade: "UNID", estoque: 20, preco: 16.33, validades: ["30/09/2026", "22/07/2027"]},
+            {nome: "CREME DE LEITE 200G", unidade: "UNID", estoque: 167.6, preco: 2.70, validades: ["14/02/2026", "08/03/2026"]},
+            {nome: "CREME LEITE CAIXA", unidade: "QUIL", estoque: 337.6, preco: 15.10, validades: ["14/02/2026", "08/03/2026"]},
+            {nome: "CURRY", unidade: "PACO", estoque: 1, preco: 3.90, validades: []},
+            {nome: "DOCE DE FRUTA", unidade: "QUIL", estoque: 200, preco: 7.37, validades: []},
+            {nome: "ERVILHA 200G LATA", unidade: "UNID", estoque: 330, preco: 2.11, validades: ["10/04/2027"]},
+            {nome: "ESSÊNCIA DE BAUNILHA", unidade: "UNID", estoque: 24, preco: 3.00, validades: ["21/01/2027"]},
+            {nome: "EXTRATO TOMATE", unidade: "QUIL", estoque: 43.73, preco: 5.80, validades: []},
+            {nome: "FARINHA DE MILHO", unidade: "PACO", estoque: 100, preco: 6.48, validades: []},
+            {nome: "FARINHA DE ROSCA", unidade: "QUIL", estoque: 119, preco: 8.80, validades: ["19/03/2026"]},
+            {nome: "FARINHA DE TAPIOCA", unidade: "QUIL", estoque: 47.5, preco: 6.97, validades: ["19/02/2026", "10/02/2026", "04/04/2026"]},
+            {nome: "FARINHA MANDIOCA", unidade: "QUIL", estoque: 237, preco: 3.39, validades: ["01/08/2026"]},
+            {nome: "FEIJAO PRETO TIPO 1", unidade: "QUIL", estoque: 640.28, preco: 4.60, validades: ["21/01/2026", "18/07/2026"]},
+            {nome: "FERMENTO BIOLÓGICO 125G", unidade: "UNID", estoque: 34, preco: 7.10, validades: ["06/03/2026"]},
+            {nome: "FERMENTO EM PÓ", unidade: "LATA", estoque: 125, preco: 5.58, validades: ["03/03/2026"]},
+            {nome: "FIGO EM CALDA", unidade: "LATA", estoque: 4, preco: 13.83, validades: ["01/09/2028"]},
+            {nome: "FIGO EM CALDA 400 GR", unidade: "UNID", estoque: 44, preco: 10.49, validades: ["01/09/2028"]},
+            {nome: "FILEZINHO PEITO FRANGO", unidade: "QUIL", estoque: 140, preco: 14.87, validades: []},
+            {nome: "FUBÁ DE MILHO", unidade: "QUIL", estoque: 5, preco: 4.80, validades: []},
+            {nome: "GOIABADA TRADICIONAL", unidade: "UNID", estoque: 23, preco: 5.81, validades: ["06/06/2027"]},
+            {nome: "GRANOLA", unidade: "QUIL", estoque: 23, preco: 13.40, validades: ["01/08/2026"]},
+            {nome: "GRÃO DE BICO 500G", unidade: "UNID", estoque: 3, preco: 7.98, validades: ["20/03/2026"]},
+            {nome: "IOGURTE", unidade: "BAND", estoque: 265, preco: 6.30, validades: []},
+            {nome: "KIWI", unidade: "QUIL", estoque: 34.5, preco: 26.42, validades: []},
+            {nome: "LEITE CONDENSADO 395GR", unidade: "UNID", estoque: 544, preco: 5.18, validades: ["02/04/2026", "29/05/2026", "20/08/2026"]},
+            {nome: "LEITE DE COCO", unidade: "VIDR", estoque: 26, preco: 3.54, validades: ["12/08/2026"]},
+            {nome: "LEITE EM PÓ INSTANTANEO", unidade: "QUIL", estoque: 471.79, preco: 28.49, validades: ["23/04/2026"]},
+            {nome: "LINGUIÇA CALABRESA", unidade: "QUIL", estoque: 52.5, preco: 18.27, validades: ["22/12/2025"]},
+            {nome: "LINGUIÇA TOSCANA", unidade: "QUIL", estoque: 198.4, preco: 16.47, validades: ["07/12/2025", "20/01/2026", "18/02/2026"]},
+            {nome: "LOURO FOLHA", unidade: "PACO", estoque: 36, preco: 3.59, validades: []},
+            {nome: "MACARRÃO ESPAGUETE", unidade: "QUIL", estoque: 1372.5, preco: 4.10, validades: ["09/04/2027"]},
+            {nome: "MACARRÃO YAKISOBA", unidade: "PACO", estoque: 200, preco: 5.90, validades: ["09/04/2027"]},
+            {nome: "MAIONESE 500G", unidade: "QUIL", estoque: 50, preco: 6.61, validades: ["11/03/2026", "27/03/2026"]},
+            {nome: "MAIONESE 500G", unidade: "UNID", estoque: 298, preco: 5.77, validades: ["11/03/2026", "27/03/2026"]},
+            {nome: "MANGA", unidade: "QUIL", estoque: 52, preco: 8.40, validades: []},
+            {nome: "MANTEIGA", unidade: "UNID", estoque: 120, preco: 9.99, validades: []},
+            {nome: "MARACUJÁ", unidade: "QUIL", estoque: 30, preco: 10.50, validades: []},
+            {nome: "MARGARINA", unidade: "UNID", estoque: 201, preco: 8.41, validades: []},
+            {nome: "MASSA MACARRÃO TIPO PENNE", unidade: "UNID", estoque: 150, preco: 5.09, validades: ["10/06/2026"]},
+            {nome: "MASSA P/ BOLO 5KG", unidade: "PACO", estoque: 24, preco: 45.33, validades: ["13/01/2026", "11/03/2026"]},
+            {nome: "MEL", unidade: "UNID", estoque: 9, preco: 17.50, validades: ["29/05/2026"]},
+            {nome: "MELANCIA", unidade: "QUIL", estoque: 482.5, preco: 4.00, validades: []},
+            {nome: "MELÃO", unidade: "QUIL", estoque: 365.9, preco: 8.23, validades: []},
+            {nome: "MILHO VERDE EM CONSERVA", unidade: "LATA", estoque: 22, preco: 24.04, validades: ["05/05/2027"]},
+            {nome: "MINI PIZZA", unidade: "UNID", estoque: 400, preco: 5.51, validades: ["25/01/2026", "16/02/2026"]},
+            {nome: "MISTURA PARA BOLO 5 KG", unidade: "PACO", estoque: 6, preco: 41.99, validades: ["02/11/2025", "07/01/2026", "28/01/2026"]},
+            {nome: "MOLHO BARBECUE", unidade: "UNID", estoque: 13, preco: 9.89, validades: []},
+            {nome: "MOLHO MADEIRA", unidade: "PACO", estoque: 19, preco: 19.96, validades: ["11/11/2026", "01/01/2027"]},
+            {nome: "MOLHO SHOYO 1L", unidade: "UNID", estoque: 151, preco: 14.69, validades: []},
+            {nome: "NECTARINA", unidade: "QUIL", estoque: 20, preco: 14.63, validades: []},
+            {nome: "NOZ MOSCADA", unidade: "PACO", estoque: 31, preco: 2.27, validades: ["08/08/2025", "22/01/2026", "12/05/2026"]},
+            {nome: "NOZ MOSCADA", unidade: "UNID", estoque: 3, preco: 2.54, validades: ["08/08/2025", "22/01/2026", "12/05/2026"]},
+            {nome: "ÓLEO SOJA", unidade: "LITR", estoque: 324, preco: 8.49, validades: ["25/04/2026"]},
+            {nome: "ORÉGANO DESIDRATADO", unidade: "PACO", estoque: 20.5, preco: 7.99, validades: ["06/05/2026", "02/12/2026"]},
+            {nome: "OVO DE CODORNA", unidade: "BALD", estoque: 15, preco: 35.00, validades: ["13/03/2026", "04/04/2026", "09/06/2026"]},
+            {nome: "OVOS", unidade: "DUZI", estoque: 45, preco: 10.16, validades: []},
+            {nome: "PANETONE", unidade: "UNID", estoque: 50, preco: 12.995, validades: []},
+            {nome: "PEPINO", unidade: "QUIL", estoque: 64.5, preco: 6.04, validades: []},
+            {nome: "PERNIL SUINO SEM OSSO", unidade: "QUIL", estoque: 573.351, preco: 13.69, validades: ["17/09/2026"]},
+            {nome: "PÊSSEGO 450G LATA", unidade: "UNID", estoque: 18, preco: 9.83, validades: []},
+            {nome: "PÊSSEGO", unidade: "QUIL", estoque: 30, preco: 15.83, validades: []},
+            {nome: "PICOLÉ", unidade: "UNID", estoque: 460, preco: 2.92, validades: ["04/11/2026"]},
+            {nome: "PIMENTÃO AMARELO", unidade: "QUIL", estoque: 1.5, preco: 19.42, validades: []},
+            {nome: "PIMENTÃO VERDE", unidade: "QUIL", estoque: 1.8, preco: 10.51, validades: []},
+            {nome: "PIMENTÃO VERMELHO", unidade: "QUIL", estoque: 1.6, preco: 16.88, validades: []},
+            {nome: "PÓ P/PUDIM DE BAUNILHA", unidade: "QUIL", estoque: 77, preco: 7.90, validades: ["19/09/2026"]},
+            {nome: "PÓ PARA PUDIM DIVERSOS", unidade: "UNID", estoque: 32, preco: 16.47, validades: ["19/09/2026"]},
+            {nome: "POLPA AÇAI", unidade: "UNID", estoque: 5, preco: 78.10, validades: ["01/01/2026"]},
+            {nome: "PRESUNTO", unidade: "QUIL", estoque: 43, preco: 21.50, validades: ["11/01/2026"]},
+            {nome: "PÃO", unidade: "QUIL", estoque: 865, preco: 13.00, validades: []},
+            {nome: "PÃO A METRO RECHEADO", unidade: "UNID", estoque: 18, preco: 81.63, validades: []},
+            {nome: "PÃO PARA CACHORRO QUENTE", unidade: "QUIL", estoque: 37, preco: 14.00, validades: []},
+            {nome: "PÉ SUINO SALGADO", unidade: "QUIL", estoque: 23, preco: 21.29, validades: ["17/09/2026", "27/06/2026"]},
+            {nome: "QUEIJO MUSSARELA", unidade: "QUIL", estoque: 100, preco: 33.00, validades: []},
+            {nome: "RABO DE PORCO SALGADO", unidade: "QUIL", estoque: 21, preco: 17.91, validades: ["04/07/2026", "17/09/2026", "21/11/2026"]},
+            {nome: "REFEIÇÃO INDIVIDUAL", unidade: "UNID", estoque: 836, preco: 9.00, validades: []},
+            {nome: "REFRIGERANTE COLA 2L", unidade: "UNID", estoque: 36, preco: 7.26, validades: ["06/11/2025", "06/04/2026"]},
+            {nome: "REFRIGERANTE LIMÃO 2L", unidade: "UNID", estoque: 129, preco: 4.82, validades: ["27/09/2025", "29/01/2026", "02/01/2026"]},
+            {nome: "REPOLHO", unidade: "QUIL", estoque: 72.2, preco: 6.19, validades: []},
+            {nome: "RÚCULA", unidade: "UNID", estoque: 50, preco: 5.62, validades: []},
+            {nome: "SAGU 500G", unidade: "UNID", estoque: 15, preco: 5.47, validades: ["01/01/2026"]},
+            {nome: "SAL MESA", unidade: "QUIL", estoque: 295, preco: 1.31, validades: ["07/07/2026", "11/11/2026"]},
+            {nome: "SALGADOS DIVERSOS", unidade: "QUIL", estoque: 28, preco: 37.71, validades: []},
+            {nome: "SALSICHA", unidade: "QUIL", estoque: 250, preco: 13.27, validades: ["01/04/2026"]},
+            {nome: "SALSICHA HOT DOG", unidade: "QUIL", estoque: 10, preco: 10.36, validades: ["01/04/2026"]},
+            {nome: "SONHO", unidade: "UNID", estoque: 85, preco: 3.80, validades: []},
+            {nome: "SUCO 1L", unidade: "CAIX", estoque: 13, preco: 4.74, validades: ["02/11/2025"]},
+            {nome: "SUCO DE UVA", unidade: "LITR", estoque: 277.5, preco: 10.55, validades: ["12/05/2026"]},
+            {nome: "SUCO DIVERSOS SABORES", unidade: "LITR", estoque: 108, preco: 5.44, validades: []},
+            {nome: "SUCO MARACUJA", unidade: "LITR", estoque: 101, preco: 6.49, validades: ["12/08/2026"]},
+            {nome: "SUCO UVA", unidade: "LITR", estoque: 198, preco: 8.51, validades: ["12/05/2026"]},
+            {nome: "TOMATE", unidade: "QUIL", estoque: 65, preco: 6.59, validades: []},
+            {nome: "TORTA CONFEITADA", unidade: "QUIL", estoque: 7.5, preco: 36.00, validades: []},
+            {nome: "TRIGO P/ KIBE", unidade: "PACO", estoque: 182, preco: 3.90, validades: ["17/10/2026"]},
+            {nome: "UVA ITÁLIA", unidade: "QUIL", estoque: 30, preco: 16.11, validades: []},
+            {nome: "UVA PASSA", unidade: "UNID", estoque: 5, preco: 35.00, validades: []}
+        ];
+
+        let valesAtual = [];
+        let historicoVales = JSON.parse(localStorage.getItem('historicoVales')) || [];
+
+        // Carregar dados salvos
+        if (localStorage.getItem('estoque')) {
+            estoque = JSON.parse(localStorage.getItem('estoque'));
+        }
+
+        function salvarDados() {
+            localStorage.setItem('estoque', JSON.stringify(estoque));
+            localStorage.setItem('historicoVales', JSON.stringify(historicoVales));
+        }
+
+        function openTab(tabName) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'dashboard') updateDashboard();
+            if (tabName === 'vale') renderItensDisponiveis();
+            if (tabName === 'estoque') renderEstoque();
+            if (tabName === 'validade') renderValidades();
+            if (tabName === 'historico') renderHistorico();
+        }
+
+        function updateDashboard() {
+            const hoje = new Date();
+            const proximos30Dias = new Date(hoje);
+            proximos30Dias.setDate(proximos30Dias.getDate() + 30);
+
+            let itensProxVenc = 0;
+            let valorTotal = 0;
+            
+            estoque.forEach(item => {
+                valorTotal += item.estoque * item.preco;
+                
+                item.validades.forEach(val => {
+                    const dataVal = parseDate(val);
+                    if (dataVal && dataVal <= proximos30Dias && dataVal >= hoje) {
+                        itensProxVenc++;
+                    }
+                });
+            });
+
+            const valesHoje = historicoVales.filter(v => {
+                const dataVale = new Date(v.data);
+                return dataVale.toDateString() === hoje.toDateString();
+            }).length;
+
+            document.getElementById('totalItens').textContent = estoque.length;
+            document.getElementById('valesHoje').textContent = valesHoje;
+            document.getElementById('itensProxVenc').textContent = itensProxVenc;
+            document.getElementById('valorEstoque').textContent = `R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+
+            renderAlertasValidade();
+        }
+
+        function renderAlertasValidade() {
+            const hoje = new Date();
+            const proximos7Dias = new Date(hoje);
+            proximos7Dias.setDate(proximos7Dias.getDate() + 7);
+
+            let alertas = [];
+            let vencidos = [];
+
+            estoque.forEach(item => {
+                item.validades.forEach(val => {
+                    const dataVal = parseDate(val);
+                    if (dataVal) {
+                        if (dataVal < hoje) {
+                            vencidos.push({item: item.nome, data: val});
+                        } else if (dataVal <= proximos7Dias) {
+                            alertas.push({item: item.nome, data: val, dias: Math.ceil((dataVal - hoje) / (1000 * 60 * 60 * 24))});
+                        }
+                    }
+                });
+            });
+
+            let html = '';
+            
+            if (vencidos.length > 0) {
+                html += '<div class="alert alert-danger">';
+                html += '<strong>⚠️ ITENS VENCIDOS:</strong><br>';
+                vencidos.forEach(v => {
+                    html += `${v.item} - Venceu em ${v.data}<br>`;
+                });
+                html += '</div>';
+            }
+
+            if (alertas.length > 0) {
+                html += '<div class="alert alert-warning">';
+                html += '<strong>⏰ ATENÇÃO - Vencimento próximo:</strong><br>';
+                alertas.forEach(a => {
+                    html += `${a.item} - Vence em ${a.dias} dia(s) (${a.data})<br>`;
+                });
+                html += '</div>';
+            }
+
+            document.getElementById('alertasValidade').innerHTML = html;
+        }
+
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            
+            // Tenta diversos formatos
+            let parts;
+            if (dateStr.includes('/')) {
+                parts = dateStr.split('/');
+                if (parts.length === 3) {
+                    // DD/MM/YYYY ou MM/DD/YYYY
+                    let day, month, year;
+                    if (parts[2].length === 4) {
+                        // DD/MM/YYYY
+                        day = parseInt(parts[0]);
+                        month = parseInt(parts[1]) - 1;
+                        year = parseInt(parts[2]);
+                    } else {
+                        // MM/DD/YY
+                        month = parseInt(parts[0]) - 1;
+                        day = parseInt(parts[1]);
+                        year = parseInt(parts[2]);
+                        if (year < 100) year += 2000;
+                    }
+                    return new Date(year, month, day);
+                }
+            }
+            return null;
+        }
+
+        function renderItensDisponiveis() {
+            const container = document.getElementById('itensDisponiveis');
+            let html = '';
+
+            estoque.forEach((item, idx) => {
+                let estoqueClass = item.estoque > 50 ? '' : (item.estoque > 0 ? 'low' : 'empty');
+                
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-name">${item.nome}</div>
+                            <div class="item-stock ${estoqueClass}">${item.estoque} ${item.unidade}</div>
+                        </div>
+                        <div class="item-details">
+                            Preço unitário: R$ ${item.preco.toFixed(2)}
+                        </div>
+                        <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="qtd_${idx}" placeholder="Quantidade" style="flex: 1; padding: 8px;" step="0.001" min="0" max="${item.estoque}">
+                            <button class="btn btn-primary" onclick="adicionarAoVale(${idx})" style="padding: 8px 20px;">+ Adicionar</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function filterItems() {
+            const search = document.getElementById('searchItem').value.toLowerCase();
+            const items = document.querySelectorAll('#itensDisponiveis .item-card');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(search) ? 'block' : 'none';
+            });
+        }
+
+        function adicionarAoVale(idx) {
+            const qtdInput = document.getElementById(`qtd_${idx}`);
+            const qtd = parseFloat(qtdInput.value);
+
+            if (!qtd || qtd <= 0) {
+                alert('Digite uma quantidade válida!');
+                return;
+            }
+
+            if (qtd > estoque[idx].estoque) {
+                alert('Quantidade maior que o estoque disponível!');
+                return;
+            }
+
+            const itemExiste = valesAtual.find(v => v.indice === idx);
+            if (itemExiste) {
+                itemExiste.quantidade += qtd;
+            } else {
+                valesAtual.push({
+                    indice: idx,
+                    nome: estoque[idx].nome,
+                    quantidade: qtd,
+                    unidade: estoque[idx].unidade,
+                    preco: estoque[idx].preco
+                });
+            }
+
+            qtdInput.value = '';
+            renderItensVale();
+        }
+
+        function renderItensVale() {
+            const container = document.getElementById('itensVale');
+            
+            if (valesAtual.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d;">Nenhum item adicionado ao vale</p>';
+                return;
+            }
+
+            let html = '';
+            let valorTotal = 0;
+
+            valesAtual.forEach((item, idx) => {
+                const valorItem = item.quantidade * item.preco;
+                valorTotal += valorItem;
+                
+                html += `
+                    <div class="vale-item">
+                        <div>
+                            <strong>${item.nome}</strong><br>
+                            <small>${item.quantidade} ${item.unidade} × R$ ${item.preco.toFixed(2)} = R$ ${valorItem.toFixed(2)}</small>
+                        </div>
+                        <button class="btn btn-danger" onclick="removerDoVale(${idx})">Remover</button>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: right;">
+                    <strong style="font-size: 1.2em;">Valor Total: R$ ${valorTotal.toFixed(2)}</strong>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function removerDoVale(idx) {
+            valesAtual.splice(idx, 1);
+            renderItensVale();
+        }
+
+        function limparVale() {
+            if (valesAtual.length === 0) return;
+            
+            if (confirm('Deseja limpar todos os itens do vale?')) {
+                valesAtual = [];
+                document.getElementById('responsavelVale').value = '';
+                document.getElementById('obsVale').value = '';
+                renderItensVale();
+            }
+        }
+
+        function finalizarVale() {
+            const responsavel = document.getElementById('responsavelVale').value.trim();
+            
+            if (!responsavel) {
+                alert('Informe o responsável pelo vale!');
+                return;
+            }
+
+            if (valesAtual.length === 0) {
+                alert('Adicione pelo menos um item ao vale!');
+                return;
+            }
+
+            // Atualizar estoque
+            valesAtual.forEach(item => {
+                estoque[item.indice].estoque -= item.quantidade;
+            });
+
+            // Salvar no histórico
+            const vale = {
+                data: new Date().toISOString(),
+                responsavel: responsavel,
+                observacoes: document.getElementById('obsVale').value,
+                itens: [...valesAtual],
+                valorTotal: valesAtual.reduce((sum, item) => sum + (item.quantidade * item.preco), 0)
+            };
+
+            historicoVales.push(vale);
+            salvarDados();
+
+            // Mostrar extrato
+            mostrarExtrato(vale);
+
+            // Limpar formulário
+            valesAtual = [];
+            document.getElementById('responsavelVale').value = '';
+            document.getElementById('obsVale').value = '';
+            renderItensVale();
+            renderItensDisponiveis();
+        }
+
+        function mostrarExtrato(vale) {
+            const dataFormatada = new Date(vale.data).toLocaleString('pt-BR');
+            
+            let html = `
+                <div class="extrato-header">
+                    <h3>5º BtlOpFuzNav</h3>
+                    <h4>Extrato de Vale de Paiol</h4>
+                    <p><strong>Data:</strong> ${dataFormatada}</p>
+                    <p><strong>Responsável:</strong> ${vale.responsavel}</p>
+                    ${vale.observacoes ? `<p><strong>Observações:</strong> ${vale.observacoes}</p>` : ''}
+                </div>
+            `;
+
+            vale.itens.forEach(item => {
+                const valorItem = item.quantidade * item.preco;
+                html += `
+                    <div class="extrato-item">
+                        <strong>${item.nome}</strong><br>
+                        Quantidade: ${item.quantidade} ${item.unidade} × R$ ${item.preco.toFixed(2)} = <strong>R$ ${valorItem.toFixed(2)}</strong>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: right;">
+                    <strong style="font-size: 1.3em;">Valor Total: R$ ${vale.valorTotal.toFixed(2)}</strong>
+                </div>
+            `;
+
+            document.getElementById('extratoContent').innerHTML = html;
+            document.getElementById('extratoModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('extratoModal').classList.remove('active');
+        }
+
+        function imprimirExtrato() {
+            window.print();
+        }
+
+        function renderEstoque() {
+            const container = document.getElementById('listaEstoque');
+            let items = [...estoque];
+
+            // Aplicar filtros
+            const search = document.getElementById('searchEstoque').value.toLowerCase();
+            const filtro = document.getElementById('filtroEstoque').value;
+
+            if (search) {
+                items = items.filter(item => item.nome.toLowerCase().includes(search));
+            }
+
+            if (filtro === 'baixo') {
+                items = items.filter(item => item.estoque > 0 && item.estoque < 50);
+            } else if (filtro === 'zerado') {
+                items = items.filter(item => item.estoque === 0);
+            }
+
+            let html = '';
+
+            items.forEach(item => {
+                let estoqueClass = item.estoque > 50 ? '' : (item.estoque > 0 ? 'low' : 'empty');
+                const valorTotal = item.estoque * item.preco;
+                
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-name">${item.nome}</div>
+                            <div class="item-stock ${estoqueClass}">${item.estoque} ${item.unidade}</div>
+                        </div>
+                        <div class="item-details">
+                            Preço unitário: R$ ${item.preco.toFixed(2)}<br>
+                            Valor em estoque: R$ ${valorTotal.toFixed(2)}
+                        </div>
+                        ${renderValidadesItem(item)}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<p style="text-align: center; color: #6c757d;">Nenhum item encontrado</p>';
+        }
+
+        function filterEstoque() {
+            renderEstoque();
+        }
+
+        function renderValidadesItem(item) {
+            if (item.validades.length === 0) return '';
+
+            const hoje = new Date();
+            const proximos30Dias = new Date(hoje);
+            proximos30Dias.setDate(proximos30Dias.getDate() + 30);
+
+            let html = '<div class="validades">';
+            
+            item.validades.forEach(val => {
+                const dataVal = parseDate(val);
+                let classe = '';
+                
+                if (dataVal) {
+                    if (dataVal < hoje) {
+                        classe = 'vencido';
+                    } else if (dataVal <= proximos30Dias) {
+                        classe = 'proximo';
+                    }
+                }
+                
+                html += `
+                    <div class="validade-item ${classe}">
+                        <span>📅 Validade: ${val}</span>
+                        ${classe === 'vencido' ? '<span>❌ VENCIDO</span>' : ''}
+                        ${classe === 'proximo' ? '<span>⚠️ PRÓXIMO</span>' : ''}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function renderValidades() {
+            const hoje = new Date();
+            const proximos30Dias = new Date(hoje);
+            proximos30Dias.setDate(proximos30Dias.getDate() + 30);
+
+            let vencidos = [];
+            let proximos = [];
+            let normais = [];
+
+            estoque.forEach(item => {
+                if (item.validades.length === 0) return;
+
+                item.validades.forEach(val => {
+                    const dataVal = parseDate(val);
+                    if (dataVal) {
+                        const obj = {item: item.nome, data: val, dataObj: dataVal};
+                        
+                        if (dataVal < hoje) {
+                            vencidos.push(obj);
+                        } else if (dataVal <= proximos30Dias) {
+                            proximos.push(obj);
+                        } else {
+                            normais.push(obj);
+                        }
+                    }
+                });
+            });
+
+            let alertasHtml = '';
+            
+            if (vencidos.length > 0) {
+                alertasHtml += '<div class="alert alert-danger">';
+                alertasHtml += `<strong>❌ ${vencidos.length} ITEM(NS) VENCIDO(S)</strong>`;
+                alertasHtml += '</div>';
+            }
+
+            if (proximos.length > 0) {
+                alertasHtml += '<div class="alert alert-warning">';
+                alertasHtml += `<strong>⚠️ ${proximos.length} ITEM(NS) PRÓXIMO(S) DO VENCIMENTO (30 dias)</strong>`;
+                alertasHtml += '</div>';
+            }
+
+            document.getElementById('alertasValidadeCompleto').innerHTML = alertasHtml;
+
+            // Renderizar lista
+            const search = document.getElementById('searchValidade').value.toLowerCase();
+            let items = [...vencidos, ...proximos, ...normais];
+
+            if (search) {
+                items = items.filter(item => item.item.toLowerCase().includes(search));
+            }
+
+            let html = '';
+            
+            items.forEach(item => {
+                let classe = '';
+                if (item.dataObj < hoje) classe = 'vencido';
+                else if (item.dataObj <= proximos30Dias) classe = 'proximo';
+                
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-name">${item.item}</div>
+                        </div>
+                        <div class="validade-item ${classe}">
+                            <span>📅 Validade: ${item.data}</span>
+                            ${classe === 'vencido' ? '<span style="color: #dc3545; font-weight: bold;">❌ VENCIDO</span>' : ''}
+                            ${classe === 'proximo' ? '<span style="color: #ffc107; font-weight: bold;">⚠️ VENCE EM BREVE</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('listaValidades').innerHTML = html || '<p style="text-align: center; color: #6c757d;">Nenhum item com validade cadastrada</p>';
+        }
+
+        function filterValidades() {
+            renderValidades();
+        }
+
+        function renderHistorico() {
+            const filtroData = document.getElementById('filtroData').value;
+            let vales = [...historicoVales].reverse();
+
+            if (filtroData) {
+                const dataFiltro = new Date(filtroData);
+                vales = vales.filter(v => {
+                    const dataVale = new Date(v.data);
+                    return dataVale.toDateString() === dataFiltro.toDateString();
+                });
+            }
+
+            let html = '';
+
+            if (vales.length === 0) {
+                html = '<p style="text-align: center; color: #6c757d;">Nenhum vale registrado</p>';
+            } else {
+                vales.forEach((vale, idx) => {
+                    const dataFormatada = new Date(vale.data).toLocaleString('pt-BR');
+                    
+                    html += `
+                        <div class="item-card">
+                            <div class="item-header">
+                                <div>
+                                    <div class="item-name">Vale #${historicoVales.length - idx}</div>
+                                    <div class="item-details">${dataFormatada}</div>
+                                </div>
+                                <button class="btn btn-primary" onclick="mostrarExtrato(historicoVales[${historicoVales.length - idx - 1}])">Ver Extrato</button>
+                            </div>
+                            <div class="item-details" style="margin-top: 10px;">
+                                <strong>Responsável:</strong> ${vale.responsavel}<br>
+                                <strong>Itens:</strong> ${vale.itens.length}<br>
+                                <strong>Valor Total:</strong> R$ ${vale.valorTotal.toFixed(2)}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('listaHistorico').innerHTML = html;
+        }
+
+        function filterHistorico() {
+            renderHistorico();
+        }
+
+        // Inicializar
+        updateDashboard();
+    </script>
+</body>
+</html>
