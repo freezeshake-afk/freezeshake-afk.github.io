@@ -1554,36 +1554,92 @@
         }
 
         function mostrarExtrato(vale) {
-            const dataFormatada = new Date(vale.data).toLocaleString('pt-BR');
+            const dataFormatada = new Date(vale.data).toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            
+            const diaSemana = new Date(vale.data).toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase();
             
             let html = `
-                <div style="text-align: center; border-bottom: 2px solid #dee2e6; padding-bottom: 20px; margin-bottom: 20px;">
-                    <h3>5º BtlOpFuzNav</h3>
-                    <h4>Extrato de Vale de Paiol</h4>
-                    ${vale.numeroVale ? `<p><strong>Nº Vale:</strong> ${vale.numeroVale}</p>` : ''}
-                    <p><strong>Data:</strong> ${dataFormatada}</p>
-                    <p><strong>Responsável:</strong> ${vale.responsavel}</p>
-                    ${vale.observacoes ? `<p><strong>Observações:</strong> ${vale.observacoes}</p>` : ''}
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="margin: 5px 0; font-size: 1.1em;">MARINHA DO BRASIL</h3>
+                    <h3 style="margin: 5px 0; font-size: 1em;">5º BATALHÃO DE OPERAÇÕES LITORÂNEAS DE FUZILEIROS NAVAIS</h3>
+                    <h4 style="margin: 15px 0; font-size: 0.95em;">VALE DE PEDIDO DE GÊNEROS AO PAIOL DE MANTIMENTOS</h4>
                 </div>
-            `;
-
-            vale.itens.forEach(item => {
-                const valorItem = item.quantidade * item.preco;
-                html += `
-                    <div style="padding: 10px; border-bottom: 1px solid #dee2e6;">
-                        <strong>${item.nome}</strong><br>
-                        Quantidade: ${item.quantidade} ${item.unidade} × R$ ${item.preco.toFixed(2)} = <strong>R$ ${valorItem.toFixed(2)}</strong>
+                
+                <div style="margin-bottom: 20px; font-size: 0.9em;">
+                    <div style="display: flex; justify-content: space-between; border: 1px solid #000; padding: 8px;">
+                        <span><strong>Data:</strong> ${dataFormatada}</span>
+                        <span><strong>Dia da Semana:</strong> ${diaSemana}</span>
+                        ${vale.numeroVale ? `<span><strong>Nº Pedido:</strong> ${vale.numeroVale}</span>` : ''}
                     </div>
+                    ${vale.observacoes ? `<div style="border: 1px solid #000; border-top: none; padding: 8px;"><strong>Observações:</strong> ${vale.observacoes}</div>` : ''}
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85em; margin-bottom: 20px;">
+                    <thead>
+                        <tr style="background: #f0f0f0; border: 1px solid #000;">
+                            <th style="border: 1px solid #000; padding: 8px; text-align: left; width: 5%;">CÓD</th>
+                            <th style="border: 1px solid #000; padding: 8px; text-align: left; width: 35%;">ITEM</th>
+                            <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 6%;">UF</th>
+                            <th style="border: 1px solid #000; padding: 8px; text-align: right; width: 10%;">QTD</th>
+                            <th style="border: 1px solid #000; padding: 8px; text-align: right; width: 12%;">P.U.</th>
+                            <th style="border: 1px solid #000; padding: 8px; text-align: right; width: 12%;">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            let valorTotalGeral = 0;
+            let codigoCounter = 1;
+            
+            vale.itens.forEach((item, idx) => {
+                const valorItem = item.quantidade * item.preco;
+                valorTotalGeral += valorItem;
+                
+                html += `
+                    <tr style="border: 1px solid #000;">
+                        <td style="border: 1px solid #000; padding: 6px; text-align: center;">${codigoCounter++}</td>
+                        <td style="border: 1px solid #000; padding: 6px;">${item.nome}</td>
+                        <td style="border: 1px solid #000; padding: 6px; text-align: center;">${item.unidade}</td>
+                        <td style="border: 1px solid #000; padding: 6px; text-align: right;">${item.quantidade}</td>
+                        <td style="border: 1px solid #000; padding: 6px; text-align: right;">R$ ${item.preco.toFixed(2)}</td>
+                        <td style="border: 1px solid #000; padding: 6px; text-align: right;"><strong>R$ ${valorItem.toFixed(2)}</strong></td>
+                    </tr>
                 `;
             });
-
+            
             html += `
-                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: right;">
-                    <strong style="font-size: 1.3em;">Valor Total: R$ ${vale.valorTotal.toFixed(2)}</strong>
-                </div>
-                <div style="margin-top: 40px; text-align: center; color: #6c757d; font-size: 0.9em;">
-                    <p style="margin-top: 30px;">_____________________________________</p>
-                    <p>Assinatura do Responsável</p>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: #f0f0f0; font-weight: bold;">
+                            <td colspan="5" style="border: 1px solid #000; padding: 10px; text-align: right; font-size: 1.1em;">VALOR TOTAL DO PEDIDO:</td>
+                            <td style="border: 1px solid #000; padding: 10px; text-align: right; font-size: 1.1em;">R$ ${valorTotalGeral.toFixed(2)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div style="margin-top: 40px; font-size: 0.85em;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 60px;">
+                        <div style="text-align: center; width: 48%;">
+                            <div style="border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 8px; min-height: 50px;"></div>
+                            <strong>${vale.responsavel}</strong><br>
+                            <span>COZINHEIRO CHEFE</span>
+                        </div>
+                        <div style="text-align: center; width: 48%;">
+                            <div style="border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 8px; min-height: 50px;"></div>
+                            <strong>NOME/POSTO/GRAD</strong><br>
+                            <span>RECEBEDOR</span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 40px;">
+                        <div style="border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 8px; min-height: 50px; width: 60%; margin-left: auto; margin-right: auto;"></div>
+                        <strong>NOME/POSTO/GRAD</strong><br>
+                        <span>FIEL DO MUNICIAMENTO / PAIOLEIRO</span>
+                    </div>
                 </div>
             `;
 
@@ -1598,57 +1654,162 @@
             }
 
             const vale = valeAtualParaBaixar;
-            const dataFormatada = new Date(vale.data).toLocaleString('pt-BR');
-            const nomeArquivo = `Vale_${vale.numeroVale || new Date().getTime()}.html`;
+            const dataFormatada = new Date(vale.data).toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            const diaSemana = new Date(vale.data).toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase();
+            const nomeArquivo = `Vale_Paiol_${vale.numeroVale || new Date().getTime()}.html`;
             
             let html = `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Extrato Vale ${vale.numeroVale || ''}</title>
+    <title>Vale de Paiol ${vale.numeroVale || ''}</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
-        h2, h3 { color: #2a5298; text-align: center; }
-        .header { text-align: center; border-bottom: 2px solid #2a5298; padding-bottom: 20px; margin-bottom: 30px; }
-        .info { margin: 10px 0; }
-        .item { padding: 15px; border-bottom: 1px solid #ddd; }
-        .total { background: #f8f9fa; padding: 20px; margin-top: 30px; text-align: right; font-size: 1.3em; font-weight: bold; }
-        .assinatura { margin-top: 60px; text-align: center; }
-        .linha { border-top: 1px solid #000; width: 300px; margin: 0 auto; padding-top: 10px; }
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            max-width: 21cm;
+            margin: 0 auto;
+            font-size: 11pt;
+        }
+        h3, h4 { 
+            margin: 5px 0;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 25px;
+        }
+        .info-box {
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 20px;
+            font-size: 10pt;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 9pt;
+        }
+        th, td { 
+            border: 1px solid #000; 
+            padding: 6px;
+        }
+        th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        .total-row {
+            background: #f0f0f0;
+            font-weight: bold;
+            font-size: 11pt;
+        }
+        .signature-section {
+            margin-top: 40px;
+            font-size: 9pt;
+        }
+        .signature-box {
+            border-bottom: 1px solid #000;
+            min-height: 60px;
+            margin-bottom: 8px;
+        }
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h2>5º BATALHÃO DE OPERAÇÕES LITORÂNEAS DE FUZILEIROS NAVAIS</h2>
-        <h3>EXTRATO DE VALE DE PAIOL</h3>
+        <h3>MARINHA DO BRASIL</h3>
+        <h3>5º BATALHÃO DE OPERAÇÕES LITORÂNEAS DE FUZILEIROS NAVAIS</h3>
+        <h4>VALE DE PEDIDO DE GÊNEROS AO PAIOL DE MANTIMENTOS</h4>
     </div>
     
-    <div class="info"><strong>Nº Vale:</strong> ${vale.numeroVale || 'N/A'}</div>
-    <div class="info"><strong>Data:</strong> ${dataFormatada}</div>
-    <div class="info"><strong>Responsável:</strong> ${vale.responsavel}</div>
-    ${vale.observacoes ? `<div class="info"><strong>Observações:</strong> ${vale.observacoes}</div>` : ''}
-    
-    <h3 style="margin-top: 30px;">Itens</h3>
+    <div class="info-box">
+        <div style="display: flex; justify-content: space-between;">
+            <span><strong>Data:</strong> ${dataFormatada}</span>
+            <span><strong>Dia da Semana:</strong> ${diaSemana}</span>
+            ${vale.numeroVale ? `<span><strong>Nº Pedido:</strong> ${vale.numeroVale}</span>` : ''}
+        </div>
+        ${vale.observacoes ? `<div style="margin-top: 8px;"><strong>Observações:</strong> ${vale.observacoes}</div>` : ''}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%; text-align: center;">CÓD</th>
+                <th style="width: 35%; text-align: left;">ITEM</th>
+                <th style="width: 6%; text-align: center;">UF</th>
+                <th style="width: 10%; text-align: right;">QTD</th>
+                <th style="width: 12%; text-align: right;">P.U.</th>
+                <th style="width: 12%; text-align: right;">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
 `;
 
+            let codigoCounter = 1;
+            let valorTotalGeral = 0;
+            
             vale.itens.forEach(item => {
                 const valorItem = item.quantidade * item.preco;
+                valorTotalGeral += valorItem;
+                
                 html += `
-    <div class="item">
-        <strong>${item.nome}</strong><br>
-        Quantidade: ${item.quantidade} ${item.unidade} × R$ ${item.preco.toFixed(2)} = <strong>R$ ${valorItem.toFixed(2)}</strong>
-    </div>
+            <tr>
+                <td style="text-align: center;">${codigoCounter++}</td>
+                <td>${item.nome}</td>
+                <td style="text-align: center;">${item.unidade}</td>
+                <td style="text-align: right;">${item.quantidade}</td>
+                <td style="text-align: right;">R$ ${item.preco.toFixed(2)}</td>
+                <td style="text-align: right;"><strong>R$ ${valorItem.toFixed(2)}</strong></td>
+            </tr>
 `;
             });
 
             html += `
-    <div class="total">
-        VALOR TOTAL: R$ ${vale.valorTotal.toFixed(2)}
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="5" style="text-align: right;">VALOR TOTAL DO PEDIDO:</td>
+                <td style="text-align: right;">R$ ${valorTotalGeral.toFixed(2)}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="signature-section">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 60px;">
+            <div style="text-align: center; width: 48%;">
+                <div class="signature-box"></div>
+                <strong>${vale.responsavel}</strong><br>
+                <span>COZINHEIRO CHEFE</span>
+            </div>
+            <div style="text-align: center; width: 48%;">
+                <div class="signature-box"></div>
+                <strong>NOME/POSTO/GRAD</strong><br>
+                <span>RECEBEDOR</span>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <div class="signature-box" style="width: 60%; margin-left: auto; margin-right: auto;"></div>
+            <strong>NOME/POSTO/GRAD</strong><br>
+            <span>FIEL DO MUNICIAMENTO / PAIOLEIRO</span>
+        </div>
     </div>
     
-    <div class="assinatura">
-        <div class="linha">Assinatura do Responsável</div>
+    <div style="text-align: center; margin-top: 20px; font-size: 8pt; color: #666;" class="no-print">
+        <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+        <p>Sistema de Controle de Paiol - 5º BtlOpFuzNav</p>
     </div>
 </body>
 </html>
@@ -1665,7 +1826,7 @@
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
 
-            alert('Vale baixado com sucesso!\nVocê pode abrir o arquivo no navegador e salvar como PDF.');
+            alert('Vale baixado com sucesso!\n\nVocê pode:\n• Abrir no navegador e imprimir (Ctrl+P)\n• Salvar como PDF\n• Formato oficial da Marinha');
         }
 
         // ESTOQUE
