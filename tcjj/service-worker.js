@@ -1,9 +1,10 @@
 /* TCJJ Centro — service worker (offline-first app shell) */
-const CACHE = 'tcjj-v1';
+const CACHE = 'tcjj-v2';
 const ASSETS = [
   './',
   './index.html',
   './qrcode.js',
+  './vendor/firebase.js',
   './manifest.json',
   './icon-180.png',
   './icon-192.png',

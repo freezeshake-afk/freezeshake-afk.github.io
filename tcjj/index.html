@@ -251,6 +251,15 @@ const GRADE = {
   }
 };
 
+/* ---------- Config do Firebase (sincronização na nuvem) ----------
+   Cole aqui o objeto de configuração do seu projeto Firebase para ligar a
+   sincronização entre celulares (você + alunos). Enquanto for null, o app
+   funciona em modo LOCAL (dados só neste aparelho). Ex.:
+   const FIREBASE_CONFIG = { apiKey:"...", authDomain:"...", projectId:"...",
+     storageBucket:"...", messagingSenderId:"...", appId:"..." };
+------------------------------------------------------------------ */
+const FIREBASE_CONFIG = null;
+
 /* ---------- Storage ---------- */
 const DB = {
   get(k,def){ try{ const v=localStorage.getItem("tcjj."+k); return v==null?def:JSON.parse(v);}catch(e){return def;} },
@@ -271,6 +280,56 @@ const save = {
   payments:()=>DB.set("payments",payments), settings:()=>DB.set("settings",settings),
   session:()=>DB.set("session",session)
 };
+
+/* ---------- Sincronização na nuvem (Firebase Firestore) ---------- */
+function effectiveFbConfig(){ return FIREBASE_CONFIG || DB.get("fbconfig", null); }
+function loadScript(src){ return new Promise((res,rej)=>{ if(window.FB) return res(); const s=document.createElement("script"); s.src=src; s.onload=()=>res(); s.onerror=rej; document.head.appendChild(s); }); }
+function parseFbConfig(raw){
+  let s=String(raw||"").trim(); const m=s.match(/\{[\s\S]*\}/); if(m) s=m[0];
+  try{ return JSON.parse(s); }catch(e){}
+  const t=s.replace(/([{,]\s*)([A-Za-z0-9_]+)\s*:/g,'$1"$2":').replace(/'/g,'"').replace(/,\s*}/g,"}").replace(/,\s*]/g,"]");
+  return JSON.parse(t);
+}
+const Cloud = {
+  on:false, db:null,
+  async init(){
+    const cfg=effectiveFbConfig(); if(!cfg || !cfg.projectId) return;
+    try{
+      await loadScript("vendor/firebase.js");
+      const emu = /[?&]emu=1/.test(location.search) || DB.get("emu",false);
+      const app = FB.initializeApp(cfg);
+      let db;
+      try{ db = FB.initializeFirestore(app, { localCache: FB.persistentLocalCache({ tabManager: FB.persistentMultipleTabManager() }) }); }
+      catch(e){ db = FB.getFirestore(app); }
+      this.db = db;
+      if(emu){ FB.connectFirestoreEmulator(db, "127.0.0.1", 8080); }
+      else { try{ await FB.signInAnonymously(FB.getAuth(app)); }catch(e){ console.warn("anon auth:", e); } }
+      this.on = true;
+      this.subscribe();
+      toast("Sincronização na nuvem ativa ☁️");
+    }catch(e){ console.warn("Nuvem indisponível — modo local.", e); }
+  },
+  subscribe(){
+    const apply={ students:v=>students=v, admins:v=>admins=v, payments:v=>payments=v };
+    ["students","admins","payments"].forEach(name=>{
+      FB.onSnapshot(FB.collection(this.db,name), snap=>{
+        const arr=[]; snap.forEach(d=>arr.push(d.data()));
+        apply[name](arr); DB.set(name,arr); cloudRerender();
+      }, err=>console.warn("snapshot",name,err));
+    });
+    FB.onSnapshot(FB.doc(this.db,"config","settings"), d=>{
+      if(d && d.exists && d.exists()){ settings=Object.assign(settings, d.data()); DB.set("settings",settings); cloudRerender(); }
+    }, ()=>{});
+  },
+  put(coll,obj){ if(this.on && obj && obj.id){ try{ FB.setDoc(FB.doc(this.db,coll,obj.id), JSON.parse(JSON.stringify(obj))); }catch(e){} } },
+  del(coll,id){ if(this.on && id){ try{ FB.deleteDoc(FB.doc(this.db,coll,id)); }catch(e){} } },
+  putSettings(){ if(this.on){ try{ FB.setDoc(FB.doc(this.db,"config","settings"), JSON.parse(JSON.stringify(settings))); }catch(e){} } }
+};
+function cloudRerender(){
+  const m=$("#modal"); if(m && !m.classList.contains("hidden")) return;
+  const ae=document.activeElement; if(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return;
+  render();
+}
 
 /* ---------- UI state ---------- */
 const ui = { authMode:"aluno", authTab:"entrar", stab:"mensalidade", atab:"alunos", detail:null, search:"" };
@@ -596,7 +655,7 @@ function bindAuth(){
         idade:num(form.idade), peso:num(form.peso),
         inicioMes:+form.inicioMes, inicioAno:+form.inicioAno, gradMes:+form.gradMes, gradAno:+form.gradAno,
         createdAt:Date.now() };
-      students.push(st); save.students(); form=null;
+      students.push(st); save.students(); Cloud.put("students",st); form=null;
       toast("Cadastro concluído! Bem-vindo 🥋");
       setSession("aluno",st.id);
     });
@@ -615,7 +674,7 @@ function bindAuth(){
       if(code!==settings.adminCode) return toast("Código de administrador incorreto.");
       if(admins.some(a=>digits(a.whatsapp)===wa)) return toast("Já existe admin com esse WhatsApp.");
       const a={id:uid(),name:nome,whatsapp:$("#caWa").value,pass:hash(pw),createdAt:Date.now()};
-      admins.push(a); save.admins(); toast("Administrador criado!");
+      admins.push(a); save.admins(); Cloud.put("admins",a); toast("Administrador criado!");
       setSession("admin",a.id);
     });
   }
@@ -751,7 +810,7 @@ function openEditProfile(u){
     Object.assign(u,{ category:form.category, militar:!!form.militar, faixa:form.faixa, graus:form.graus,
       idade:num(form.idade), peso:num(form.peso), inicioMes:+form.inicioMes, inicioAno:+form.inicioAno,
       gradMes:+form.gradMes, gradAno:+form.gradAno });
-    save.students(); form=null; closeModal(); toast("Perfil atualizado ✓"); render();
+    save.students(); Cloud.put("students",u); form=null; closeModal(); toast("Perfil atualizado ✓"); render();
   });
 }
 
@@ -845,11 +904,14 @@ function bindStudentDetail(id){
   $("#btnEditAluno").addEventListener("click",()=>openEditProfile(s));
   $("#btnDelAluno").addEventListener("click",()=>{
     if(!confirm("Excluir "+s.name+" e seus pagamentos?")) return;
+    const delPays=payments.filter(p=>p.studentId===id).map(p=>p.id);
     students=students.filter(x=>x.id!==id); payments=payments.filter(p=>p.studentId!==id);
-    save.students(); save.payments(); ui.detail=null; toast("Aluno excluído."); render();
+    save.students(); save.payments(); Cloud.del("students",id); delPays.forEach(pid=>Cloud.del("payments",pid));
+    ui.detail=null; toast("Aluno excluído."); render();
   });
   $$("[data-delpay]").forEach(b=>b.addEventListener("click",()=>{
-    payments=payments.filter(p=>p.id!==b.dataset.delpay); save.payments(); toast("Pagamento removido."); render();
+    const pid=b.dataset.delpay;
+    payments=payments.filter(p=>p.id!==pid); save.payments(); Cloud.del("payments",pid); toast("Pagamento removido."); render();
   }));
 }
 
@@ -877,9 +939,11 @@ function openRegPay(s){
   $("#btnConfirmPay").addEventListener("click",()=>{
     const ref=$("#pAno").value+"-"+pad(+$("#pMes").value);
     const amount=num($("#pVal").value);
-    payments=payments.filter(p=>!(p.studentId===s.id && p.ref===ref)); // substitui se já houver
-    payments.push({id:uid(),studentId:s.id,ref,amount,status:"pago",method,paidAt:Date.now(),by:session.id});
-    save.payments(); closeModal(); toast("Pagamento registrado ✓"); render();
+    payments.filter(p=>p.studentId===s.id && p.ref===ref).forEach(p=>Cloud.del("payments",p.id)); // substitui se já houver
+    payments=payments.filter(p=>!(p.studentId===s.id && p.ref===ref));
+    const pay={id:uid(),studentId:s.id,ref,amount,status:"pago",method,paidAt:Date.now(),by:session.id};
+    payments.push(pay);
+    save.payments(); Cloud.put("payments",pay); closeModal(); toast("Pagamento registrado ✓"); render();
   });
 }
 
@@ -900,11 +964,11 @@ function openAddAluno(){
     const nome=(form.nome||"").trim(), wa=digits(form.whatsapp), pw=form.pw||"tcjj123";
     if(!nome||wa.length<10) return toast("Informe nome e WhatsApp válidos.");
     if(students.some(x=>digits(x.whatsapp)===wa)) return toast("Já existe aluno com esse WhatsApp.");
-    students.push({ id:uid(), name:nome, whatsapp:form.whatsapp, pass:hash(pw),
+    const st={ id:uid(), name:nome, whatsapp:form.whatsapp, pass:hash(pw),
       category:form.category, militar:!!form.militar, faixa:form.faixa, graus:form.graus,
       idade:num(form.idade), peso:num(form.peso), inicioMes:+form.inicioMes, inicioAno:+form.inicioAno,
-      gradMes:+form.gradMes, gradAno:+form.gradAno, createdAt:Date.now() });
-    save.students(); form=null; closeModal(); toast("Aluno cadastrado ✓ (senha: "+ (pw==="tcjj123"?"tcjj123":"a definida") +")"); render();
+      gradMes:+form.gradMes, gradAno:+form.gradAno, createdAt:Date.now() };
+    students.push(st); save.students(); Cloud.put("students",st); form=null; closeModal(); toast("Aluno cadastrado ✓ (senha: "+ (pw==="tcjj123"?"tcjj123":"a definida") +")"); render();
   });
 }
 
@@ -990,9 +1054,18 @@ function adminConfig(){
       <button class="btn btn-dark" id="btnAddAdmin">+ Adicionar administrador</button>
     </div>
 
+    <div class="sec-title">Sincronização na nuvem</div>
+    <div class="card">
+      <p class="muted" style="font-size:13px;margin:0 0 10px">Status: <b style="color:${Cloud.on?'var(--good)':'var(--muted)'}">${Cloud.on?'Nuvem ativa ☁️':(FIREBASE_CONFIG?'Configurada (carregando…)':'Local — só este aparelho')}</b></p>
+      <label class="fld">Config do Firebase (cole o objeto do console)</label>
+      <textarea class="inp" id="cfgCloud" rows="5" placeholder='{ "apiKey": "...", "projectId": "...", "appId": "..." }' style="resize:vertical;font-family:ui-monospace,Menlo,monospace;font-size:12px">${esc(DB.get("fbconfig",null)?JSON.stringify(DB.get("fbconfig",null)):"")}</textarea>
+      <button class="btn btn-gold" id="btnCloudSave" style="margin-top:10px">${Cloud.on?'Atualizar nuvem':'Ativar nuvem'}</button>
+      <p class="note" style="margin-top:10px">Sincroniza alunos e pagamentos entre aparelhos. Para os <b>alunos</b> também sincronizarem ao se cadastrarem no próprio celular, envie essa mesma config para embutir no app.</p>
+    </div>
+
     <div class="sec-title">Sobre</div>
-    <div class="note">Este é um MVP. Os dados ficam salvos <b>neste dispositivo</b> (navegador). Para que alunos que se cadastram no próprio celular apareçam aqui, e para lembretes automáticos com o app fechado, é preciso um servidor (próximo passo).
-      <button class="btn btn-danger btn-sm" id="btnWipe" style="margin-top:12px">Apagar todos os dados</button>
+    <div class="note">TCJJ Centro — MVP. ${Cloud.on?'Dados sincronizados na nuvem (Firebase).':'Sem nuvem, os dados ficam só neste aparelho.'} Lembretes automáticos com o app fechado (push) são o próximo passo.
+      <button class="btn btn-danger btn-sm" id="btnWipe" style="margin-top:12px">Apagar dados deste aparelho</button>
     </div>
     <div class="foot">🦍 TCJJ Centro · OSS!</div>
   </div>`;
@@ -1001,11 +1074,19 @@ function bindConfig(){
   $("#btnSavePix").addEventListener("click",()=>{
     settings.pixKey=$("#cfgKey").value.trim(); settings.pixName=$("#cfgName").value.trim()||"Tuté Costa Jiu Jitsu";
     settings.pixCity=$("#cfgCity").value.trim()||"Rio Grande"; settings.academyWhats=$("#cfgWhats").value.trim();
-    save.settings(); toast("PIX salvo ✓");
+    save.settings(); Cloud.putSettings(); toast("PIX salvo ✓");
   });
-  $("#btnSaveTpl").addEventListener("click",()=>{ settings.reminderTpl=$("#cfgTpl").value; save.settings(); toast("Mensagem salva ✓"); });
+  $("#btnSaveTpl").addEventListener("click",()=>{ settings.reminderTpl=$("#cfgTpl").value; save.settings(); Cloud.putSettings(); toast("Mensagem salva ✓"); });
+  $("#btnCloudSave")?.addEventListener("click",()=>{
+    const raw=$("#cfgCloud").value.trim();
+    if(!raw){ DB.set("fbconfig",null); toast("Config da nuvem removida."); return; }
+    let cfg=null;
+    try{ cfg=parseFbConfig(raw); }catch(e){ return toast("Config inválida. Cole o objeto do Firebase."); }
+    if(!cfg || !cfg.projectId || !cfg.apiKey) return toast("Config incompleta (falta projectId/apiKey).");
+    DB.set("fbconfig", cfg); toast("Nuvem configurada — reiniciando…"); setTimeout(()=>location.reload(),700);
+  });
   $("#btnAddAdmin").addEventListener("click",()=>{
-    settings.adminCode=$("#cfgCode").value.trim()||settings.adminCode; save.settings();
+    settings.adminCode=$("#cfgCode").value.trim()||settings.adminCode; save.settings(); Cloud.putSettings();
     openModal(`
       <div class="mh"><h3>Novo administrador</h3><button class="x" data-close>×</button></div>
       <div class="field-mb"><label class="fld">Nome</label><input class="inp" id="naNome" placeholder="Nome"></div>
@@ -1016,11 +1097,11 @@ function bindConfig(){
       const nome=($("#naNome").value||"").trim(), wa=digits($("#naWa").value), pw=$("#naPw").value;
       if(!nome||wa.length<10||pw.length<4) return toast("Preencha nome, WhatsApp e senha.");
       if(admins.some(a=>digits(a.whatsapp)===wa)) return toast("Admin já existe.");
-      admins.push({id:uid(),name:nome,whatsapp:$("#naWa").value,pass:hash(pw),createdAt:Date.now()});
-      save.admins(); closeModal(); toast("Administrador adicionado ✓"); render();
+      const a={id:uid(),name:nome,whatsapp:$("#naWa").value,pass:hash(pw),createdAt:Date.now()};
+      admins.push(a); save.admins(); Cloud.put("admins",a); closeModal(); toast("Administrador adicionado ✓"); render();
     });
   });
-  $("#cfgCode").addEventListener("change",()=>{ settings.adminCode=$("#cfgCode").value.trim()||settings.adminCode; save.settings(); });
+  $("#cfgCode").addEventListener("change",()=>{ settings.adminCode=$("#cfgCode").value.trim()||settings.adminCode; save.settings(); Cloud.putSettings(); });
   $("#btnWipe").addEventListener("click",()=>{
     if(!confirm("Apagar TODOS os dados (alunos, pagamentos, admins)? Não dá para desfazer.")) return;
     if(!confirm("Tem certeza mesmo?")) return;
@@ -1099,6 +1180,7 @@ function closeModal(){ const m=$("#modal"); m.classList.add("hidden"); m.innerHT
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && session && session.role==="aluno") maybeNotify(currentUser()); });
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{})); }
 render();
+Cloud.init();   // liga a sincronização na nuvem se houver config (não bloqueia o app)
 </script>
 </body>
 </html>
