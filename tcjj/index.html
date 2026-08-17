@@ -258,7 +258,14 @@ const GRADE = {
    const FIREBASE_CONFIG = { apiKey:"...", authDomain:"...", projectId:"...",
      storageBucket:"...", messagingSenderId:"...", appId:"..." };
 ------------------------------------------------------------------ */
-const FIREBASE_CONFIG = null;
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCIvtdVZ5q6-9Sl1Wh3HvkfzsDXZ64Cg8g",
+  authDomain: "tcjj-fc3fb.firebaseapp.com",
+  projectId: "tcjj-fc3fb",
+  storageBucket: "tcjj-fc3fb.firebasestorage.app",
+  messagingSenderId: "563576287204",
+  appId: "1:563576287204:web:5b3318100f3b8dc974a1f1"
+};
 
 /* ---------- Storage ---------- */
 const DB = {
@@ -303,7 +310,10 @@ const Cloud = {
       catch(e){ db = FB.getFirestore(app); }
       this.db = db;
       if(emu){ FB.connectFirestoreEmulator(db, "127.0.0.1", 8080); }
-      else { try{ await FB.signInAnonymously(FB.getAuth(app)); }catch(e){ console.warn("anon auth:", e); } }
+      else {
+        try{ await FB.signInAnonymously(FB.getAuth(app)); }
+        catch(e){ console.warn("Nuvem em espera: ative Authentication › Anônimo no Firebase.", e && e.code); return; } // segue em modo local
+      }
       this.on = true;
       this.subscribe();
       toast("Sincronização na nuvem ativa ☁️");
