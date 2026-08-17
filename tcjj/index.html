@@ -306,7 +306,10 @@ const Cloud = {
       const emu = /[?&]emu=1/.test(location.search) || DB.get("emu",false);
       const app = FB.initializeApp(cfg);
       let db;
-      try{ db = FB.initializeFirestore(app, { localCache: FB.persistentLocalCache({ tabManager: FB.persistentMultipleTabManager() }) }); }
+      try{ db = FB.initializeFirestore(app, {
+        localCache: FB.persistentLocalCache({ tabManager: FB.persistentMultipleTabManager() }),
+        experimentalAutoDetectLongPolling: true   // conecta melhor em redes restritas (wifi de academia, operadora)
+      }); }
       catch(e){ db = FB.getFirestore(app); }
       this.db = db;
       if(emu){ FB.connectFirestoreEmulator(db, "127.0.0.1", 8080); }
