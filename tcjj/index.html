@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TCJJ Centro</title>
+<meta name="description" content="Gestão de alunos e mensalidades — Tuté Costa Jiu-Jitsu, unidade Centro.">
+<meta name="theme-color" content="#0c0a07">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TCJJ Centro">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root{
+    --bg:#0b0a07; --bg2:#110e09; --card:#17130c; --card2:#211a10; --line:#2f2614;
+    --text:#f5efe2; --muted:#ab9f85; --muted2:#7b7057;
+    --gold:#f2a81d; --gold2:#ffc84a; --goldGlow:rgba(242,168,29,.30);
+    --good:#3ecf8e; --goodbg:rgba(62,207,142,.13);
+    --warn:#f5b301; --warnbg:rgba(245,179,1,.13);
+    --danger:#f0533f; --dangerbg:rgba(240,83,63,.14);
+    --info:#5aa9ff; --pink:#ec5aa0; --green:#8bc34a;
+    --r:16px; --r2:12px;
+    --safeT:env(safe-area-inset-top); --safeB:env(safe-area-inset-bottom);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overscroll-behavior-y:contain}
+  a{color:var(--gold2);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:16px}
+  .hidden{display:none !important}
+  .hazard{height:5px;background:repeating-linear-gradient(45deg,var(--gold) 0 14px,#111 14px 28px);opacity:.9}
+
+  /* Top bar */
+  .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:11px;
+    padding:calc(var(--safeT) + 11px) 15px 11px;
+    background:linear-gradient(180deg,rgba(11,10,7,.97),rgba(11,10,7,.82) 72%,transparent);
+    backdrop-filter:saturate(140%) blur(10px)}
+  .topbar img.logo{width:36px;height:36px;border-radius:9px}
+  .topbar .tt{flex:1;min-width:0}
+  .topbar .tt h1{margin:0;font-size:16px;font-weight:900;letter-spacing:.6px}
+  .topbar .tt h1 b{color:var(--gold)}
+  .topbar .tt p{margin:1px 0 0;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .icon-btn{width:38px;height:38px;border-radius:10px;background:var(--card);border:1px solid var(--line);
+    display:grid;place-items:center}
+  .icon-btn svg{width:18px;height:18px;fill:var(--muted)}
+
+  main{padding:6px 15px calc(120px + var(--safeB))}
+  .view{animation:fade .22s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .sec-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:800;margin:22px 4px 10px}
+
+  /* Cards & common */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+  .card h3{margin:0 0 4px;font-size:15.5px}
+  .muted{color:var(--muted)}
+  .row{display:flex;gap:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+
+  label.fld{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:0 0 6px}
+  .inp{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:11px;color:var(--text);
+    padding:13px 13px;font-weight:600;outline:none;transition:.15s}
+  .inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--goldGlow)}
+  select.inp{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%23ab9f85'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+  .field-mb{margin-bottom:13px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:800;border-radius:12px;
+    padding:14px 16px;font-size:15px;transition:.15s;width:100%}
+  .btn:active{transform:scale(.985)}
+  .btn-gold{background:linear-gradient(145deg,var(--gold),var(--gold2));color:#1a1204;box-shadow:0 6px 18px var(--goldGlow)}
+  .btn-dark{background:var(--card2);border:1px solid var(--line);color:var(--text)}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+  .btn-danger{background:var(--dangerbg);border:1px solid rgba(240,83,63,.4);color:var(--danger)}
+  .btn-wa{background:#25D366;color:#04310f}
+  .btn-sm{padding:10px 12px;font-size:13px;width:auto;border-radius:10px}
+  .btn svg{width:18px;height:18px;fill:currentColor}
+
+  /* segmented + chips */
+  .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+  .seg button{flex:1;padding:10px;border-radius:9px;font-size:13.5px;font-weight:800;color:var(--muted)}
+  .seg button.active{background:linear-gradient(145deg,var(--gold),var(--gold2));color:#1a1204}
+  .seg.sub button.active{background:var(--card2);color:var(--gold);box-shadow:inset 0 0 0 1px var(--line)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{padding:9px 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);
+    color:var(--muted);font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
+  .chip.active{border-color:var(--gold);color:var(--text);box-shadow:0 0 0 1px var(--gold)}
+  .chip .dotc{width:13px;height:13px;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
+
+  /* stepper */
+  .stepper{display:flex;align-items:center;gap:14px}
+  .stepper button{width:44px;height:44px;border-radius:12px;background:var(--card2);border:1px solid var(--line);
+    font-size:22px;font-weight:800;color:var(--gold);display:grid;place-items:center}
+  .stepper .val{font-size:22px;font-weight:900;min-width:26px;text-align:center}
+
+  /* belt */
+  .belt{position:relative;height:30px;border-radius:6px;overflow:hidden;display:flex;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.3)}
+  .belt.big{height:52px;border-radius:9px}
+  .belt.mini{height:15px;border-radius:4px}
+  .belt-main{flex:1}
+  .belt-tip{width:36%;max-width:150px;display:flex;align-items:center;gap:6px;padding:0 10px}
+  .belt.big .belt-tip{gap:8px;padding:0 14px}
+  .belt.mini .belt-tip{gap:3px;padding:0 5px}
+  .belt-tip i{width:6px;height:64%;border-radius:1px;display:block}
+  .belt.big .belt-tip i{width:8px}
+  .belt.mini .belt-tip i{width:3px}
+
+  /* logo hero (auth) */
+  .hero{text-align:center;padding:22px 0 8px}
+  .hero img{width:96px;height:96px;border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .hero h1{margin:14px 0 2px;font-size:26px;font-weight:900;letter-spacing:1px}
+  .hero h1 b{color:var(--gold)}
+  .hero .motto{font-size:11px;color:var(--gold);letter-spacing:2px;font-weight:800;text-transform:uppercase}
+  .hero .oss{font-size:11px;color:var(--muted2);letter-spacing:3px;margin-top:6px}
+
+  /* status banner */
+  .status{border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid}
+  .status .lbl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+  .status .big{font-size:26px;font-weight:900;margin:4px 0 2px}
+  .status .sub{font-size:13px;opacity:.85}
+  .st-good{background:var(--goodbg);border-color:rgba(62,207,142,.35);color:var(--good)}
+  .st-warn{background:var(--warnbg);border-color:rgba(245,179,1,.35);color:var(--warn)}
+  .st-danger{background:var(--dangerbg);border-color:rgba(240,83,63,.4);color:var(--danger)}
+  .status .white{color:var(--text)}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;padding:5px 10px;border-radius:999px;white-space:nowrap}
+  .pill-good{background:var(--goodbg);color:var(--good)}
+  .pill-warn{background:var(--warnbg);color:var(--warn)}
+  .pill-danger{background:var(--dangerbg);color:var(--danger)}
+
+  /* QR / pix */
+  .qrbox{background:#fff;padding:14px;border-radius:14px;width:210px;margin:12px auto;display:grid;place-items:center}
+  .qrbox img{width:100%;height:auto;image-rendering:pixelated;display:block}
+  .qrbox svg{width:100%;height:auto}
+  .pix-code{width:100%;background:var(--bg2);border:1px dashed var(--line);border-radius:11px;color:var(--muted);
+    padding:11px;font-size:11px;word-break:break-all;font-family:ui-monospace,Menlo,monospace;max-height:70px;overflow:auto}
+
+  /* list items */
+  .li{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:12px;margin-bottom:9px}
+  .li .av{width:42px;height:42px;flex:0 0 auto;border-radius:11px;background:var(--card2);display:grid;place-items:center;
+    font-size:16px;font-weight:900;color:var(--gold)}
+  .li .info{flex:1;min-width:0}
+  .li .info b{font-size:14.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .li .info span{font-size:11.5px;color:var(--muted)}
+  .li .go{color:var(--muted2);font-size:20px}
+
+  /* stat tiles */
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px;text-align:center}
+  .tile .k{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:800}
+  .tile .v{font-size:21px;font-weight:900;margin-top:3px}
+
+  /* schedule */
+  .grade{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px}
+  table.grade-t{border-collapse:collapse;width:100%;min-width:440px}
+  table.grade-t th,table.grade-t td{border:1px solid var(--line);padding:7px 4px;text-align:center;font-size:11px}
+  table.grade-t th{background:var(--card2);color:var(--gold);font-weight:800;font-size:12px}
+  table.grade-t td.time{background:var(--card2);color:var(--text);font-weight:800;white-space:nowrap}
+  .cl{display:inline-block;padding:3px 6px;border-radius:6px;font-weight:800;font-size:10px;color:#12100a}
+  .cl-adulto{background:var(--gold)} .cl-infantil{background:var(--info)} .cl-feminino{background:var(--pink)} .cl-fxbranca{background:var(--green)}
+
+  /* profile rows */
+  .prow{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .prow:last-child{border-bottom:none}
+  .prow .k{color:var(--muted)} .prow .v{font-weight:700;text-align:right}
+
+  /* tab bar */
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;
+    background:rgba(12,10,7,.95);backdrop-filter:blur(16px) saturate(150%);
+    border-top:1px solid var(--line);padding:8px 6px calc(8px + var(--safeB))}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;color:var(--muted2);font-size:10.5px;font-weight:700}
+  .tab svg{width:23px;height:23px;fill:currentColor}
+  .tab.active{color:var(--gold)}
+
+  /* modal */
+  .modal-back{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);
+    display:flex;align-items:flex-end;justify-content:center}
+  .modal{background:var(--bg2);border:1px solid var(--line);border-radius:20px 20px 0 0;width:100%;max-width:560px;
+    max-height:92vh;overflow:auto;padding:18px 16px calc(20px + var(--safeB));animation:up .25s ease}
+  @keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+  .modal .mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .modal .mh h3{margin:0;font-size:17px}
+  .modal .mh .x{font-size:26px;color:var(--muted2);padding:0 6px}
+
+  #toast{position:fixed;left:50%;bottom:calc(84px + var(--safeB));transform:translate(-50%,20px);z-index:90;
+    background:var(--card2);border:1px solid var(--line);color:var(--text);padding:12px 18px;border-radius:12px;
+    font-size:13.5px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.25s;max-width:88vw;text-align:center}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .empty{color:var(--muted2);font-size:13.5px;text-align:center;padding:30px 12px;line-height:1.6}
+  .note{font-size:12px;color:var(--muted2);line-height:1.55;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .foot{text-align:center;color:var(--muted2);font-size:10.5px;letter-spacing:2px;margin:16px 0 4px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="hazard"></div>
+<header id="topbar" class="topbar hidden"></header>
+<main id="app"></main>
+<nav id="tabbar" class="tabbar hidden"></nav>
+<div id="modal" class="modal-back hidden"></div>
+<div id="toast"></div>
+
+<script src="qrcode.js"></script>
+<script>
+"use strict";
+/* ==========================================================================
+   TCJJ CENTRO — Gestão de alunos e mensalidades (MVP)
+   ========================================================================== */
+
+/* ---------- Constantes do negócio ---------- */
+const MOTTO = "Disciplina · Foco · Honra · Superação";
+const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const DUE_DAY = 5;
+
+const PRICES = { adulto:{ base:140, late:160 }, kids:{ base:100, late:120 } };
+
+const BELTS = {
+  adulto:[
+    {id:"branca", nome:"Branca", cor:"#e9e3d2", max:4, tip:"#111", stripe:"#fff"},
+    {id:"azul",   nome:"Azul",   cor:"#1663c7", max:4, tip:"#0b0b0b", stripe:"#fff"},
+    {id:"roxa",   nome:"Roxa",   cor:"#6a2fb0", max:4, tip:"#0b0b0b", stripe:"#fff"},
+    {id:"marrom", nome:"Marrom", cor:"#5a3a24", max:4, tip:"#0b0b0b", stripe:"#fff"},
+    {id:"preta",  nome:"Preta",  cor:"#161616", max:6, tip:"#c62828", stripe:"#fff"},
+  ],
+  kids:[
+    {id:"branca",  nome:"Branca",  cor:"#e9e3d2", max:4, tip:"#111", stripe:"#fff"},
+    {id:"cinza",   nome:"Cinza",   cor:"#9a9a9a", max:4, tip:"#0b0b0b", stripe:"#fff"},
+    {id:"amarela", nome:"Amarela", cor:"#f4c81e", max:4, tip:"#0b0b0b", stripe:"#fff"},
+    {id:"laranja", nome:"Laranja", cor:"#f08a1d", max:4, tip:"#0b0b0b", stripe:"#fff"},
+    {id:"verde",   nome:"Verde",   cor:"#2e9e4f", max:4, tip:"#0b0b0b", stripe:"#fff"},
+  ]
+};
+
+/* Grade de horários (da unidade) */
+const GRADE = {
+  times:["8:00","9:30","12:00","15:00","18:00","19:00","20:00"],
+  days:["SEG","TER","QUA","QUI","SEX"],
+  cells:{
+    "8:00":{SEG:"ADULTO",QUA:"ADULTO",SEX:"ADULTO"},
+    "9:30":{SEG:"INFANTIL",SEX:"INFANTIL"},
+    "12:00":{TER:"ADULTO",QUI:"ADULTO"},
+    "15:00":{TER:"ADULTO",QUI:"ADULTO"},
+    "18:00":{SEG:"INFANTIL",QUI:"INFANTIL",SEX:"FEMININO"},
+    "19:00":{SEG:"INFANTIL",TER:"FEMININO",QUA:"FEMININO",QUI:"INFANTIL"},
+    "20:00":{SEG:"ADULTO",TER:"ADULTO",QUA:"ADULTO",QUI:"ADULTO",SEX:"FXBRANCA"},
+  }
+};
+
+/* ---------- Storage ---------- */
+const DB = {
+  get(k,def){ try{ const v=localStorage.getItem("tcjj."+k); return v==null?def:JSON.parse(v);}catch(e){return def;} },
+  set(k,v){ try{ localStorage.setItem("tcjj."+k, JSON.stringify(v)); }catch(e){} }
+};
+let admins   = DB.get("admins", []);
+let students = DB.get("students", []);
+let payments = DB.get("payments", []);
+let settings = Object.assign({
+  pixKey:"", pixName:"Tuté Costa Jiu Jitsu", pixCity:"Rio Grande", academyWhats:"",
+  adminCode:"TCJJ2025",
+  reminderTpl:"Olá {nome}! 🥋 Lembrete da sua mensalidade da TCJJ Centro ({mes}). Valor: R$ {valor}. Pague até o dia 05 pra garantir o valor promocional. Qualquer dúvida estamos à disposição. OSS! 🦍"
+}, DB.get("settings",{}));
+let session  = DB.get("session", null);
+
+const save = {
+  admins:()=>DB.set("admins",admins), students:()=>DB.set("students",students),
+  payments:()=>DB.set("payments",payments), settings:()=>DB.set("settings",settings),
+  session:()=>DB.set("session",session)
+};
+
+/* ---------- UI state ---------- */
+const ui = { authMode:"aluno", authTab:"entrar", stab:"mensalidade", atab:"alunos", detail:null, search:"" };
+let form = null; // formulário de perfil em edição
+
+/* ---------- Utils ---------- */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
+const pad=(n)=>String(n).padStart(2,"0");
+const esc=(s)=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const digits=(s)=>String(s||"").replace(/\D/g,"");
+const uid=()=>"u"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const money=(v)=>"R$ "+Number(v||0).toFixed(2).replace(".",",");
+const num=(v)=>{const n=parseFloat(String(v==null?"":v).replace(",",".")); return isNaN(n)?0:n;};
+const hash=(pw)=>{let h=5381;const s="tcjj•"+pw;for(let i=0;i<s.length;i++){h=((h<<5)+h)^s.charCodeAt(i);h|=0;}return (h>>>0).toString(16);};
+const ymKey=(d)=>d.getFullYear()+"-"+pad(d.getMonth()+1);
+const ymLabel=(ref)=>{const [y,m]=ref.split("-");return MESES[+m-1]+"/"+y;};
+const norm=(s)=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase();
+function to55(n){ let d=digits(n); if(d && d.length<=11 && !d.startsWith("55")) d="55"+d; return d; }
+function waLink(number,text){ return "https://wa.me/"+to55(number)+"?text="+encodeURIComponent(text); }
+function initials(name){ const p=String(name||"").trim().split(/\s+/); return ((p[0]||"")[0]||"")+((p[1]||"")[0]||""); }
+
+/* ---------- Status de pagamento ---------- */
+function isPaid(studentId, ref){ return payments.some(p=>p.studentId===studentId && p.ref===ref && p.status==="pago"); }
+
+function statusOf(student, today){
+  today = today || new Date();
+  const ref = ymKey(today);
+  const day = today.getDate();
+  const cat = student.category || "adulto";
+  const p = PRICES[cat] || PRICES.adulto;
+  if(isPaid(student.id, ref)){
+    // já pago — verifica próxima mensalidade (aviso 5 dias antes)
+    const nextDue = new Date(today.getFullYear(), today.getMonth()+1, DUE_DAY);
+    const diff = Math.ceil((nextDue - today)/86400000);
+    if(diff<=5 && diff>=0) return {state:"em_dia", window:"proximo", dias:diff, price:p.base, ref, cat, nextRef:ymKey(nextDue)};
+    return {state:"em_dia", window:"ok", price:p.base, ref, cat};
+  }
+  if(day<=DUE_DAY){
+    const dias = DUE_DAY-day;
+    return {state:"a_vencer", window: dias===0?"hoje":"antes", dias, price:p.base, ref, cat};
+  }
+  const atraso = day-DUE_DAY;
+  return {state:"vencido", window: atraso===1?"ontem":"vencido", atraso, price:p.late, ref, cat};
+}
+
+function statusPill(st){
+  if(st.state==="em_dia") return '<span class="pill pill-good">✓ Em dia</span>';
+  if(st.state==="a_vencer") return '<span class="pill pill-warn">'+(st.window==="hoje"?"Vence hoje":"A vencer")+'</span>';
+  return '<span class="pill pill-danger">Vencido '+st.atraso+'d</span>';
+}
+
+/* ---------- PIX (BR Code EMV) ---------- */
+const crc16=(s)=>{let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++){c=(c&0x8000)?((c<<1)^0x1021):(c<<1);c&=0xFFFF;}}return c.toString(16).toUpperCase().padStart(4,"0");};
+const emv=(id,v)=>id+String(v.length).padStart(2,"0")+v;
+function pixPayload({key,name,city,amount,txid}){
+  name=norm(name).slice(0,25); city=norm(city).slice(0,15);
+  const mai=emv("26", emv("00","br.gov.bcb.pix")+emv("01",key));
+  let p=emv("00","01")+emv("01","11")+mai+emv("52","0000")+emv("53","986");
+  if(amount) p+=emv("54", Number(amount).toFixed(2));
+  p+=emv("58","BR")+emv("59",name)+emv("60",city);
+  p+=emv("62", emv("05", txid?norm(txid).replace(/[^A-Z0-9]/g,"").slice(0,25):"***"));
+  p+="6304"; return p+crc16(p);
+}
+function qrDataURL(text){
+  try{ const qr=qrcode(0,"M"); qr.addData(text); qr.make(); return qr.createDataURL(6,2); }
+  catch(e){ try{ const qr=qrcode(0,"L"); qr.addData(text); qr.make(); return qr.createDataURL(5,2);}catch(e2){ return null; } }
+}
+
+/* ==========================================================================
+   AUTH
+   ========================================================================== */
+function toTop(){ window.scrollTo(0,0); }
+function setSession(role,id){ session={role,id,ts:Date.now()}; save.session(); render(); toTop(); }
+function logout(){ session=null; save.session(); ui.stab="mensalidade"; ui.atab="alunos"; ui.detail=null; render(); toTop(); }
+function currentUser(){
+  if(!session) return null;
+  return (session.role==="admin"?admins:students).find(u=>u.id===session.id)||null;
+}
+
+/* ==========================================================================
+   RENDER root
+   ========================================================================== */
+function render(){
+  const u=currentUser();
+  if(!session || !u){ session=null; renderAuth(); return; }
+  if(session.role==="admin") renderAdmin(u); else renderStudent(u);
+}
+
+function renderTopbar(title, sub){
+  const tb=$("#topbar");
+  tb.classList.remove("hidden");
+  tb.innerHTML=`
+    <img class="logo" src="icon-192.png" alt="TCJJ">
+    <div class="tt"><h1>${title}</h1><p>${esc(sub)}</p></div>
+    <button class="icon-btn" id="logoutBtn" title="Sair">
+      <svg viewBox="0 0 24 24"><path d="M16 17v-3H9v-4h7V7l5 5-5 5zM14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z"/></svg>
+    </button>`;
+  $("#logoutBtn").addEventListener("click",()=>{ if(confirm("Deseja sair da conta?")) logout(); });
+}
+function renderTabbar(role){
+  const tb=$("#tabbar"); tb.classList.remove("hidden");
+  const tabs = role==="admin"
+    ? [["alunos","Alunos",'<path d="M16 11a3 3 0 100-6 3 3 0 000 6zm-8 0a3 3 0 100-6 3 3 0 000 6zm0 2c-2.7 0-8 1.3-8 4v3h9v-3c0-1 .4-1.9 1-2.6-.6-.3-1.4-.4-2-.4zm8 0c-.3 0-.6 0-1 .1 1.3.9 2 2.1 2 2.9v3h7v-3c0-2.7-5.3-4-8-4z"/>'],
+        ["cobrancas","Cobranças",'<path d="M12 22a2 2 0 002-2h-4a2 2 0 002 2zm6-6v-5c0-3.1-1.6-5.6-4.5-6.3V4a1.5 1.5 0 00-3 0v.7C7.6 5.4 6 7.9 6 11v5l-2 2v1h16v-1l-2-2z"/>'],
+        ["config","Config",'<path d="M19.4 13a7.8 7.8 0 000-2l2-1.6-2-3.4-2.4 1a7.6 7.6 0 00-1.7-1L14 3h-4l-.3 2.9a7.6 7.6 0 00-1.7 1l-2.4-1-2 3.4L3.6 11a7.8 7.8 0 000 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.7 1.7 1L10 21h4l.3-2.9c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.6zM12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z"/>']]
+    : [["mensalidade","Mensalidade",'<path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4H4V6h16v2zm0 4H4v-2h16v2z"/>'],
+        ["horarios","Horários",'<path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 11H7v-2h4V6h2v7z"/>'],
+        ["perfil","Perfil",'<path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-9 2-9 5v3h18v-3c0-3-5-5-9-5z"/>']];
+  tb.style.gridTemplateColumns=`repeat(${tabs.length},1fr)`;
+  const active = role==="admin"?ui.atab:ui.stab;
+  tb.innerHTML = tabs.map(([id,lbl,svg])=>`
+    <button class="tab ${active===id?"active":""}" data-tab="${id}">
+      <svg viewBox="0 0 24 24">${svg}</svg>${lbl}</button>`).join("");
+  $$("#tabbar .tab").forEach(b=>b.addEventListener("click",()=>{
+    if(role==="admin"){ ui.atab=b.dataset.tab; ui.detail=null; } else ui.stab=b.dataset.tab;
+    render(); toTop();
+  }));
+}
+
+/* ==========================================================================
+   AUTH SCREEN
+   ========================================================================== */
+function renderAuth(){
+  $("#topbar").classList.add("hidden"); $("#tabbar").classList.add("hidden");
+  const app=$("#app");
+  const body = ui.authMode==="aluno" ? authAluno() : authAdmin();
+  app.innerHTML=`
+    <div class="view">
+      <div class="hero">
+        <img src="icon-192.png" alt="TCJJ Centro">
+        <h1>TCJJ <b>CENTRO</b></h1>
+        <div class="motto">${esc(MOTTO)}</div>
+        <div class="oss">🦍 OSS! 🦍</div>
+      </div>
+      <div class="seg" style="margin:8px 0 14px">
+        <button data-am="aluno" class="${ui.authMode==="aluno"?"active":""}">Sou Aluno</button>
+        <button data-am="admin" class="${ui.authMode==="admin"?"active":""}">Sou Admin</button>
+      </div>
+      <div id="authBody">${body}</div>
+      <div class="foot">Respeito no tatame, força na missão</div>
+    </div>`;
+  $$("[data-am]").forEach(b=>b.addEventListener("click",()=>{ ui.authMode=b.dataset.am; ui.authTab="entrar"; render(); }));
+  bindAuth();
+}
+
+function authAluno(){
+  const t=ui.authTab;
+  return `
+    <div class="seg sub" style="margin-bottom:14px">
+      <button data-at="entrar" class="${t==="entrar"?"active":""}">Entrar</button>
+      <button data-at="criar" class="${t==="criar"?"active":""}">Criar conta</button>
+    </div>
+    ${ t==="entrar" ? `
+      <div class="field-mb"><label class="fld">WhatsApp (com DDD)</label>
+        <input class="inp" id="loginWa" inputmode="tel" placeholder="53 99999-9999"></div>
+      <div class="field-mb"><label class="fld">Senha</label>
+        <input class="inp" id="loginPw" type="password" placeholder="••••••"></div>
+      <button class="btn btn-gold" id="btnLoginAluno">Entrar</button>
+    ` : authRegForm() }`;
+}
+
+function authRegForm(){
+  if(!form) form = newForm("adulto");
+  return `
+    <div class="card">
+      <div class="field-mb"><label class="fld">Nome completo</label>
+        <input class="inp" id="regNome" placeholder="Seu nome" value="${esc(form.nome||"")}"></div>
+      <div class="field-mb"><label class="fld">WhatsApp (com DDD) — será seu login</label>
+        <input class="inp" id="regWa" inputmode="tel" placeholder="53 99999-9999" value="${esc(form.whatsapp||"")}"></div>
+      <div class="field-mb"><label class="fld">Crie uma senha</label>
+        <input class="inp" id="regPw" type="password" placeholder="••••••" value="${esc(form.pw||"")}"></div>
+    </div>
+    <div id="profFields">${profileFields()}</div>
+    <button class="btn btn-gold" id="btnRegAluno" style="margin-top:4px">Cadastrar e entrar</button>`;
+}
+
+function newForm(cat){
+  return { nome:"", whatsapp:"", pw:"", category:cat||"adulto", militar:false,
+    faixa:"branca", graus:0, idade:"", peso:"",
+    inicioMes:new Date().getMonth()+1, inicioAno:new Date().getFullYear(),
+    gradMes:new Date().getMonth()+1, gradAno:new Date().getFullYear() };
+}
+
+function beltBar(cat,faixa,graus,cls){
+  const list=BELTS[cat]||BELTS.adulto;
+  const b=list.find(x=>x.id===faixa)||list[0];
+  let stripes=""; for(let i=0;i<(graus||0);i++) stripes+=`<i style="background:${b.stripe}"></i>`;
+  return `<div class="belt ${cls||""}">
+    <div class="belt-main" style="background:${b.cor}"></div>
+    <div class="belt-tip" style="background:${b.tip}">${stripes}</div>
+  </div>`;
+}
+
+function profileFields(){
+  const f=form; const list=BELTS[f.category]||BELTS.adulto;
+  const belt=list.find(x=>x.id===f.faixa)||list[0];
+  const maxG=belt.max;
+  const p=PRICES[f.category];
+  const mesOpts=(sel)=>MESES.map((m,i)=>`<option value="${i+1}" ${+sel===i+1?"selected":""}>${m}</option>`).join("");
+  return `
+  <div class="card">
+    <label class="fld">Categoria</label>
+    <div class="seg" style="margin-bottom:14px">
+      <button data-cat="adulto" class="${f.category==="adulto"?"active":""}">Adulto</button>
+      <button data-cat="kids" class="${f.category==="kids"?"active":""}">Kids</button>
+    </div>
+    <p class="note" style="margin-bottom:14px">Mensalidade ${f.category==="kids"?"Kids":"Adulto"}: <b style="color:var(--gold)">${money(p.base)}</b> até dia 05 · ${money(p.late)} após.</p>
+
+    <label class="fld">É militar?</label>
+    <div class="seg" style="margin-bottom:14px">
+      <button data-mil="0" class="${!f.militar?"active":""}">Não</button>
+      <button data-mil="1" class="${f.militar?"active":""}">Sim</button>
+    </div>
+
+    <label class="fld">Faixa</label>
+    <div class="chips" style="margin-bottom:14px">
+      ${list.map(b=>`<button class="chip ${f.faixa===b.id?"active":""}" data-belt="${b.id}">
+        <span class="dotc" style="background:${b.cor}"></span>${b.nome}</button>`).join("")}
+    </div>
+
+    <label class="fld">Graus na faixa (0 a ${maxG})</label>
+    <div class="stepper" style="margin-bottom:12px">
+      <button data-g="-1">−</button><span class="val">${f.graus}</span><button data-g="1">+</button>
+    </div>
+    <div style="margin-bottom:6px">${beltBar(f.category,f.faixa,f.graus,"big")}</div>
+  </div>
+
+  <div class="card">
+    <div class="grid2 field-mb">
+      <div><label class="fld">Idade</label><input class="inp" id="fIdade" inputmode="numeric" placeholder="30" value="${esc(f.idade)}"></div>
+      <div><label class="fld">Peso (kg)</label><input class="inp" id="fPeso" inputmode="decimal" placeholder="80" value="${esc(f.peso)}"></div>
+    </div>
+    <label class="fld">Início na academia</label>
+    <div class="grid2 field-mb">
+      <select class="inp" id="fInicioMes">${mesOpts(f.inicioMes)}</select>
+      <input class="inp" id="fInicioAno" inputmode="numeric" placeholder="Ano" value="${esc(f.inicioAno)}">
+    </div>
+    <label class="fld">Última graduação de faixa</label>
+    <div class="grid2">
+      <select class="inp" id="fGradMes">${mesOpts(f.gradMes)}</select>
+      <input class="inp" id="fGradAno" inputmode="numeric" placeholder="Ano" value="${esc(f.gradAno)}">
+    </div>
+  </div>`;
+}
+
+function bindProfileFields(container){
+  // texto/selects → salva em form sem re-render
+  const set=(id,key,isNum)=>{ const el=$("#"+id,container); if(el) el.addEventListener("input",()=>{ form[key]= isNum?el.value:el.value; }); };
+  set("regNome","nome"); set("regWa","whatsapp"); set("regPw","pw");
+  set("fIdade","idade"); set("fPeso","peso");
+  ["fInicioAno","fGradAno"].forEach(id=>{const el=$("#"+id,container); if(el) el.addEventListener("input",()=>form[id==="fInicioAno"?"inicioAno":"gradAno"]=el.value);});
+  ["fInicioMes","fGradMes"].forEach(id=>{const el=$("#"+id,container); if(el) el.addEventListener("change",()=>form[id==="fInicioMes"?"inicioMes":"gradMes"]=+el.value);});
+  const rerender=()=>{ const pf=$("#profFields",container)||$("#profFields"); if(pf){ pf.innerHTML=profileFields(); bindProfileFields(container);} };
+  $$("[data-cat]",container).forEach(b=>b.addEventListener("click",()=>{
+    form.category=b.dataset.cat; const list=BELTS[form.category];
+    if(!list.find(x=>x.id===form.faixa)) form.faixa=list[0].id;
+    const mx=(list.find(x=>x.id===form.faixa)||list[0]).max; if(form.graus>mx) form.graus=mx;
+    // preserva textos digitados
+    grabTexts(container); rerender();
+  }));
+  $$("[data-mil]",container).forEach(b=>b.addEventListener("click",()=>{ form.militar=b.dataset.mil==="1"; grabTexts(container); rerender(); }));
+  $$("[data-belt]",container).forEach(b=>b.addEventListener("click",()=>{
+    form.faixa=b.dataset.belt; const mx=(BELTS[form.category].find(x=>x.id===form.faixa)).max; if(form.graus>mx) form.graus=mx;
+    grabTexts(container); rerender();
+  }));
+  $$("[data-g]",container).forEach(b=>b.addEventListener("click",()=>{
+    const mx=(BELTS[form.category].find(x=>x.id===form.faixa)||BELTS[form.category][0]).max;
+    form.graus=Math.max(0,Math.min(mx, form.graus + (+b.dataset.g))); grabTexts(container); rerender();
+  }));
+}
+function grabTexts(container){
+  const g=(id)=>{const el=$("#"+id,container); return el?el.value:undefined;};
+  const map={regNome:"nome",regWa:"whatsapp",regPw:"pw",fIdade:"idade",fPeso:"peso",fInicioAno:"inicioAno",fGradAno:"gradAno"};
+  for(const id in map){ const v=g(id); if(v!==undefined) form[map[id]]=v; }
+}
+
+function authAdmin(){
+  const hasAdmins=admins.length>0;
+  return `
+    <div class="field-mb"><label class="fld">WhatsApp do admin</label>
+      <input class="inp" id="admWa" inputmode="tel" placeholder="53 99999-9999"></div>
+    <div class="field-mb"><label class="fld">Senha</label>
+      <input class="inp" id="admPw" type="password" placeholder="••••••"></div>
+    <button class="btn btn-gold" id="btnLoginAdmin">Entrar como admin</button>
+    <button class="btn btn-ghost" id="btnShowCreateAdmin" style="margin-top:10px">Criar administrador</button>
+    <div id="createAdminBox" class="hidden" style="margin-top:12px">
+      <div class="card">
+        <div class="field-mb"><label class="fld">Nome</label><input class="inp" id="caNome" placeholder="Nome do admin"></div>
+        <div class="field-mb"><label class="fld">WhatsApp</label><input class="inp" id="caWa" inputmode="tel" placeholder="53 99999-9999"></div>
+        <div class="field-mb"><label class="fld">Senha</label><input class="inp" id="caPw" type="password" placeholder="••••••"></div>
+        <div class="field-mb"><label class="fld">Código de administrador</label><input class="inp" id="caCode" placeholder="código"></div>
+        <button class="btn btn-gold" id="btnCreateAdmin">Criar admin</button>
+        ${!hasAdmins?'<p class="note" style="margin-top:10px">Primeiro acesso: use o código padrão <b>'+esc(settings.adminCode)+'</b> (você pode alterá-lo depois em Config).</p>':''}
+      </div>
+    </div>`;
+}
+
+function bindAuth(){
+  $$("[data-at]").forEach(b=>b.addEventListener("click",()=>{ ui.authTab=b.dataset.at; if(b.dataset.at==="criar"&&!form) form=newForm("adulto"); render(); }));
+
+  if(ui.authMode==="aluno" && ui.authTab==="entrar"){
+    $("#btnLoginAluno")?.addEventListener("click",()=>{
+      const wa=digits($("#loginWa").value), pw=$("#loginPw").value;
+      if(!wa||!pw) return toast("Preencha WhatsApp e senha.");
+      const u=students.find(s=>digits(s.whatsapp)===wa);
+      if(!u || u.pass!==hash(pw)) return toast("WhatsApp ou senha inválidos.");
+      setSession("aluno",u.id);
+    });
+  }
+  if(ui.authMode==="aluno" && ui.authTab==="criar"){
+    const box=$("#profFields")?.parentElement || document;
+    bindProfileFields(document);
+    $("#btnRegAluno")?.addEventListener("click",()=>{
+      grabTexts(document);
+      const nome=(form.nome||"").trim(), wa=digits(form.whatsapp), pw=form.pw||"";
+      if(!nome) return toast("Informe seu nome.");
+      if(wa.length<10) return toast("WhatsApp inválido (use DDD).");
+      if(pw.length<4) return toast("Senha muito curta (mín. 4).");
+      if(students.some(s=>digits(s.whatsapp)===wa)) return toast("Já existe conta com esse WhatsApp.");
+      const st={ id:uid(), name:nome, whatsapp:form.whatsapp, pass:hash(pw),
+        category:form.category, militar:!!form.militar, faixa:form.faixa, graus:form.graus,
+        idade:num(form.idade), peso:num(form.peso),
+        inicioMes:+form.inicioMes, inicioAno:+form.inicioAno, gradMes:+form.gradMes, gradAno:+form.gradAno,
+        createdAt:Date.now() };
+      students.push(st); save.students(); form=null;
+      toast("Cadastro concluído! Bem-vindo 🥋");
+      setSession("aluno",st.id);
+    });
+  }
+  if(ui.authMode==="admin"){
+    $("#btnLoginAdmin")?.addEventListener("click",()=>{
+      const wa=digits($("#admWa").value), pw=$("#admPw").value;
+      const u=admins.find(a=>digits(a.whatsapp)===wa);
+      if(!u || u.pass!==hash(pw)) return toast("Admin: WhatsApp ou senha inválidos.");
+      setSession("admin",u.id);
+    });
+    $("#btnShowCreateAdmin")?.addEventListener("click",()=>$("#createAdminBox").classList.toggle("hidden"));
+    $("#btnCreateAdmin")?.addEventListener("click",()=>{
+      const nome=($("#caNome").value||"").trim(), wa=digits($("#caWa").value), pw=$("#caPw").value, code=$("#caCode").value;
+      if(!nome||wa.length<10||pw.length<4) return toast("Preencha nome, WhatsApp e senha (mín. 4).");
+      if(code!==settings.adminCode) return toast("Código de administrador incorreto.");
+      if(admins.some(a=>digits(a.whatsapp)===wa)) return toast("Já existe admin com esse WhatsApp.");
+      const a={id:uid(),name:nome,whatsapp:$("#caWa").value,pass:hash(pw),createdAt:Date.now()};
+      admins.push(a); save.admins(); toast("Administrador criado!");
+      setSession("admin",a.id);
+    });
+  }
+}
+
+/* ==========================================================================
+   ALUNO
+   ========================================================================== */
+function renderStudent(u){
+  renderTopbar(`TCJJ <b>CENTRO</b>`, "Olá, "+u.name.split(" ")[0]);
+  renderTabbar("aluno");
+  const app=$("#app");
+  if(ui.stab==="mensalidade") app.innerHTML=studentMensalidade(u);
+  else if(ui.stab==="horarios") app.innerHTML=`<div class="view"><div class="sec-title">Grade de Horários</div>${gradeHTML()}${gradeLegend()}</div>`;
+  else app.innerHTML=studentPerfil(u);
+
+  if(ui.stab==="mensalidade") bindMensalidade(u);
+  if(ui.stab==="perfil") bindPerfil(u);
+  maybeNotify(u);
+}
+
+function studentMensalidade(u){
+  const st=statusOf(u);
+  let banner, cls, lbl, big, sub;
+  if(st.state==="em_dia"){
+    cls="st-good"; lbl="Mensalidade em dia"; big="✓ Tudo certo";
+    sub = st.window==="proximo" ? `Próxima vence em ${st.dias} dia(s) — ${money(st.price)} até dia 05.` : `Referente a ${ymLabel(st.ref)}.`;
+  }else if(st.state==="a_vencer"){
+    cls="st-warn"; lbl = st.window==="hoje"?"Vence hoje (dia 05)":"A vencer";
+    big=money(st.price); sub = st.window==="hoje"?`Pague hoje e garanta o valor promocional.`:`Vence dia 05 · faltam ${st.dias} dia(s). Após, ${money(PRICES[st.cat].late)}.`;
+  }else{
+    cls="st-danger"; lbl=`Vencido há ${st.atraso} dia(s)`; big=money(st.price); sub=`Valor cheio (após dia 05). Regularize para manter a matrícula.`;
+  }
+  const paidThis=isPaid(u.id, st.ref);
+  const hist=payments.filter(p=>p.studentId===u.id).sort((a,b)=>a.ref<b.ref?1:-1).slice(0,8);
+  return `<div class="view">
+    <div class="status ${cls}">
+      <div class="lbl">${lbl}</div>
+      <div class="big white">${big}</div>
+      <div class="sub white">${sub}</div>
+    </div>
+    ${ !paidThis ? `
+    <div class="card">
+      <h3>Pagar via PIX</h3>
+      <p class="muted" style="font-size:13px;margin:2px 0 0">Mensalidade de <b>${ymLabel(st.ref)}</b> · <b style="color:var(--gold)">${money(st.price)}</b></p>
+      <div id="pixArea">${pixAreaHTML(u, st)}</div>
+    </div>` : `
+    <div class="note">Pagamento de <b>${ymLabel(st.ref)}</b> registrado ✓. Bons treinos! 🥋</div>`}
+
+    <div class="sec-title">Meus pagamentos</div>
+    ${ hist.length ? hist.map(p=>`
+      <div class="li"><div class="av">✓</div>
+        <div class="info"><b>${ymLabel(p.ref)}</b><span>${p.method||"PIX"} · ${money(p.amount)}</span></div>
+        <span class="pill pill-good">Pago</span></div>`).join("")
+      : `<div class="empty">Nenhum pagamento registrado ainda.</div>` }
+
+    <div class="note" style="margin-top:12px">🔔 Ative os lembretes para não perder o vencimento.
+      <button class="btn btn-dark btn-sm" id="btnNotif" style="margin-top:8px">Ativar lembretes</button></div>
+  </div>`;
+}
+
+function pixAreaHTML(u, st){
+  if(!settings.pixKey){
+    return `<div class="note" style="margin-top:12px">A chave PIX ainda não foi configurada pela academia.${settings.academyWhats?` <a href="${waLink(settings.academyWhats,"Olá! Quero pagar a mensalidade da TCJJ Centro.")}" target="_blank">Falar no WhatsApp</a>`:""}</div>`;
+  }
+  const txid = "TCJJ"+st.ref.replace("-","")+u.id.slice(-4);
+  const payload = pixPayload({key:settings.pixKey,name:settings.pixName,city:settings.pixCity,amount:st.price,txid});
+  const durl = qrDataURL(payload);
+  return `
+    <div class="qrbox">${durl?`<img src="${durl}" alt="QR PIX">`:`<div style="color:#111;font-size:12px;padding:20px">QR indisponível — use o código abaixo</div>`}</div>
+    <p class="muted" style="font-size:12px;text-align:center;margin:0 0 6px">Chave: ${esc(settings.pixKey)} · ${esc(settings.pixName)}</p>
+    <div class="pix-code" id="pixCode">${esc(payload)}</div>
+    <button class="btn btn-gold" id="btnCopyPix" style="margin-top:10px">Copiar código PIX (copia e cola)</button>
+    ${settings.academyWhats?`<a class="btn btn-wa" href="${waLink(settings.academyWhats,"Olá! Efetuei o pagamento da mensalidade ("+ymLabel(st.ref)+") da TCJJ Centro via PIX. Segue o comprovante.")}" target="_blank" style="margin-top:9px">Já paguei — avisar no WhatsApp</a>`:""}`;
+}
+
+function bindMensalidade(u){
+  $("#btnCopyPix")?.addEventListener("click",()=>{
+    const code=$("#pixCode")?.textContent||"";
+    copyText(code); toast("Código PIX copiado! 📋");
+  });
+  $("#btnNotif")?.addEventListener("click", askNotifications);
+}
+
+function studentPerfil(u){
+  const st=statusOf(u);
+  const belt=(BELTS[u.category]||BELTS.adulto).find(b=>b.id===u.faixa);
+  const tempoCasa = mesesDesde(u.inicioMes,u.inicioAno);
+  const tempoFaixa = mesesDesde(u.gradMes,u.gradAno);
+  return `<div class="view">
+    <div class="card" style="text-align:center">
+      <div class="av" style="width:64px;height:64px;border-radius:18px;margin:0 auto 10px;font-size:24px">${esc(initials(u.name))||"🦍"}</div>
+      <h3 style="font-size:18px;margin:0">${esc(u.name)}</h3>
+      <p class="muted" style="margin:2px 0 12px;font-size:13px">${u.category==="kids"?"Kids":"Adulto"}${u.militar?" · Militar":""} · ${digits(u.whatsapp).replace(/^55/,"")}</p>
+      ${beltBar(u.category,u.faixa,u.graus,"big")}
+      <p style="margin:10px 0 0;font-weight:800">${belt?belt.nome:""} ${u.graus?("· "+u.graus+"º grau"):""}</p>
+      <div style="margin-top:10px">${statusPill(st)}</div>
+    </div>
+    <div class="card">
+      <div class="prow"><span class="k">Idade</span><span class="v">${u.idade||"—"} anos</span></div>
+      <div class="prow"><span class="k">Peso</span><span class="v">${u.peso?u.peso+" kg":"—"}</span></div>
+      <div class="prow"><span class="k">Início na academia</span><span class="v">${MESES[(u.inicioMes||1)-1]}/${u.inicioAno||"—"}</span></div>
+      <div class="prow"><span class="k">Tempo de casa</span><span class="v">${tempoCasa}</span></div>
+      <div class="prow"><span class="k">Última graduação</span><span class="v">${MESES[(u.gradMes||1)-1]}/${u.gradAno||"—"}</span></div>
+      <div class="prow"><span class="k">Tempo na faixa</span><span class="v">${tempoFaixa}</span></div>
+    </div>
+    <button class="btn btn-dark" id="btnEditPerfil">Editar perfil</button>
+    <button class="btn btn-ghost" id="btnSair" style="margin-top:10px">Sair da conta</button>
+  </div>`;
+}
+function bindPerfil(u){
+  $("#btnSair")?.addEventListener("click",()=>{ if(confirm("Sair da conta?")) logout(); });
+  $("#btnEditPerfil")?.addEventListener("click",()=>openEditProfile(u));
+}
+function mesesDesde(mes,ano){
+  if(!ano) return "—";
+  const now=new Date(); let m=(now.getFullYear()-ano)*12 + (now.getMonth()+1-(mes||1));
+  if(m<0) m=0; const y=Math.floor(m/12), r=m%12;
+  return (y?y+"a ":"")+(r||!y?r+"m":"").trim() || "0m";
+}
+
+function openEditProfile(u){
+  form={ category:u.category, militar:u.militar, faixa:u.faixa, graus:u.graus,
+    idade:u.idade, peso:u.peso, inicioMes:u.inicioMes, inicioAno:u.inicioAno,
+    gradMes:u.gradMes, gradAno:u.gradAno, nome:u.name, whatsapp:u.whatsapp };
+  openModal(`
+    <div class="mh"><h3>Editar perfil</h3><button class="x" data-close>×</button></div>
+    <div id="profFields">${profileFields()}</div>
+    <button class="btn btn-gold" id="btnSaveProfile">Salvar</button>`);
+  bindProfileFields($("#modal"));
+  $("#btnSaveProfile").addEventListener("click",()=>{
+    grabTexts($("#modal"));
+    Object.assign(u,{ category:form.category, militar:!!form.militar, faixa:form.faixa, graus:form.graus,
+      idade:num(form.idade), peso:num(form.peso), inicioMes:+form.inicioMes, inicioAno:+form.inicioAno,
+      gradMes:+form.gradMes, gradAno:+form.gradAno });
+    save.students(); form=null; closeModal(); toast("Perfil atualizado ✓"); render();
+  });
+}
+
+/* ==========================================================================
+   ADMIN
+   ========================================================================== */
+function renderAdmin(u){
+  renderTopbar(`TCJJ <b>ADMIN</b>`, u.name);
+  renderTabbar("admin");
+  const app=$("#app");
+  if(ui.detail){ app.innerHTML=adminStudentDetail(ui.detail); bindStudentDetail(ui.detail); return; }
+  if(ui.atab==="alunos"){ app.innerHTML=adminAlunos(); bindAlunos(); }
+  else if(ui.atab==="cobrancas"){ app.innerHTML=adminCobrancas(); bindCobrancas(); }
+  else { app.innerHTML=adminConfig(); bindConfig(); }
+}
+
+function studentLI(s){
+  const st=statusOf(s);
+  return `<div class="li" data-open="${s.id}">
+    <div class="av">${esc(initials(s.name))||"🦍"}</div>
+    <div class="info">
+      <b>${esc(s.name)}</b>
+      <span>${(BELTS[s.category]||BELTS.adulto).find(b=>b.id===s.faixa)?.nome||""}${s.graus?(" "+s.graus+"º"):""} · ${s.category==="kids"?"Kids":"Adulto"}${s.militar?" · Mil":""}</span>
+    </div>
+    ${statusPill(st)}
+  </div>`;
+}
+
+function adminAlunos(){
+  const q=ui.search.trim().toLowerCase();
+  const list=students.filter(s=>!q || s.name.toLowerCase().includes(q) || digits(s.whatsapp).includes(digits(q)))
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  return `<div class="view">
+    <div class="row" style="margin:10px 0 12px;gap:8px">
+      <input class="inp" id="admSearch" placeholder="Buscar aluno..." value="${esc(ui.search)}" style="flex:1">
+      <button class="btn btn-gold btn-sm" id="btnAddAluno" style="width:auto;padding:0 16px">+ Aluno</button>
+    </div>
+    <p class="muted" style="font-size:12px;margin:0 4px 10px">${students.length} aluno(s) cadastrado(s)</p>
+    ${ list.length ? list.map(studentLI).join("") : `<div class="empty">Nenhum aluno ainda.<br>Os alunos aparecem aqui quando se cadastram, ou toque em <b>+ Aluno</b>.</div>` }
+  </div>`;
+}
+function bindAlunos(){
+  $("#admSearch")?.addEventListener("input",e=>{ ui.search=e.target.value; renderAdmin(currentUser()); const el=$("#admSearch"); if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);} });
+  $$("#app .li[data-open]").forEach(li=>li.addEventListener("click",()=>{ ui.detail=li.dataset.open; render(); toTop(); }));
+  $("#btnAddAluno")?.addEventListener("click",()=>openAddAluno());
+}
+
+function adminStudentDetail(id){
+  const s=students.find(x=>x.id===id); if(!s) { ui.detail=null; return adminAlunos(); }
+  const st=statusOf(s);
+  const belt=(BELTS[s.category]||BELTS.adulto).find(b=>b.id===s.faixa);
+  const hist=payments.filter(p=>p.studentId===s.id).sort((a,b)=>a.ref<b.ref?1:-1);
+  const msg=reminderMsg(s,st);
+  return `<div class="view">
+    <button class="btn btn-ghost btn-sm" id="btnBack" style="width:auto;margin:8px 0 12px">‹ Voltar</button>
+    <div class="card" style="text-align:center">
+      <div class="av" style="width:60px;height:60px;border-radius:16px;margin:0 auto 8px;font-size:22px">${esc(initials(s.name))||"🦍"}</div>
+      <h3 style="margin:0;font-size:18px">${esc(s.name)}</h3>
+      <p class="muted" style="margin:2px 0 12px;font-size:13px">${s.category==="kids"?"Kids":"Adulto"}${s.militar?" · Militar":""} · ${digits(s.whatsapp).replace(/^55/,"")}</p>
+      ${beltBar(s.category,s.faixa,s.graus,"big")}
+      <p style="margin:9px 0 0;font-weight:800">${belt?belt.nome:""} ${s.graus?("· "+s.graus+"º grau"):""}</p>
+      <div style="margin-top:10px">${statusPill(st)} <span class="pill" style="background:var(--card2);color:var(--muted)">${money(st.price)} · ${ymLabel(st.ref)}</span></div>
+    </div>
+
+    <div class="grid2">
+      <button class="btn btn-gold" id="btnRegPay">Registrar pagamento</button>
+      <a class="btn btn-wa" href="${waLink(s.whatsapp,msg)}" target="_blank">Cobrar no WhatsApp</a>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="prow"><span class="k">Idade</span><span class="v">${s.idade||"—"} anos</span></div>
+      <div class="prow"><span class="k">Peso</span><span class="v">${s.peso?s.peso+" kg":"—"}</span></div>
+      <div class="prow"><span class="k">Início</span><span class="v">${MESES[(s.inicioMes||1)-1]}/${s.inicioAno||"—"}</span></div>
+      <div class="prow"><span class="k">Última graduação</span><span class="v">${MESES[(s.gradMes||1)-1]}/${s.gradAno||"—"}</span></div>
+    </div>
+
+    <div class="sec-title">Histórico de pagamentos</div>
+    ${ hist.length ? hist.map(p=>`<div class="li"><div class="av">✓</div>
+      <div class="info"><b>${ymLabel(p.ref)}</b><span>${p.method||"PIX"} · ${money(p.amount)}</span></div>
+      <button class="btn btn-danger btn-sm" data-delpay="${p.id}">Remover</button></div>`).join("")
+      : `<div class="empty">Nenhum pagamento registrado.</div>` }
+
+    <button class="btn btn-dark" id="btnEditAluno" style="margin-top:12px">Editar aluno</button>
+    <button class="btn btn-danger" id="btnDelAluno" style="margin-top:10px">Excluir aluno</button>
+  </div>`;
+}
+function bindStudentDetail(id){
+  const s=students.find(x=>x.id===id);
+  $("#btnBack").addEventListener("click",()=>{ ui.detail=null; render(); toTop(); });
+  $("#btnRegPay").addEventListener("click",()=>openRegPay(s));
+  $("#btnEditAluno").addEventListener("click",()=>openEditProfile(s));
+  $("#btnDelAluno").addEventListener("click",()=>{
+    if(!confirm("Excluir "+s.name+" e seus pagamentos?")) return;
+    students=students.filter(x=>x.id!==id); payments=payments.filter(p=>p.studentId!==id);
+    save.students(); save.payments(); ui.detail=null; toast("Aluno excluído."); render();
+  });
+  $$("[data-delpay]").forEach(b=>b.addEventListener("click",()=>{
+    payments=payments.filter(p=>p.id!==b.dataset.delpay); save.payments(); toast("Pagamento removido."); render();
+  }));
+}
+
+function openRegPay(s){
+  const st=statusOf(s);
+  const mesOpts=MESES.map((m,i)=>`<option value="${i+1}" ${i===new Date().getMonth()?"selected":""}>${m}</option>`).join("");
+  const anos=[]; const Y=new Date().getFullYear(); for(let y=Y+1;y>=Y-2;y--) anos.push(y);
+  openModal(`
+    <div class="mh"><h3>Registrar pagamento</h3><button class="x" data-close>×</button></div>
+    <p class="muted" style="font-size:13px;margin:0 0 12px">${esc(s.name)}</p>
+    <label class="fld">Mês de referência</label>
+    <div class="grid2 field-mb">
+      <select class="inp" id="pMes">${mesOpts}</select>
+      <select class="inp" id="pAno">${anos.map(y=>`<option value="${y}" ${y===Y?"selected":""}>${y}</option>`).join("")}</select>
+    </div>
+    <label class="fld">Valor</label>
+    <input class="inp field-mb" id="pVal" inputmode="decimal" value="${st.price.toFixed(2).replace('.',',')}">
+    <label class="fld">Forma de pagamento</label>
+    <div class="seg field-mb" id="pMet">
+      <button data-m="PIX" class="active">PIX</button><button data-m="Dinheiro">Dinheiro</button><button data-m="Cartão">Cartão</button>
+    </div>
+    <button class="btn btn-gold" id="btnConfirmPay">Confirmar pagamento</button>`);
+  let method="PIX";
+  $$("#pMet button").forEach(b=>b.addEventListener("click",()=>{ method=b.dataset.m; $$("#pMet button").forEach(x=>x.classList.toggle("active",x===b)); }));
+  $("#btnConfirmPay").addEventListener("click",()=>{
+    const ref=$("#pAno").value+"-"+pad(+$("#pMes").value);
+    const amount=num($("#pVal").value);
+    payments=payments.filter(p=>!(p.studentId===s.id && p.ref===ref)); // substitui se já houver
+    payments.push({id:uid(),studentId:s.id,ref,amount,status:"pago",method,paidAt:Date.now(),by:session.id});
+    save.payments(); closeModal(); toast("Pagamento registrado ✓"); render();
+  });
+}
+
+function openAddAluno(){
+  form=newForm("adulto");
+  openModal(`
+    <div class="mh"><h3>Novo aluno</h3><button class="x" data-close>×</button></div>
+    <div class="card">
+      <div class="field-mb"><label class="fld">Nome completo</label><input class="inp" id="regNome" placeholder="Nome"></div>
+      <div class="field-mb"><label class="fld">WhatsApp (login do aluno)</label><input class="inp" id="regWa" inputmode="tel" placeholder="53 99999-9999"></div>
+      <div class="field-mb"><label class="fld">Senha inicial</label><input class="inp" id="regPw" type="password" placeholder="••••••"></div>
+    </div>
+    <div id="profFields">${profileFields()}</div>
+    <button class="btn btn-gold" id="btnSaveAluno">Cadastrar aluno</button>`);
+  bindProfileFields($("#modal"));
+  $("#btnSaveAluno").addEventListener("click",()=>{
+    grabTexts($("#modal"));
+    const nome=(form.nome||"").trim(), wa=digits(form.whatsapp), pw=form.pw||"tcjj123";
+    if(!nome||wa.length<10) return toast("Informe nome e WhatsApp válidos.");
+    if(students.some(x=>digits(x.whatsapp)===wa)) return toast("Já existe aluno com esse WhatsApp.");
+    students.push({ id:uid(), name:nome, whatsapp:form.whatsapp, pass:hash(pw),
+      category:form.category, militar:!!form.militar, faixa:form.faixa, graus:form.graus,
+      idade:num(form.idade), peso:num(form.peso), inicioMes:+form.inicioMes, inicioAno:+form.inicioAno,
+      gradMes:+form.gradMes, gradAno:+form.gradAno, createdAt:Date.now() });
+    save.students(); form=null; closeModal(); toast("Aluno cadastrado ✓ (senha: "+ (pw==="tcjj123"?"tcjj123":"a definida") +")"); render();
+  });
+}
+
+/* ---------- Cobranças ---------- */
+function reminderMsg(s, st){
+  return settings.reminderTpl
+    .replace(/{nome}/g, s.name.split(" ")[0])
+    .replace(/{valor}/g, st.price.toFixed(2).replace(".",","))
+    .replace(/{mes}/g, ymLabel(st.ref));
+}
+function adminCobrancas(){
+  const rows=students.map(s=>({s,st:statusOf(s)}));
+  const rank={vencido:0,a_vencer:1,em_dia:2};
+  rows.sort((a,b)=>{ const r=rank[a.st.state]-rank[b.st.state]; if(r) return r;
+    if(a.st.state==="vencido") return b.st.atraso-a.st.atraso;
+    if(a.st.state==="a_vencer") return a.st.dias-b.st.dias; return a.s.name.localeCompare(b.s.name); });
+  const emDia=rows.filter(r=>r.st.state==="em_dia").length;
+  const aVencer=rows.filter(r=>r.st.state==="a_vencer").length;
+  const vencidos=rows.filter(r=>r.st.state==="vencido").length;
+  const ref=ymKey(new Date());
+  const recebido=payments.filter(p=>p.ref===ref&&p.status==="pago").reduce((a,p)=>a+p.amount,0);
+  const previsto=rows.reduce((a,r)=> a + (r.st.state==="em_dia"?0:r.st.price), recebido);
+  const pend=rows.filter(r=>r.st.state!=="em_dia");
+  return `<div class="view">
+    <div class="tiles" style="margin-top:12px">
+      <div class="tile"><div class="k">Alunos</div><div class="v">${students.length}</div></div>
+      <div class="tile"><div class="k">Em dia</div><div class="v" style="color:var(--good)">${emDia}</div></div>
+      <div class="tile"><div class="k">Vencidos</div><div class="v" style="color:var(--danger)">${vencidos}</div></div>
+    </div>
+    <div class="grid2" style="margin-top:9px">
+      <div class="tile"><div class="k">Recebido (${MESES[new Date().getMonth()].slice(0,3)})</div><div class="v" style="color:var(--good)">${money(recebido)}</div></div>
+      <div class="tile"><div class="k">Previsto</div><div class="v" style="color:var(--gold)">${money(previsto)}</div></div>
+    </div>
+
+    <div class="sec-title">A cobrar (${pend.length})</div>
+    ${ pend.length ? pend.map(({s,st})=>`
+      <div class="li">
+        <div class="av">${esc(initials(s.name))||"🦍"}</div>
+        <div class="info"><b>${esc(s.name)}</b><span>${statusPill(st)} · ${money(st.price)}</span></div>
+        <a class="icon-btn" style="background:#25D366;border:none" href="${waLink(s.whatsapp,reminderMsg(s,st))}" target="_blank" title="Cobrar">
+          <svg viewBox="0 0 24 24" style="fill:#04310f"><path d="M20 3.9A10 10 0 003.5 18.6L2 22l3.5-1.4A10 10 0 1020 3.9zM12 20a8 8 0 01-4.1-1.1l-.3-.2-2.4 1 1-2.3-.2-.3A8 8 0 1112 20zm4.4-5.6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 01-1.9-1.2 7.2 7.2 0 01-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3A2.8 2.8 0 006 8.3a4.9 4.9 0 001 2.6 11.2 11.2 0 004.3 3.8c.6.3 1.1.4 1.5.5a3.6 3.6 0 001.6.1c.5-.1 1.4-.6 1.6-1.1a2 2 0 00.1-1.1c0-.1-.2-.2-.4-.3z"/></svg>
+        </a>
+        <button class="btn btn-gold btn-sm" data-pay="${s.id}" style="width:auto">Pgto</button>
+      </div>`).join("")
+      : `<div class="empty">🎉 Todos os alunos estão em dia!</div>` }
+
+    <div class="note" style="margin-top:14px">💡 O botão verde abre o WhatsApp com a mensagem de cobrança pronta. Registre o pagamento no botão <b>Pgto</b> assim que o aluno pagar — isso encerra os lembretes do mês.</div>
+  </div>`;
+}
+function bindCobrancas(){
+  $$("#app [data-pay]").forEach(b=>b.addEventListener("click",(e)=>{ e.stopPropagation();
+    const s=students.find(x=>x.id===b.dataset.pay); if(s) openRegPay(s); }));
+}
+
+/* ---------- Config ---------- */
+function adminConfig(){
+  return `<div class="view">
+    <div class="sec-title" style="margin-top:14px">PIX da academia</div>
+    <div class="card">
+      <div class="field-mb"><label class="fld">Chave PIX (CPF/CNPJ, e-mail, telefone ou aleatória)</label>
+        <input class="inp" id="cfgKey" value="${esc(settings.pixKey)}" placeholder="ex: tutecosta@email.com"></div>
+      <div class="field-mb"><label class="fld">Nome do recebedor</label>
+        <input class="inp" id="cfgName" value="${esc(settings.pixName)}"></div>
+      <div class="grid2 field-mb">
+        <div><label class="fld">Cidade</label><input class="inp" id="cfgCity" value="${esc(settings.pixCity)}"></div>
+        <div><label class="fld">WhatsApp da academia</label><input class="inp" id="cfgWhats" inputmode="tel" value="${esc(settings.academyWhats)}" placeholder="opcional"></div>
+      </div>
+      <button class="btn btn-gold" id="btnSavePix">Salvar PIX</button>
+    </div>
+
+    <div class="sec-title">Mensagem de cobrança</div>
+    <div class="card">
+      <label class="fld">Modelo (use {nome}, {valor}, {mes})</label>
+      <textarea class="inp" id="cfgTpl" rows="4" style="resize:vertical">${esc(settings.reminderTpl)}</textarea>
+      <button class="btn btn-dark" id="btnSaveTpl" style="margin-top:10px">Salvar mensagem</button>
+    </div>
+
+    <div class="sec-title">Administradores</div>
+    <div class="card">
+      ${admins.map(a=>`<div class="prow"><span class="k">${esc(a.name)}</span><span class="v">${digits(a.whatsapp).replace(/^55/,"")}${a.id===session.id?" · você":""}</span></div>`).join("")}
+      <div class="field-mb" style="margin-top:12px"><label class="fld">Código para criar novos admins</label>
+        <input class="inp" id="cfgCode" value="${esc(settings.adminCode)}"></div>
+      <button class="btn btn-dark" id="btnAddAdmin">+ Adicionar administrador</button>
+    </div>
+
+    <div class="sec-title">Sobre</div>
+    <div class="note">Este é um MVP. Os dados ficam salvos <b>neste dispositivo</b> (navegador). Para que alunos que se cadastram no próprio celular apareçam aqui, e para lembretes automáticos com o app fechado, é preciso um servidor (próximo passo).
+      <button class="btn btn-danger btn-sm" id="btnWipe" style="margin-top:12px">Apagar todos os dados</button>
+    </div>
+    <div class="foot">🦍 TCJJ Centro · OSS!</div>
+  </div>`;
+}
+function bindConfig(){
+  $("#btnSavePix").addEventListener("click",()=>{
+    settings.pixKey=$("#cfgKey").value.trim(); settings.pixName=$("#cfgName").value.trim()||"Tuté Costa Jiu Jitsu";
+    settings.pixCity=$("#cfgCity").value.trim()||"Rio Grande"; settings.academyWhats=$("#cfgWhats").value.trim();
+    save.settings(); toast("PIX salvo ✓");
+  });
+  $("#btnSaveTpl").addEventListener("click",()=>{ settings.reminderTpl=$("#cfgTpl").value; save.settings(); toast("Mensagem salva ✓"); });
+  $("#btnAddAdmin").addEventListener("click",()=>{
+    settings.adminCode=$("#cfgCode").value.trim()||settings.adminCode; save.settings();
+    openModal(`
+      <div class="mh"><h3>Novo administrador</h3><button class="x" data-close>×</button></div>
+      <div class="field-mb"><label class="fld">Nome</label><input class="inp" id="naNome" placeholder="Nome"></div>
+      <div class="field-mb"><label class="fld">WhatsApp</label><input class="inp" id="naWa" inputmode="tel" placeholder="53 99999-9999"></div>
+      <div class="field-mb"><label class="fld">Senha</label><input class="inp" id="naPw" type="password" placeholder="••••••"></div>
+      <button class="btn btn-gold" id="btnDoAddAdmin">Criar administrador</button>`);
+    $("#btnDoAddAdmin").addEventListener("click",()=>{
+      const nome=($("#naNome").value||"").trim(), wa=digits($("#naWa").value), pw=$("#naPw").value;
+      if(!nome||wa.length<10||pw.length<4) return toast("Preencha nome, WhatsApp e senha.");
+      if(admins.some(a=>digits(a.whatsapp)===wa)) return toast("Admin já existe.");
+      admins.push({id:uid(),name:nome,whatsapp:$("#naWa").value,pass:hash(pw),createdAt:Date.now()});
+      save.admins(); closeModal(); toast("Administrador adicionado ✓"); render();
+    });
+  });
+  $("#cfgCode").addEventListener("change",()=>{ settings.adminCode=$("#cfgCode").value.trim()||settings.adminCode; save.settings(); });
+  $("#btnWipe").addEventListener("click",()=>{
+    if(!confirm("Apagar TODOS os dados (alunos, pagamentos, admins)? Não dá para desfazer.")) return;
+    if(!confirm("Tem certeza mesmo?")) return;
+    ["admins","students","payments","settings","session"].forEach(k=>localStorage.removeItem("tcjj."+k));
+    location.reload();
+  });
+}
+
+/* ---------- Horários ---------- */
+function gradeHTML(){
+  const head=`<tr><th>Hora</th>${GRADE.days.map(d=>`<th>${d}</th>`).join("")}</tr>`;
+  const rows=GRADE.times.map(t=>{
+    const cells=GRADE.days.map(d=>{
+      const v=GRADE.cells[t] && GRADE.cells[t][d];
+      if(!v) return `<td></td>`;
+      const cls="cl-"+v.toLowerCase();
+      const lbl=v==="FXBRANCA"?"FX BRANCA":v;
+      return `<td><span class="cl ${cls}">${lbl}</span></td>`;
+    }).join("");
+    return `<tr><td class="time">${t}</td>${cells}</tr>`;
+  }).join("");
+  return `<div class="grade"><table class="grade-t">${head}${rows}</table></div>`;
+}
+function gradeLegend(){
+  return `<div class="chips" style="margin-top:12px">
+    <span class="chip"><span class="dotc" style="background:var(--gold)"></span>Adulto</span>
+    <span class="chip"><span class="dotc" style="background:var(--info)"></span>Infantil</span>
+    <span class="chip"><span class="dotc" style="background:var(--pink)"></span>Feminino</span>
+    <span class="chip"><span class="dotc" style="background:var(--green)"></span>Fx. Branca</span>
+  </div>
+  <div class="note" style="margin-top:12px">Grade da unidade Centro. Sujeita a alteração — confirme sempre com a recepção.</div>`;
+}
+
+/* ==========================================================================
+   Notificações locais (best-effort) + helpers UI
+   ========================================================================== */
+function askNotifications(){
+  if(!("Notification" in window)) return toast("Seu navegador não suporta notificações.");
+  Notification.requestPermission().then(p=>{
+    if(p==="granted"){ toast("Lembretes ativados 🔔"); maybeNotify(currentUser(),true); }
+    else toast("Permita as notificações nos ajustes do app.");
+  });
+}
+function maybeNotify(u, force){
+  if(!u || !("Notification" in window) || Notification.permission!=="granted") return;
+  const st=statusOf(u);
+  let msg=null;
+  if(st.state==="a_vencer" && st.window==="antes" && st.dias<=5) msg=`Sua mensalidade vence em ${st.dias} dia(s) — pague até dia 05 e garanta ${money(st.price)}.`;
+  else if(st.state==="a_vencer" && st.window==="hoje") msg=`Sua mensalidade vence HOJE (dia 05). Valor ${money(st.price)}.`;
+  else if(st.state==="vencido" && st.window==="ontem") msg=`Sua mensalidade venceu ontem. Valor agora ${money(st.price)}.`;
+  else if(st.state==="em_dia" && st.window==="proximo") msg=`Sua próxima mensalidade vence em ${st.dias} dia(s).`;
+  if(!msg) return;
+  const key="notif."+u.id+"."+(st.window)+"."+new Date().toISOString().slice(0,10);
+  if(!force && DB.get(key,false)) return;
+  DB.set(key,true);
+  try{ new Notification("TCJJ Centro 🥋", { body:msg, icon:"icon-192.png", badge:"icon-192.png" }); }catch(e){}
+}
+
+function copyText(t){
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).catch(()=>fallbackCopy(t)); }
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){ const a=document.createElement("textarea"); a.value=t; a.style.position="fixed"; a.style.opacity="0";
+  document.body.appendChild(a); a.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(a); }
+
+let toastT;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2400); }
+
+function openModal(html){ const m=$("#modal"); m.innerHTML=`<div class="modal">${html}</div>`; m.classList.remove("hidden");
+  m.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",closeModal));
+  m.addEventListener("click",(e)=>{ if(e.target===m) closeModal(); },{once:true});
+}
+function closeModal(){ const m=$("#modal"); m.classList.add("hidden"); m.innerHTML=""; }
+
+/* ---------- Init ---------- */
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && session && session.role==="aluno") maybeNotify(currentUser()); });
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{})); }
+render();
+</script>
+</body>
+</html>
