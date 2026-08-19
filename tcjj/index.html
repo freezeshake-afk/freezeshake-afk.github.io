@@ -368,29 +368,41 @@ function initials(name){ const p=String(name||"").trim().split(/\s+/); return ((
 /* ---------- Status de pagamento ---------- */
 function isPaid(studentId, ref){ return payments.some(p=>p.studentId===studentId && p.ref===ref && p.status==="pago"); }
 
+function clampDay(d){ d=parseInt(d,10)||DUE_DAY; return Math.max(1,Math.min(28,d)); }
+function isAtivo(student){ return (student.status||"pendente")==="ativo"; }
 function statusOf(student, today){
   today = today || new Date();
-  const ref = ymKey(today);
-  const day = today.getDate();
   const cat = student.category || "adulto";
   const p = PRICES[cat] || PRICES.adulto;
+  const dueDay = clampDay(student.vencimentoDia || DUE_DAY);
+  // aluno ainda não ativado pela academia → sem cobrança/atraso
+  if(!isAtivo(student)){ return { state:"pendente", cat, price:p.base, dueDay }; }
+  const ref = ymKey(today);
+  const inicio = student.inicioCobranca || ref;                 // 'YYYY-MM' do 1º vencimento
+  const firstDue = new Date(+inicio.slice(0,4), +inicio.slice(5,7)-1, dueDay);
+  // antes do primeiro vencimento configurado
+  if(ref < inicio || today < firstDue){
+    const dias = Math.max(0, Math.ceil((firstDue - today)/86400000));
+    return { state:"em_dia", window:"antes_inicio", price:p.base, ref:inicio, cat, dueDay, firstDue, dias };
+  }
+  const day = today.getDate();
   if(isPaid(student.id, ref)){
-    // já pago — verifica próxima mensalidade (aviso 5 dias antes)
-    const nextDue = new Date(today.getFullYear(), today.getMonth()+1, DUE_DAY);
+    const nextDue = new Date(today.getFullYear(), today.getMonth()+1, dueDay);
     const diff = Math.ceil((nextDue - today)/86400000);
-    if(diff<=5 && diff>=0) return {state:"em_dia", window:"proximo", dias:diff, price:p.base, ref, cat, nextRef:ymKey(nextDue)};
-    return {state:"em_dia", window:"ok", price:p.base, ref, cat};
+    if(diff<=5 && diff>=0) return {state:"em_dia", window:"proximo", dias:diff, price:p.base, ref, cat, dueDay};
+    return {state:"em_dia", window:"ok", price:p.base, ref, cat, dueDay};
   }
-  if(day<=DUE_DAY){
-    const dias = DUE_DAY-day;
-    return {state:"a_vencer", window: dias===0?"hoje":"antes", dias, price:p.base, ref, cat};
+  if(day<=dueDay){
+    const dias = dueDay-day;
+    return {state:"a_vencer", window: dias===0?"hoje":"antes", dias, price:p.base, ref, cat, dueDay};
   }
-  const atraso = day-DUE_DAY;
-  return {state:"vencido", window: atraso===1?"ontem":"vencido", atraso, price:p.late, ref, cat};
+  const atraso = day-dueDay;
+  return {state:"vencido", window: atraso===1?"ontem":"vencido", atraso, price:p.late, ref, cat, dueDay};
 }
 
 function statusPill(st){
-  if(st.state==="em_dia") return '<span class="pill pill-good">✓ Em dia</span>';
+  if(st.state==="pendente") return '<span class="pill pill-warn">Aguardando ativação</span>';
+  if(st.state==="em_dia") return '<span class="pill pill-good">'+(st.window==="antes_inicio"?"Matrícula ativa":"✓ Em dia")+'</span>';
   if(st.state==="a_vencer") return '<span class="pill pill-warn">'+(st.window==="hoje"?"Vence hoje":"A vencer")+'</span>';
   return '<span class="pill pill-danger">Vencido '+st.atraso+'d</span>';
 }
@@ -667,7 +679,7 @@ function bindAuth(){
         category:form.category, militar:!!form.militar, faixa:form.faixa, graus:form.graus,
         idade:num(form.idade), peso:num(form.peso),
         inicioMes:+form.inicioMes, inicioAno:+form.inicioAno, gradMes:+form.gradMes, gradAno:+form.gradAno,
-        createdAt:Date.now() };
+        status:"pendente", createdAt:Date.now() };
       students.push(st); save.students(); Cloud.put("students",st); form=null;
       toast("Cadastro concluído! Bem-vindo 🥋");
       setSession("aluno",st.id);
@@ -711,15 +723,29 @@ function renderStudent(u){
 
 function studentMensalidade(u){
   const st=statusOf(u);
-  let banner, cls, lbl, big, sub;
+  // aluno recém-cadastrado, ainda não ativado pela academia
+  if(st.state==="pendente"){
+    return `<div class="view">
+      <div class="status st-warn">
+        <div class="lbl">Matrícula em análise</div>
+        <div class="big white">⏳ Aguardando ativação</div>
+        <div class="sub white">Seu cadastro foi recebido! A academia vai ativar sua matrícula e definir o vencimento. O PIX da mensalidade aparece aqui assim que for liberado.</div>
+      </div>
+      <div class="note" style="margin-top:4px">Qualquer dúvida${settings.academyWhats?`, <a href="${waLink(settings.academyWhats,"Olá! Acabei de me cadastrar no app da TCJJ Centro.")}" target="_blank">fale no WhatsApp</a>`:", fale com a recepção"}. 🦍</div>
+    </div>`;
+  }
+  const dd = st.dueDay || DUE_DAY;
+  let cls, lbl, big, sub;
   if(st.state==="em_dia"){
-    cls="st-good"; lbl="Mensalidade em dia"; big="✓ Tudo certo";
-    sub = st.window==="proximo" ? `Próxima vence em ${st.dias} dia(s) — ${money(st.price)} até dia 05.` : `Referente a ${ymLabel(st.ref)}.`;
+    cls="st-good"; big="✓ Tudo certo";
+    if(st.window==="antes_inicio"){ lbl="Matrícula ativa"; sub=`Primeiro vencimento em ${st.firstDue.getDate()}/${pad(st.firstDue.getMonth()+1)}/${st.firstDue.getFullYear()}.`; }
+    else if(st.window==="proximo"){ lbl="Mensalidade em dia"; sub=`Próxima vence em ${st.dias} dia(s) — ${money(st.price)} até dia ${dd}.`; }
+    else { lbl="Mensalidade em dia"; sub=`Referente a ${ymLabel(st.ref)}.`; }
   }else if(st.state==="a_vencer"){
-    cls="st-warn"; lbl = st.window==="hoje"?"Vence hoje (dia 05)":"A vencer";
-    big=money(st.price); sub = st.window==="hoje"?`Pague hoje e garanta o valor promocional.`:`Vence dia 05 · faltam ${st.dias} dia(s). Após, ${money(PRICES[st.cat].late)}.`;
+    cls="st-warn"; lbl = st.window==="hoje"?`Vence hoje (dia ${dd})`:"A vencer";
+    big=money(st.price); sub = st.window==="hoje"?`Pague hoje e garanta o valor promocional.`:`Vence dia ${dd} · faltam ${st.dias} dia(s). Após, ${money(PRICES[st.cat].late)}.`;
   }else{
-    cls="st-danger"; lbl=`Vencido há ${st.atraso} dia(s)`; big=money(st.price); sub=`Valor cheio (após dia 05). Regularize para manter a matrícula.`;
+    cls="st-danger"; lbl=`Vencido há ${st.atraso} dia(s)`; big=money(st.price); sub=`Valor cheio (após dia ${dd}). Regularize para manter a matrícula.`;
   }
   const paidThis=isPaid(u.id, st.ref);
   const hist=payments.filter(p=>p.studentId===u.id).sort((a,b)=>a.ref<b.ref?1:-1).slice(0,8);
@@ -874,6 +900,7 @@ function bindAlunos(){
 function adminStudentDetail(id){
   const s=students.find(x=>x.id===id); if(!s) { ui.detail=null; return adminAlunos(); }
   const st=statusOf(s);
+  const ativo=isAtivo(s);
   const belt=(BELTS[s.category]||BELTS.adulto).find(b=>b.id===s.faixa);
   const hist=payments.filter(p=>p.studentId===s.id).sort((a,b)=>a.ref<b.ref?1:-1);
   const msg=reminderMsg(s,st);
@@ -885,18 +912,26 @@ function adminStudentDetail(id){
       <p class="muted" style="margin:2px 0 12px;font-size:13px">${s.category==="kids"?"Kids":"Adulto"}${s.militar?" · Militar":""} · ${digits(s.whatsapp).replace(/^55/,"")}</p>
       ${beltBar(s.category,s.faixa,s.graus,"big")}
       <p style="margin:9px 0 0;font-weight:800">${belt?belt.nome:""} ${s.graus?("· "+s.graus+"º grau"):""}</p>
-      <div style="margin-top:10px">${statusPill(st)} <span class="pill" style="background:var(--card2);color:var(--muted)">${money(st.price)} · ${ymLabel(st.ref)}</span></div>
+      <div style="margin-top:10px">${statusPill(st)} ${ativo?`<span class="pill" style="background:var(--card2);color:var(--muted)">${money(st.price)}${st.ref?" · "+ymLabel(st.ref):""}</span>`:""}</div>
     </div>
 
+    ${ ativo ? `
     <div class="grid2">
       <button class="btn btn-gold" id="btnRegPay">Registrar pagamento</button>
       <a class="btn btn-wa" href="${waLink(s.whatsapp,msg)}" target="_blank">Cobrar no WhatsApp</a>
     </div>
+    <button class="btn btn-ghost btn-sm" id="btnVenc" style="width:auto;margin-top:10px">Vencimento: todo dia ${clampDay(s.vencimentoDia||DUE_DAY)} · alterar</button>
+    ` : `
+    <button class="btn btn-gold" id="btnAtivar">✓ Ativar matrícula</button>
+    <p class="note" style="margin-top:10px">Defina o dia de vencimento e o mês do 1º pagamento para começar a cobrança deste aluno.</p>
+    `}
 
     <div class="card" style="margin-top:12px">
+      ${ativo?`<div class="prow"><span class="k">Vencimento</span><span class="v">Todo dia ${clampDay(s.vencimentoDia||DUE_DAY)}</span></div>
+      <div class="prow"><span class="k">Início da cobrança</span><span class="v">${s.inicioCobranca?ymLabel(s.inicioCobranca):"—"}</span></div>`:""}
       <div class="prow"><span class="k">Idade</span><span class="v">${s.idade||"—"} anos</span></div>
       <div class="prow"><span class="k">Peso</span><span class="v">${s.peso?s.peso+" kg":"—"}</span></div>
-      <div class="prow"><span class="k">Início</span><span class="v">${MESES[(s.inicioMes||1)-1]}/${s.inicioAno||"—"}</span></div>
+      <div class="prow"><span class="k">Início na academia</span><span class="v">${MESES[(s.inicioMes||1)-1]}/${s.inicioAno||"—"}</span></div>
       <div class="prow"><span class="k">Última graduação</span><span class="v">${MESES[(s.gradMes||1)-1]}/${s.gradAno||"—"}</span></div>
     </div>
 
@@ -913,7 +948,9 @@ function adminStudentDetail(id){
 function bindStudentDetail(id){
   const s=students.find(x=>x.id===id);
   $("#btnBack").addEventListener("click",()=>{ ui.detail=null; render(); toTop(); });
-  $("#btnRegPay").addEventListener("click",()=>openRegPay(s));
+  $("#btnRegPay")?.addEventListener("click",()=>openRegPay(s));
+  $("#btnAtivar")?.addEventListener("click",()=>openActivate(s));
+  $("#btnVenc")?.addEventListener("click",()=>openActivate(s));
   $("#btnEditAluno").addEventListener("click",()=>openEditProfile(s));
   $("#btnDelAluno").addEventListener("click",()=>{
     if(!confirm("Excluir "+s.name+" e seus pagamentos?")) return;
@@ -926,6 +963,36 @@ function bindStudentDetail(id){
     const pid=b.dataset.delpay;
     payments=payments.filter(p=>p.id!==pid); save.payments(); Cloud.del("payments",pid); toast("Pagamento removido."); render();
   }));
+}
+
+function openActivate(s){
+  const now=new Date();
+  const curDay = clampDay(s.vencimentoDia||DUE_DAY);
+  // padrão: 1º vencimento no PRÓXIMO mês (aluno novo não entra em atraso na hora)
+  let dMes, dAno;
+  if(s.inicioCobranca){ dAno=+s.inicioCobranca.slice(0,4); dMes=+s.inicioCobranca.slice(5,7); }
+  else { const n=now.getMonth()+2; dMes=((n-1)%12)+1; dAno=now.getFullYear()+(n>12?1:0); }
+  const mesOpts=MESES.map((m,i)=>`<option value="${i+1}" ${i+1===dMes?"selected":""}>${m}</option>`).join("");
+  const anos=[]; for(let y=now.getFullYear();y<=now.getFullYear()+1;y++) anos.push(y);
+  const ativo=isAtivo(s);
+  openModal(`
+    <div class="mh"><h3>${ativo?"Vencimento da matrícula":"Ativar matrícula"}</h3><button class="x" data-close>×</button></div>
+    <p class="muted" style="font-size:13px;margin:0 0 14px">${esc(s.name)} · ${s.category==="kids"?"Kids":"Adulto"}</p>
+    <label class="fld">Dia de vencimento (todo mês)</label>
+    <input class="inp field-mb" id="avDia" inputmode="numeric" value="${curDay}">
+    <label class="fld">1º vencimento (mês/ano)</label>
+    <div class="grid2 field-mb">
+      <select class="inp" id="avMes">${mesOpts}</select>
+      <select class="inp" id="avAno">${anos.map(y=>`<option value="${y}" ${y===dAno?"selected":""}>${y}</option>`).join("")}</select>
+    </div>
+    <p class="note" style="margin-bottom:14px">Antes do 1º vencimento o aluno <b>não</b> aparece como em atraso. Depois, a cobrança segue todo mês no dia escolhido — Adulto ${money(PRICES.adulto.base)}/${money(PRICES.adulto.late)} · Kids ${money(PRICES.kids.base)}/${money(PRICES.kids.late)} (promo até o dia do vencimento).</p>
+    <button class="btn btn-gold" id="btnDoAtivar">${ativo?"Salvar":"Ativar aluno"}</button>`);
+  $("#btnDoAtivar").addEventListener("click",()=>{
+    s.vencimentoDia=clampDay($("#avDia").value);
+    s.inicioCobranca=$("#avAno").value+"-"+pad(+$("#avMes").value);
+    s.status="ativo";
+    save.students(); Cloud.put("students",s); closeModal(); toast(ativo?"Vencimento atualizado ✓":"Matrícula ativada ✓"); render();
+  });
 }
 
 function openRegPay(s){
@@ -980,41 +1047,48 @@ function openAddAluno(){
     const st={ id:uid(), name:nome, whatsapp:form.whatsapp, pass:hash(pw),
       category:form.category, militar:!!form.militar, faixa:form.faixa, graus:form.graus,
       idade:num(form.idade), peso:num(form.peso), inicioMes:+form.inicioMes, inicioAno:+form.inicioAno,
-      gradMes:+form.gradMes, gradAno:+form.gradAno, createdAt:Date.now() };
-    students.push(st); save.students(); Cloud.put("students",st); form=null; closeModal(); toast("Aluno cadastrado ✓ (senha: "+ (pw==="tcjj123"?"tcjj123":"a definida") +")"); render();
+      gradMes:+form.gradMes, gradAno:+form.gradAno, status:"pendente", createdAt:Date.now() };
+    students.push(st); save.students(); Cloud.put("students",st); form=null; closeModal(); toast("Aluno cadastrado ✓ — ative a matrícula para definir o vencimento."); render();
   });
 }
 
 /* ---------- Cobranças ---------- */
 function reminderMsg(s, st){
-  return settings.reminderTpl
-    .replace(/{nome}/g, s.name.split(" ")[0])
-    .replace(/{valor}/g, st.price.toFixed(2).replace(".",","))
-    .replace(/{mes}/g, ymLabel(st.ref));
+  const mes = st.ref? ymLabel(st.ref) : (MESES[new Date().getMonth()]+"/"+new Date().getFullYear());
+  const val = (st.price!=null?st.price:(PRICES[s.category||"adulto"].base)).toFixed(2).replace(".",",");
+  return settings.reminderTpl.replace(/{nome}/g, s.name.split(" ")[0]).replace(/{valor}/g, val).replace(/{mes}/g, mes);
 }
 function adminCobrancas(){
-  const rows=students.map(s=>({s,st:statusOf(s)}));
+  const all=students.map(s=>({s,st:statusOf(s)}));
+  const pendentes=all.filter(r=>r.st.state==="pendente");
+  const ativos=all.filter(r=>r.st.state!=="pendente");
   const rank={vencido:0,a_vencer:1,em_dia:2};
-  rows.sort((a,b)=>{ const r=rank[a.st.state]-rank[b.st.state]; if(r) return r;
+  ativos.sort((a,b)=>{ const r=rank[a.st.state]-rank[b.st.state]; if(r) return r;
     if(a.st.state==="vencido") return b.st.atraso-a.st.atraso;
     if(a.st.state==="a_vencer") return a.st.dias-b.st.dias; return a.s.name.localeCompare(b.s.name); });
-  const emDia=rows.filter(r=>r.st.state==="em_dia").length;
-  const aVencer=rows.filter(r=>r.st.state==="a_vencer").length;
-  const vencidos=rows.filter(r=>r.st.state==="vencido").length;
+  const emDia=ativos.filter(r=>r.st.state==="em_dia").length;
+  const vencidos=ativos.filter(r=>r.st.state==="vencido").length;
   const ref=ymKey(new Date());
   const recebido=payments.filter(p=>p.ref===ref&&p.status==="pago").reduce((a,p)=>a+p.amount,0);
-  const previsto=rows.reduce((a,r)=> a + (r.st.state==="em_dia"?0:r.st.price), recebido);
-  const pend=rows.filter(r=>r.st.state!=="em_dia");
+  const previsto=ativos.reduce((a,r)=> a + (r.st.state==="em_dia"?0:r.st.price), recebido);
+  const pend=ativos.filter(r=>r.st.state!=="em_dia");
   return `<div class="view">
     <div class="tiles" style="margin-top:12px">
-      <div class="tile"><div class="k">Alunos</div><div class="v">${students.length}</div></div>
       <div class="tile"><div class="k">Em dia</div><div class="v" style="color:var(--good)">${emDia}</div></div>
       <div class="tile"><div class="k">Vencidos</div><div class="v" style="color:var(--danger)">${vencidos}</div></div>
+      <div class="tile"><div class="k">Novos</div><div class="v" style="color:var(--gold)">${pendentes.length}</div></div>
     </div>
     <div class="grid2" style="margin-top:9px">
       <div class="tile"><div class="k">Recebido (${MESES[new Date().getMonth()].slice(0,3)})</div><div class="v" style="color:var(--good)">${money(recebido)}</div></div>
       <div class="tile"><div class="k">Previsto</div><div class="v" style="color:var(--gold)">${money(previsto)}</div></div>
     </div>
+
+    ${ pendentes.length ? `<div class="sec-title">Aguardando ativação (${pendentes.length})</div>
+    ${pendentes.map(({s})=>`<div class="li">
+        <div class="av">${esc(initials(s.name))||"🦍"}</div>
+        <div class="info"><b>${esc(s.name)}</b><span>Novo cadastro · ${s.category==="kids"?"Kids":"Adulto"}</span></div>
+        <button class="btn btn-gold btn-sm" data-ativar="${s.id}" style="width:auto">Ativar</button>
+      </div>`).join("")}` : "" }
 
     <div class="sec-title">A cobrar (${pend.length})</div>
     ${ pend.length ? pend.map(({s,st})=>`
@@ -1026,14 +1100,16 @@ function adminCobrancas(){
         </a>
         <button class="btn btn-gold btn-sm" data-pay="${s.id}" style="width:auto">Pgto</button>
       </div>`).join("")
-      : `<div class="empty">🎉 Todos os alunos estão em dia!</div>` }
+      : `<div class="empty">🎉 Todos os alunos ativos estão em dia!</div>` }
 
-    <div class="note" style="margin-top:14px">💡 O botão verde abre o WhatsApp com a mensagem de cobrança pronta. Registre o pagamento no botão <b>Pgto</b> assim que o aluno pagar — isso encerra os lembretes do mês.</div>
+    <div class="note" style="margin-top:14px">💡 O botão verde abre o WhatsApp com a cobrança pronta. Registre o pagamento no <b>Pgto</b> quando o aluno pagar — isso encerra os lembretes do mês. Alunos novos aparecem em <b>Aguardando ativação</b> até você definir o vencimento.</div>
   </div>`;
 }
 function bindCobrancas(){
   $$("#app [data-pay]").forEach(b=>b.addEventListener("click",(e)=>{ e.stopPropagation();
     const s=students.find(x=>x.id===b.dataset.pay); if(s) openRegPay(s); }));
+  $$("#app [data-ativar]").forEach(b=>b.addEventListener("click",(e)=>{ e.stopPropagation();
+    const s=students.find(x=>x.id===b.dataset.ativar); if(s) openActivate(s); }));
 }
 
 /* ---------- Config ---------- */
@@ -1162,8 +1238,9 @@ function maybeNotify(u, force){
   if(!u || !("Notification" in window) || Notification.permission!=="granted") return;
   const st=statusOf(u);
   let msg=null;
-  if(st.state==="a_vencer" && st.window==="antes" && st.dias<=5) msg=`Sua mensalidade vence em ${st.dias} dia(s) — pague até dia 05 e garanta ${money(st.price)}.`;
-  else if(st.state==="a_vencer" && st.window==="hoje") msg=`Sua mensalidade vence HOJE (dia 05). Valor ${money(st.price)}.`;
+  const dd=st.dueDay||DUE_DAY;
+  if(st.state==="a_vencer" && st.window==="antes" && st.dias<=5) msg=`Sua mensalidade vence em ${st.dias} dia(s) — pague até dia ${dd} e garanta ${money(st.price)}.`;
+  else if(st.state==="a_vencer" && st.window==="hoje") msg=`Sua mensalidade vence HOJE (dia ${dd}). Valor ${money(st.price)}.`;
   else if(st.state==="vencido" && st.window==="ontem") msg=`Sua mensalidade venceu ontem. Valor agora ${money(st.price)}.`;
   else if(st.state==="em_dia" && st.window==="proximo") msg=`Sua próxima mensalidade vence em ${st.dias} dia(s).`;
   if(!msg) return;
