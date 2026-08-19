@@ -1,5 +1,5 @@
 /* TCJJ Centro — service worker (offline-first app shell) */
-const CACHE = 'tcjj-v2';
+const CACHE = 'tcjj-v3';
 const ASSETS = [
   './',
   './index.html',
