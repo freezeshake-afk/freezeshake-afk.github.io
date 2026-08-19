@@ -782,15 +782,26 @@ function pixAreaHTML(u, st){
   const txid = "TCJJ"+st.ref.replace("-","")+u.id.slice(-4);
   const payload = pixPayload({key:settings.pixKey,name:settings.pixName,city:settings.pixCity,amount:st.price,txid});
   const durl = qrDataURL(payload);
+  const compMsg = "Olá! Segue o comprovante do pagamento da mensalidade ("+ymLabel(st.ref)+") da TCJJ Centro — "+money(st.price)+". 📎 (vou anexar o comprovante aqui)";
   return `
-    <div class="qrbox">${durl?`<img src="${durl}" alt="QR PIX">`:`<div style="color:#111;font-size:12px;padding:20px">QR indisponível — use o código abaixo</div>`}</div>
-    <p class="muted" style="font-size:12px;text-align:center;margin:0 0 6px">Chave: ${esc(settings.pixKey)} · ${esc(settings.pixName)}</p>
-    <div class="pix-code" id="pixCode">${esc(payload)}</div>
-    <button class="btn btn-gold" id="btnCopyPix" style="margin-top:10px">Copiar código PIX (copia e cola)</button>
-    ${settings.academyWhats?`<a class="btn btn-wa" href="${waLink(settings.academyWhats,"Olá! Efetuei o pagamento da mensalidade ("+ymLabel(st.ref)+") da TCJJ Centro via PIX. Segue o comprovante.")}" target="_blank" style="margin-top:9px">Já paguei — avisar no WhatsApp</a>`:""}`;
+    <button class="btn btn-gold" id="btnGerarPix" style="margin-top:12px">Gerar PIX</button>
+    <div id="pixDetails" class="hidden" style="margin-top:12px">
+      <div class="qrbox">${durl?`<img src="${durl}" alt="QR PIX">`:`<div style="color:#111;font-size:12px;padding:20px">QR indisponível — use o código abaixo</div>`}</div>
+      <p class="muted" style="font-size:12px;text-align:center;margin:0 0 6px">Chave: ${esc(settings.pixKey)} · ${esc(settings.pixName)}</p>
+      <div class="pix-code" id="pixCode">${esc(payload)}</div>
+      <button class="btn btn-gold" id="btnCopyPix" style="margin-top:10px">Copiar código PIX (copia e cola)</button>
+      ${settings.academyWhats
+        ? `<a class="btn btn-wa" href="${waLink(settings.academyWhats, compMsg)}" target="_blank" style="margin-top:9px">Confirmar pagamento (enviar comprovante)</a>
+           <p class="hint" style="text-align:center;margin-top:6px">Abre o WhatsApp da academia — é só anexar a foto/print do comprovante.</p>`
+        : `<p class="note" style="margin-top:9px">Para enviar o comprovante por aqui, a academia precisa cadastrar o <b>WhatsApp</b> em Config.</p>`}
+    </div>`;
 }
 
 function bindMensalidade(u){
+  $("#btnGerarPix")?.addEventListener("click",()=>{
+    $("#pixDetails")?.classList.remove("hidden");
+    $("#btnGerarPix")?.classList.add("hidden");
+  });
   $("#btnCopyPix")?.addEventListener("click",()=>{
     const code=$("#pixCode")?.textContent||"";
     copyText(code); toast("Código PIX copiado! 📋");
