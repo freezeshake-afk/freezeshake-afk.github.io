@@ -478,6 +478,29 @@ function renderTabbar(role){
 /* ==========================================================================
    AUTH SCREEN
    ========================================================================== */
+/* ---------- Instalação do app (PWA) ---------- */
+let deferredPrompt=null;
+function isStandalone(){ return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true; }
+function isIos(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+function installUI(){
+  if(isStandalone()) return "";                       // já instalado
+  if(deferredPrompt) return `<button class="btn btn-gold" id="btnInstall" style="margin:2px 0 6px">📲 Instalar app</button>`;
+  if(isIos()) return `<div class="note" style="text-align:left;margin-bottom:6px">📲 <b>Instalar no iPhone:</b> toque em <b>Compartilhar</b> ▸ <b>Adicionar à Tela de Início</b>.</div>`;
+  return "";                                           // Android sem evento ainda / desktop: navegador oferece sozinho
+}
+function bindInstall(){
+  const b=$("#btnInstall"); if(!b) return;
+  b.addEventListener("click", async ()=>{
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    try{ await deferredPrompt.userChoice; }catch(e){}
+    deferredPrompt=null; refreshInstallUI();
+  });
+}
+function refreshInstallUI(){ const s=$("#installSlot"); if(s){ s.innerHTML=installUI(); bindInstall(); } }
+window.addEventListener("beforeinstallprompt",(e)=>{ e.preventDefault(); deferredPrompt=e; refreshInstallUI(); });
+window.addEventListener("appinstalled",()=>{ deferredPrompt=null; toast("App instalado! 🦍"); refreshInstallUI(); });
+
 function renderAuth(){
   $("#topbar").classList.add("hidden"); $("#tabbar").classList.add("hidden");
   const app=$("#app");
@@ -490,6 +513,7 @@ function renderAuth(){
         <div class="motto">${esc(MOTTO)}</div>
         <div class="oss">🦍 OSS! 🦍</div>
       </div>
+      <div id="installSlot">${installUI()}</div>
       <div class="seg" style="margin:8px 0 14px">
         <button data-am="aluno" class="${ui.authMode==="aluno"?"active":""}">Sou Aluno</button>
         <button data-am="admin" class="${ui.authMode==="admin"?"active":""}">Sou Admin</button>
@@ -498,6 +522,7 @@ function renderAuth(){
       <div class="foot">Respeito no tatame, força na missão</div>
     </div>`;
   $$("[data-am]").forEach(b=>b.addEventListener("click",()=>{ ui.authMode=b.dataset.am; ui.authTab="entrar"; render(); }));
+  bindInstall();
   bindAuth();
 }
 
