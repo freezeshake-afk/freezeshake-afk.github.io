@@ -665,6 +665,16 @@ function authAdmin(){
     <div class="field-mb"><label class="fld">Senha</label>
       <input class="inp" id="admPw" type="password" placeholder="••••••"></div>
     <button class="btn btn-gold" id="btnLoginAdmin">Entrar como admin</button>
+    <button class="btn btn-ghost" id="btnShowForgot" style="margin-top:10px">Esqueci a senha</button>
+    <div id="forgotBox" class="hidden" style="margin-top:12px">
+      <div class="card">
+        <p class="note" style="margin-bottom:12px">Redefina sua senha usando o <b>código de administrador</b> da academia.</p>
+        <div class="field-mb"><label class="fld">WhatsApp do admin</label><input class="inp" id="fgWa" inputmode="tel" placeholder="53 99999-9999"></div>
+        <div class="field-mb"><label class="fld">Código de administrador</label><input class="inp" id="fgCode" placeholder="código"></div>
+        <div class="field-mb"><label class="fld">Nova senha</label><input class="inp" id="fgPw" type="password" placeholder="nova senha"></div>
+        <button class="btn btn-gold" id="btnForgot">Redefinir senha</button>
+      </div>
+    </div>
     <button class="btn btn-ghost" id="btnShowCreateAdmin" style="margin-top:10px">Criar administrador</button>
     <div id="createAdminBox" class="hidden" style="margin-top:12px">
       <div class="card">
@@ -716,6 +726,18 @@ function bindAuth(){
       const u=admins.find(a=>digits(a.whatsapp)===wa);
       if(!u || u.pass!==hash(pw)) return toast("Admin: WhatsApp ou senha inválidos.");
       setSession("admin",u.id);
+    });
+    $("#btnShowForgot")?.addEventListener("click",()=>$("#forgotBox").classList.toggle("hidden"));
+    $("#btnForgot")?.addEventListener("click",()=>{
+      const wa=digits($("#fgWa").value), code=$("#fgCode").value, pw=$("#fgPw").value;
+      const u=admins.find(a=>digits(a.whatsapp)===wa);
+      if(!u) return toast("Nenhum admin com esse WhatsApp.");
+      if(code!==settings.adminCode) return toast("Código de administrador incorreto.");
+      if((pw||"").length<4) return toast("Senha muito curta (mín. 4).");
+      u.pass=hash(pw); u.ts=Date.now(); save.admins(); Cloud.put("admins",u);
+      toast("Senha redefinida ✓ Agora entre com a nova senha.");
+      $("#forgotBox").classList.add("hidden");
+      const w=$("#admWa"); if(w) w.value=$("#fgWa").value;
     });
     $("#btnShowCreateAdmin")?.addEventListener("click",()=>$("#createAdminBox").classList.toggle("hidden"));
     $("#btnCreateAdmin")?.addEventListener("click",()=>{
@@ -1179,6 +1201,12 @@ function adminConfig(){
       <button class="btn btn-dark" id="btnAddAdmin">+ Adicionar administrador</button>
     </div>
 
+    <div class="sec-title">Minha conta</div>
+    <div class="card">
+      <div class="prow"><span class="k">Você</span><span class="v">${esc((currentUser()||{}).name||"")}</span></div>
+      <button class="btn btn-dark" id="btnChangePass" style="margin-top:12px">Trocar minha senha</button>
+    </div>
+
     <div class="sec-title">Sincronização na nuvem</div>
     <div class="card">
       <p class="muted" style="font-size:13px;margin:0 0 10px">Status: <b style="color:${Cloud.on?'var(--good)':'var(--muted)'}">${Cloud.on?'Nuvem ativa ☁️':(FIREBASE_CONFIG?'Configurada (carregando…)':'Local — só este aparelho')}</b></p>
@@ -1202,6 +1230,21 @@ function bindConfig(){
     save.settings(); Cloud.putSettings(); toast("PIX salvo ✓");
   });
   $("#btnSaveTpl").addEventListener("click",()=>{ settings.reminderTpl=$("#cfgTpl").value; save.settings(); Cloud.putSettings(); toast("Mensagem salva ✓"); });
+  $("#btnChangePass")?.addEventListener("click",()=>{
+    openModal(`
+      <div class="mh"><h3>Trocar minha senha</h3><button class="x" data-close>×</button></div>
+      <div class="field-mb"><label class="fld">Nova senha</label><input class="inp" id="npPw" type="password" placeholder="nova senha"></div>
+      <div class="field-mb"><label class="fld">Confirmar nova senha</label><input class="inp" id="npPw2" type="password" placeholder="repita a senha"></div>
+      <button class="btn btn-gold" id="btnDoChangePass">Salvar nova senha</button>`);
+    $("#btnDoChangePass").addEventListener("click",()=>{
+      const p1=$("#npPw").value, p2=$("#npPw2").value;
+      if((p1||"").length<4) return toast("Senha muito curta (mín. 4).");
+      if(p1!==p2) return toast("As senhas não conferem.");
+      const me=currentUser(); if(!me) return toast("Sessão expirada.");
+      me.pass=hash(p1); me.ts=Date.now(); save.admins(); Cloud.put("admins",me);
+      closeModal(); toast("Senha alterada ✓");
+    });
+  });
   $("#btnCloudSave")?.addEventListener("click",()=>{
     const raw=$("#cfgCloud").value.trim();
     if(!raw){ DB.set("fbconfig",null); toast("Config da nuvem removida."); return; }
