@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+body { padding:60px; display:inline-block; }
+.p { display:inline-flex; align-items:center; gap:14px; height:{{ALTURA}}px;
+     padding:0 {{PAD}}px 0 {{PAD_ESQ}}px; border-radius:{{RAIO}}px;
+     background:{{FUNDO}}; border:{{BORDA}}; box-shadow:{{GLOW}}; white-space:nowrap; }
+.b { width:{{BADGE}}px; height:{{BADGE}}px; border-radius:50%; background:{{BADGE_FUNDO}};
+     color:{{BADGE_TEXTO}}; font-weight:800; font-size:{{BADGE_PX}}px;
+     display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+     line-height:1; padding-bottom:2px; }
+.ico { font-size:{{ICO_PX}}px; line-height:1; color:{{ICONE_COR}}; }
+.t { font-weight:800; font-size:{{FONTE}}px; letter-spacing:.065em;
+     background:{{TEXTO_GRAD}}; -webkit-background-clip:text; background-clip:text;
+     color:transparent; }
+</style></head><body><div class="p">{{BADGE_HTML}}<span class="t">{{TEXTO}}</span></div></body></html>

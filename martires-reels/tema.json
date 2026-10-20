@@ -1,0 +1,104 @@
+{
+  "nome": "martires-dark",
+  "_origem": "Medido pixel a pixel do reel de referencia (720x1280); valores normalizados, render em 1080x1920.",
+  "saida": {
+    "w": 1080,
+    "h": 1920,
+    "fps": 30,
+    "crf": 19,
+    "preset": "medium",
+    "audio_lufs": -14,
+    "audio_bitrate": "192k"
+  },
+  "fundo": {
+    "cor_base": "#0A0B0F",
+    "grid_px": 90,
+    "grid_cor": "rgba(255,255,255,0.11)",
+    "grid_linha": 1,
+    "glow_topo": {
+      "cor": "rgba(255,135,55,0.55)",
+      "x": "50%",
+      "y": "13%",
+      "raio": "80%"
+    },
+    "glow_baixo": {
+      "cor": "rgba(120,130,190,0.16)",
+      "x": "50%",
+      "y": "96%",
+      "raio": "60%"
+    }
+  },
+  "pip": {
+    "_medido": "ref: borda x165..554 y680..1004 -> 390x325 px em 720x1280",
+    "x": 0.2292,
+    "y": 0.5313,
+    "w": 0.5417,
+    "h": 0.2539,
+    "raio": 30,
+    "borda_px": 5,
+    "borda_cor": "#F0A868",
+    "glow": "0 0 46px rgba(240,150,90,0.55)",
+    "crop_foco_y": 0.34,
+    "zoom": 1.18,
+    "_zoom": ">1 aperta o enquadramento do rosto no card"
+  },
+  "legenda": {
+    "fonte": "Inter",
+    "peso": "Bold",
+    "tamanho_cheio": 74,
+    "tamanho_board": 74,
+    "cor": "#FFFFFF",
+    "contorno_cor": "#000000",
+    "contorno_px": 5,
+    "sombra_px": 4,
+    "maiusculas": true,
+    "palavras_por_bloco": 3,
+    "y_cheio": 0.748,
+    "y_board": 0.4867,
+    "pop": true,
+    "_medido": "ref: altura de maiusculas 28-29px em 720w; centro y 0.748 (cheio) e 0.487 (board)",
+    "_calibrado": "fonte 74 = maiusculas de 42px em 1080w, identico a referencia (28px em 720w)",
+    "max_chars": 18
+  },
+  "pilula": {
+    "y": 0.1504,
+    "altura": 63,
+    "raio": 32,
+    "padding_x": 30,
+    "fonte_px": 35,
+    "fundo": "linear-gradient(100deg,#2B1329 0%,#34152F 100%)",
+    "borda": "1.5px solid rgba(255,205,220,0.55)",
+    "texto_cor": "#FFFFFF",
+    "glow": "0 8px 26px rgba(0,0,0,0.55)",
+    "badge_fundo": "linear-gradient(135deg,#F2A3B8,#F6C9A0)",
+    "badge_texto": "#2B1020",
+    "_medido": "ref: capsula 382x42px em 720x1280, centro y 0.1504, maiusculas 17px",
+    "texto_gradiente": "linear-gradient(95deg,#FFE4EE 0%,#FFC9B0 55%,#F8B07E 100%)",
+    "icone_cor": "#F06292"
+  },
+  "card": {
+    "x": 0.111,
+    "y": 0.105,
+    "w": 0.82,
+    "raio": 34,
+    "fundo": "linear-gradient(145deg,#2A1230 0%,#1A1020 100%)",
+    "borda": "1px solid rgba(255,180,200,0.28)",
+    "glow": "0 24px 70px rgba(0,0,0,0.6)",
+    "titulo_px": 60,
+    "titulo_cor": "#FFFFFF",
+    "sub_px": 34,
+    "sub_cor": "rgba(255,255,255,0.68)",
+    "destaque": "linear-gradient(100deg,#F2A3B8,#F6C9A0)"
+  },
+  "animacao": {
+    "entrada_s": 0.28,
+    "saida_s": 0.22,
+    "slide_px": 26
+  },
+  "musica": {
+    "volume_db": -21,
+    "ducking_db": 9,
+    "fade_in_s": 0.8,
+    "fade_out_s": 1.4
+  }
+}

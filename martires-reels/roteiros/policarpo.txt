@@ -1,0 +1,51 @@
+---
+titulo: Policarpo - o bispo que nao negou
+arquivo: policarpo
+idioma: pt
+# clipes: pode apontar pra uma pasta ou listar arquivos na ordem
+clipes: [../clipes]
+# musica: ../assets/musica/epico.mp3
+---
+
+[[pilula: 🔥 | esmirna, ano 155]]
+No ano cento e cinquenta e cinco, na cidade de Esmirna, um homem de oitenta e seis
+anos foi arrastado para o meio do estadio.
+[[/pilula]]
+
+[[board]]
+[[card: ✝️ | 86 ANOS SERVINDO A <<CRISTO>> | e naquela tarde pediram que ele negasse tudo | policarpo de esmirna]]
+O nome dele era Policarpo. Ele tinha sido discipulo do apostolo Joao.
+[[/card]]
+
+[[cheio]]
+O proconsul olhou para aquele velho e ofereceu a saida mais facil do mundo.
+
+[[board]]
+[[card: ⚖️ | A ESCOLHA | jure pelo imperador e amaldicoe o Cristo, e eu te solto]]
+Bastava jurar pela sorte do imperador e dizer tres palavras: fora com os ateus.
+[[/card]]
+
+[[cheio]]
+[[pilula: 2 | a resposta]]
+E Policarpo respondeu com a frase que atravessou dezoito seculos.
+[[/pilula]]
+
+[[board]]
+[[card: 🕊️ | <<OITENTA E SEIS ANOS>> EU O SIRVO | e ele nunca me fez mal algum. Como posso blasfemar do meu Rei, que me salvou?]]
+Oitenta e seis anos eu o sirvo, e ele nunca me fez mal algum.
+Como posso blasfemar do meu Rei, que me salvou?
+[[/card]]
+
+[[cheio]]
+Eles levantaram a fogueira no centro do estadio. E quando foram prega-lo na estaca,
+Policarpo pediu que apenas o amarrassem.
+Porque quem lhe dava forca para ficar no fogo tambem o sustentaria sem os pregos.
+
+[[board]]
+[[card: 🔥 | ELE NAO FUGIU | morreu em pe, cantando, no meio das chamas | 23 de fevereiro de 155]]
+As chamas subiram. E a igreja daquela cidade nunca mais esqueceu aquele dia.
+[[/card]]
+
+[[cheio]]
+[[pilula: 💬 | comenta AMEM]]
+Se essa historia te marcou, comenta amem aqui embaixo e segue pra proxima.

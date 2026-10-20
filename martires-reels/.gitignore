@@ -1,0 +1,7 @@
+build/
+out/
+clipes/
+assets/musica/*
+!assets/musica/.gitkeep
+__pycache__/
+*.pyc

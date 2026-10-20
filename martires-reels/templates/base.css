@@ -1,0 +1,7 @@
+@font-face { font-family:'InterLocal'; src:url('file:///usr/share/fonts/opentype/inter/Inter-Bold.otf'); font-weight:700; }
+@font-face { font-family:'InterLocal'; src:url('file:///usr/share/fonts/opentype/inter/Inter-ExtraBold.otf'); font-weight:800; }
+@font-face { font-family:'InterLocal'; src:url('file:///usr/share/fonts/opentype/inter/Inter-SemiBold.otf'); font-weight:600; }
+@font-face { font-family:'InterLocal'; src:url('file:///usr/share/fonts/opentype/inter/Inter-Medium.otf'); font-weight:500; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { background:transparent; }
+body { font-family:'InterLocal','Inter','Noto Color Emoji',sans-serif; -webkit-font-smoothing:antialiased; }

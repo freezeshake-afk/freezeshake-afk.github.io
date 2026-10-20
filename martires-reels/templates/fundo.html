@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+body { width:{{W}}px; height:{{H}}px; background:{{COR_BASE}}; overflow:hidden; position:relative; }
+.grid { position:absolute; inset:0;
+  background-image:
+    linear-gradient(to right, {{GRID_COR}} {{GRID_LINHA}}px, transparent {{GRID_LINHA}}px),
+    linear-gradient(to bottom, {{GRID_COR}} {{GRID_LINHA}}px, transparent {{GRID_LINHA}}px);
+  background-size:{{GRID_PX}}px {{GRID_PX}}px; }
+.glowA { position:absolute; inset:0;
+  background:radial-gradient(ellipse {{GA_RAIO}} 42% at {{GA_X}} {{GA_Y}}, {{GA_COR}} 0%, transparent 70%); }
+.glowB { position:absolute; inset:0;
+  background:radial-gradient(ellipse {{GB_RAIO}} 34% at {{GB_X}} {{GB_Y}}, {{GB_COR}} 0%, transparent 72%); }
+.vig { position:absolute; inset:0;
+  background:radial-gradient(ellipse 85% 70% at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%); }
+</style></head><body>
+<div class="grid"></div><div class="glowA"></div><div class="glowB"></div><div class="vig"></div>
+</body></html>
