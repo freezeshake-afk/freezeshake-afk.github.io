@@ -14,6 +14,37 @@ renderizadas de verdade no HyperFrames antes de entrar aqui.
 
 ## Instalar
 
+**Comece conferindo o que falta na sua máquina:**
+
+```
+python3 preparar.py          # Windows:  py preparar.py
+```
+
+Ele detecta seu sistema e imprime o comando exato de cada coisa que falta —
+Python, uv, Node, FFmpeg, OCR, espaço em disco — e no Windows ainda testa se
+links simbólicos estão liberados, porque o instalador do editonny usa symlink.
+Só usa biblioteca padrão, então roda antes de você instalar qualquer coisa.
+
+### O que o conjunto exige
+
+| item | versão | para quê |
+|---|---|---|
+| Python | 3.9+ no lançador, **>=3.10 e <3.14** no engine | CLI e motor |
+| uv | qualquer | monta o ambiente travado do engine |
+| Node.js | **22.13+ ou 24+** | renderiza as cenas (HyperFrames) |
+| FFmpeg + ffprobe | qualquer | cortes, áudio e inspeção |
+| OCR | Tesseract (`por`, `eng`) ou Apple Vision no macOS | confere as legendas no vídeo final |
+| disco | ~5 GB | pacote 1,1 GB + navegador 365 MB + modelo + seus vídeos |
+
+Atenção ao Python: **3.14 não serve** para o engine. Se instalar "o mais novo"
+pode cair nessa. O uv contorna baixando uma versão compatível sozinho.
+
+No Windows, a documentação do editonny avisa que o projeto é validado em
+macOS Apple Silicon e que Windows e Linux precisam de validação própria — os
+links de diretório podem exigir **Modo de Desenvolvedor** ligado.
+
+### Instalar de fato
+
 Primeiro o editonny, se ainda não tiver:
 
 ```
@@ -34,8 +65,11 @@ Ele copia as cenas para `visuals/scenes/` e mescla as entradas em
 > **Toda vez que atualizar o editonny, rode `python3 instalar.py` de novo.**
 > A atualização substitui a pasta inteira do pacote e leva junto as cenas de fora.
 
-Conferir: `python3 instalar.py --conferir` — ou `doctor`, que deve dizer
+Conferir: `python3 preparar.py` de novo (deve dar tudo verde), ou
+`python3 instalar.py --conferir`, ou o `doctor` do editonny, que deve dizer
 **151 scenes; 0 missing files**.
+
+Tudo roda local: seus clipes e o vídeo final nunca saem da sua máquina.
 
 Sair: `python3 instalar.py --remover`.
 
