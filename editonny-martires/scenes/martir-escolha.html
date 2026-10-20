@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><title>editonny - The choice</title></head>
+<body>
+<!-- The choice. When the martyr is offered a way out: two options appear, one is crossed out and the other lights up. -->
+
+<template id="martir-escolha-template">
+<style>
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin-ext.woff2") format("woff2");font-weight:100 900;font-display:block;unicode-range:U+0100-02BA,U+1E00-1E9F,U+20A0-20C0}
+@font-face{font-family:"Playfair";src:url("assets/visuals/fonts/Playfair.ttf") format("truetype");font-weight:400 900;font-display:block}
+@font-face{font-family:"PlayfairIt";src:url("assets/visuals/fonts/Playfair-Italic.ttf") format("truetype");font-weight:400 900;font-display:block}
+#root *{margin:0;padding:0;box-sizing:border-box}
+#root{position:absolute;inset:0;overflow:hidden;font-family:"Inter",sans-serif;color:var(--tx);
+  --bg:#0A0B0F; --tx:#ffffff; --ac:#F0A868; --ac2:#F2A3B8; --su:rgba(255,255,255,.70); --ln:rgba(255,255,255,.11);}
+
+/* fundo medido do reel de referencia: base quase preta, grade de 90px e brilho quente no topo */
+.mt-bg{position:absolute;left:0;top:0;width:1080px;height:992px;background:var(--bg);opacity:0;overflow:hidden}
+.mt-bg i{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background-image:linear-gradient(to right,var(--ln) 1px,transparent 1px),linear-gradient(to bottom,var(--ln) 1px,transparent 1px);
+  background-size:90px 90px}
+.mt-bg u{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background:radial-gradient(ellipse 80% 46% at 50% 10%,rgba(255,135,55,.55) 0%,transparent 70%)}
+.mt-bg s{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;text-decoration:none;
+  background:radial-gradient(ellipse 85% 70% at 50% 46%,transparent 38%,rgba(0,0,0,.6) 100%)}
+.mt-layer{position:absolute;left:0;top:0;width:1080px;height:992px;opacity:0;overflow:hidden}
+
+.mt-kicker{position:absolute;left:0;top:148px;width:1080px;text-align:center;font-size:26px;font-weight:800;
+  letter-spacing:.34em;color:var(--ac);opacity:0;white-space:nowrap}
+.mt-rule{position:absolute;left:470px;top:196px;width:140px;height:2px;background:var(--su);opacity:0}
+.mt-note{position:absolute;left:0;width:1080px;text-align:center;opacity:0}
+.mt-note span{display:inline-block;padding:16px 34px;border-radius:999px;background:var(--ac);color:#2B1020;
+  font-size:30px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.e-card{position:absolute;top:290px;width:356px;height:400px;border-radius:30px;
+  background:linear-gradient(160deg,#17121E 0%,#110C15 100%);border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 24px 60px rgba(0,0,0,.55);opacity:0}
+#e-a{left:142px} #e-b{left:582px}
+.e-card b{position:absolute;left:36px;top:150px;width:284px;font-size:40px;font-weight:800;line-height:1.16;
+  letter-spacing:-.015em}
+.e-card span{position:absolute;left:36px;top:280px;width:284px;font-size:28px;font-weight:500;line-height:1.3;color:var(--su)}
+.e-card i{position:absolute;left:36px;top:46px;width:62px;height:62px;border-radius:50%;
+  background:rgba(255,255,255,.1);font-style:normal;font-size:30px;font-weight:800;line-height:62px;text-align:center}
+.e-risco{position:absolute;top:468px;left:150px;width:340px;height:11px;border-radius:6px;background:#E2503F;
+  box-shadow:0 0 18px rgba(226,80,63,.6);
+  opacity:0;clip-path:inset(0% 100% 0% 0%)}
+#e-brilho{position:absolute;left:574px;top:282px;width:372px;height:416px;border-radius:34px;
+  border:3px solid var(--ac);box-shadow:0 0 46px rgba(240,168,104,.55);opacity:0}
+#e-nota{top:756px}
+</style>
+
+<div id="root" data-composition-id="martir-escolha" data-width="1080" data-height="1920" data-duration="6.5">
+<div class="mt-bg" id="martir-escolha-bg"><i></i><u></u><s></s></div>
+<div class="mt-layer" id="martir-escolha-layer">
+      <div class="mt-kicker" id="e-kicker">A ESCOLHA</div>
+      <div class="mt-rule" id="e-rule"></div>
+      <div class="e-card" id="e-a"><i>A</i><b id="e-at" data-layout-allow-occlusion>Jurar pelo imperador</b><span id="e-ad">e sair vivo do estadio</span></div>
+      <div class="e-card" id="e-b"><i>B</i><b id="e-bt" data-layout-allow-occlusion>Nao negar o Cristo</b><span id="e-bd">e morrer na fogueira</span></div>
+      <div class="e-risco" id="e-risco"></div>
+      <div id="e-brilho"></div>
+      <div class="mt-note" id="e-nota"><span id="e-nota-t">ele escolheu a segunda</span></div>
+</div>
+</div>
+
+<script>
+(function () {
+  const C = (window.__scenes || {})["martir-escolha"] || { words: [], duration: 6.5 };
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  var D = 6.5, IR = { immediateRender: false };
+
+  var P = {
+    titulo: "A ESCOLHA", // Linha curta no topo.
+    opcaoA: "Jurar pelo imperador", // Texto da opcao da esquerda.
+    detalheA: "e sair vivo do estadio", // Linha menor da opcao A; vazio esconde.
+    opcaoB: "Nao negar o Cristo", // Texto da opcao da direita.
+    detalheB: "e morrer na fogueira", // Linha menor da opcao B; vazio esconde.
+    escolhida: "B", // Qual acende: "A" ou "B". A outra e riscada.
+  };
+
+  function ext(x, y) { var o = {}, i; for (i in x) o[i] = x[i]; for (i in y) o[i] = y[i]; return o; }
+  /* Scale tweens are converted to clipping or translation for the renderer contract. */
+  function rec(axis, v) { v = Math.max(0, Math.min(1, v)); var p = (100 - v * 100).toFixed(2) + "%";
+    return axis === "x" ? "inset(0% " + p + " 0% 0%)" : "inset(" + p + " 0% 0% 0%)"; }
+  function lim(o, start) {
+    var r = {}, i;
+    for (i in o) {
+      if (i === "scale" || i === "transformOrigin" || i === "svgOrigin") continue;
+      if (i === "scaleX") { r.clipPath = rec("x", o[i]); continue; }
+      if (i === "scaleY") { r.clipPath = rec("y", o[i]); continue; }
+      r[i] = o[i];
+    }
+    if (start && ("scale" in o) && !("x" in r) && !("y" in r) && !("rotation" in r) && !("clipPath" in r)) r.y = 26;
+    return r;
+  }
+  var T = {
+    fromTo: function (s, x, y, t) { var X = lim(x, true), Y = lim(y, false); if (("y" in X) && !("y" in Y)) Y.y = 0; return tl.fromTo(s, X, Y, t); },
+    to: function (s, y, t) { return tl.to(s, lim(y, false), t); },
+    set: function (s, y, t) { return tl.set(s, lim(y, false), t); }
+  };
+  /* Format counters in a modifier so GSAP does not parse a grouped number as a decimal. */
+  function countNumber(sel, start, end, t, dur, fmt, ease) {
+    var f = fmt || function (v) { return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, "."); };
+    tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
+      immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
+  }
+  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
+
+  function painel() {
+    T.fromTo("#martir-escolha-bg", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-escolha-bg", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+    T.fromTo("#martir-escolha-layer", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-escolha-layer", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+  }
+  function titulo(sel, t) { T.fromTo(sel, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: .42, ease: "back.out(1.7)" }, t); }
+  function sobe(sel, t, d) { T.fromTo(sel, { opacity: 0, y: d == null ? 60 : d }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }, t); }
+  function selo(sel, t) { T.fromTo(sel, { opacity: 0, rotation: -22, y: -40 }, { opacity: 1, rotation: 0, y: 0, duration: .5, ease: "back.out(2.2)" }, t); }
+  function aviso(sel, t) { T.fromTo(sel, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .36, ease: "back.out(2)" }, t); }
+  function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
+  function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
+
+  txt("e-kicker", P.titulo); txt("e-at", P.opcaoA); txt("e-bt", P.opcaoB);
+  var ad = document.getElementById("e-ad"), bd = document.getElementById("e-bd");
+  if (P.detalheA) { ad.textContent = P.detalheA; } else { ad.style.display = "none"; }
+  if (P.detalheB) { bd.textContent = P.detalheB; } else { bd.style.display = "none"; }
+  var escB = String(P.escolhida || "B").toUpperCase() !== "A";
+  var risco = document.getElementById("e-risco"), brilho = document.getElementById("e-brilho");
+  risco.style.left = (escB ? 150 : 590) + "px";
+  brilho.style.left = (escB ? 574 : 134) + "px";
+  var apagada = escB ? "#e-a" : "#e-b";
+  var en = document.getElementById("e-nota"); if (en) en.style.display = "none";
+
+  painel();
+  titulo("#e-kicker", .12);
+  T.fromTo("#e-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .4, ease: "power2.out" }, .2);
+  T.fromTo("#e-a", { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }, .4);
+  T.fromTo("#e-b", { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }, .58);
+  T.fromTo("#e-risco", { opacity: 1, clipPath: "inset(0% 100% 0% 0%)" }, { opacity: 1, clipPath: "inset(0% 0% 0% 0%)", duration: .4, ease: "power2.inOut" }, 2.1);
+  T.to(apagada, ext({ opacity: .46, duration: .4, ease: "power2.out" }, IR), 2.2);
+  T.fromTo("#e-brilho", { opacity: 0 }, { opacity: 1, duration: .4, ease: "power2.out" }, 2.5);
+  T.to("#e-brilho", ext({ opacity: .55, duration: .9, yoyo: true, repeat: 2, ease: "sine.inOut" }, IR), 3.0);
+
+  tl.to({}, { duration: D }, 0);
+  window.__timelines["martir-escolha"] = tl;
+})();
+</script>
+</template>
+</body></html>

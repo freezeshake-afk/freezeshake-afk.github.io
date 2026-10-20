@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><title>editonny - Where it happened</title></head>
+<body>
+<!-- Where it happened. When naming the place: a locator pulses over a map grid with the city, the Roman province and the year. -->
+
+<template id="martir-local-template">
+<style>
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin-ext.woff2") format("woff2");font-weight:100 900;font-display:block;unicode-range:U+0100-02BA,U+1E00-1E9F,U+20A0-20C0}
+@font-face{font-family:"Playfair";src:url("assets/visuals/fonts/Playfair.ttf") format("truetype");font-weight:400 900;font-display:block}
+@font-face{font-family:"PlayfairIt";src:url("assets/visuals/fonts/Playfair-Italic.ttf") format("truetype");font-weight:400 900;font-display:block}
+#root *{margin:0;padding:0;box-sizing:border-box}
+#root{position:absolute;inset:0;overflow:hidden;font-family:"Inter",sans-serif;color:var(--tx);
+  --bg:#0A0B0F; --tx:#ffffff; --ac:#F0A868; --ac2:#F2A3B8; --su:rgba(255,255,255,.70); --ln:rgba(255,255,255,.11);}
+
+/* fundo medido do reel de referencia: base quase preta, grade de 90px e brilho quente no topo */
+.mt-bg{position:absolute;left:0;top:0;width:1080px;height:992px;background:var(--bg);opacity:0;overflow:hidden}
+.mt-bg i{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background-image:linear-gradient(to right,var(--ln) 1px,transparent 1px),linear-gradient(to bottom,var(--ln) 1px,transparent 1px);
+  background-size:90px 90px}
+.mt-bg u{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background:radial-gradient(ellipse 80% 46% at 50% 10%,rgba(255,135,55,.55) 0%,transparent 70%)}
+.mt-bg s{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;text-decoration:none;
+  background:radial-gradient(ellipse 85% 70% at 50% 46%,transparent 38%,rgba(0,0,0,.6) 100%)}
+.mt-layer{position:absolute;left:0;top:0;width:1080px;height:992px;opacity:0;overflow:hidden}
+
+.mt-kicker{position:absolute;left:0;top:148px;width:1080px;text-align:center;font-size:26px;font-weight:800;
+  letter-spacing:.34em;color:var(--ac);opacity:0;white-space:nowrap}
+.mt-rule{position:absolute;left:470px;top:196px;width:140px;height:2px;background:var(--su);opacity:0}
+.mt-note{position:absolute;left:0;width:1080px;text-align:center;opacity:0}
+.mt-note span{display:inline-block;padding:16px 34px;border-radius:999px;background:var(--ac);color:#2B1020;
+  font-size:30px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+#l-campo{position:absolute;left:140px;top:250px;width:800px;height:440px;border-radius:28px;overflow:hidden;
+  background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(240,168,104,.14) 0%,transparent 72%),#0D0E14;
+  border:1px solid rgba(255,255,255,.1);opacity:0}
+#l-campo i{position:absolute;left:0;top:0;width:800px;height:440px;display:block;
+  background-image:linear-gradient(to right,rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:50px 50px}
+.l-pt{position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22)}
+.l-anel{position:absolute;left:540px;top:470px;width:0;height:0;border-radius:50%;
+  box-shadow:0 0 0 3px var(--ac);opacity:0}
+#l-ponto{position:absolute;left:526px;top:456px;width:28px;height:28px;border-radius:50%;background:var(--ac);
+  box-shadow:0 0 30px var(--ac);opacity:0}
+#l-haste{position:absolute;left:538px;top:360px;width:4px;height:110px;background:linear-gradient(to bottom,transparent,var(--ac));opacity:0}
+#l-cidade{position:absolute;left:0;top:716px;width:1080px;text-align:center;font-family:"Playfair",serif;
+  font-weight:800;font-size:76px;letter-spacing:.03em;opacity:0}
+#l-prov{position:absolute;left:0;top:810px;width:1080px;text-align:center;font-size:32px;font-weight:500;
+  color:var(--su);opacity:0}
+#l-ano{position:absolute;left:0;top:288px;width:1080px;text-align:center;font-size:30px;font-weight:800;
+  letter-spacing:.2em;color:var(--ac);opacity:0}
+#l-nota{top:876px}
+</style>
+
+<div id="root" data-composition-id="martir-local" data-width="1080" data-height="1920" data-duration="6">
+<div class="mt-bg" id="martir-local-bg"><i></i><u></u><s></s></div>
+<div class="mt-layer" id="martir-local-layer">
+      <div class="mt-kicker" id="l-kicker">ONDE ACONTECEU</div>
+      <div class="mt-rule" id="l-rule"></div>
+      <div id="l-campo"><i></i>
+        <b class="l-pt" style="left:118px;top:96px"></b><b class="l-pt" style="left:252px;top:318px"></b>
+        <b class="l-pt" style="left:596px;top:132px"></b><b class="l-pt" style="left:680px;top:352px"></b>
+        <b class="l-pt" style="left:430px;top:66px"></b><b class="l-pt" style="left:158px;top:238px"></b>
+      </div>
+      <div id="l-ano">155 d.C.</div>
+      <div class="l-anel" id="l-r1"></div>
+      <div class="l-anel" id="l-r2"></div>
+      <div class="l-anel" id="l-r3"></div>
+      <div id="l-haste"></div>
+      <div id="l-ponto"></div>
+      <div id="l-cidade">ESMIRNA</div>
+      <div id="l-prov">provincia romana da Asia</div>
+      <div class="mt-note" id="l-nota"><span id="l-nota-t">hoje Izmir, na Turquia</span></div>
+</div>
+</div>
+
+<script>
+(function () {
+  const C = (window.__scenes || {})["martir-local"] || { words: [], duration: 6 };
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  var D = 6, IR = { immediateRender: false };
+
+  var P = {
+    cidade: "ESMIRNA", // Nome da cidade, como e falada.
+    provincia: "provincia romana da Asia", // Provincia ou regiao.
+    ano: "155 d.C.", // Ano ou periodo; vazio esconde.
+    nota: "hoje Izmir, na Turquia", // Pastilha abaixo; vazio esconde.
+  };
+
+  function ext(x, y) { var o = {}, i; for (i in x) o[i] = x[i]; for (i in y) o[i] = y[i]; return o; }
+  /* Scale tweens are converted to clipping or translation for the renderer contract. */
+  function rec(axis, v) { v = Math.max(0, Math.min(1, v)); var p = (100 - v * 100).toFixed(2) + "%";
+    return axis === "x" ? "inset(0% " + p + " 0% 0%)" : "inset(" + p + " 0% 0% 0%)"; }
+  function lim(o, start) {
+    var r = {}, i;
+    for (i in o) {
+      if (i === "scale" || i === "transformOrigin" || i === "svgOrigin") continue;
+      if (i === "scaleX") { r.clipPath = rec("x", o[i]); continue; }
+      if (i === "scaleY") { r.clipPath = rec("y", o[i]); continue; }
+      r[i] = o[i];
+    }
+    if (start && ("scale" in o) && !("x" in r) && !("y" in r) && !("rotation" in r) && !("clipPath" in r)) r.y = 26;
+    return r;
+  }
+  var T = {
+    fromTo: function (s, x, y, t) { var X = lim(x, true), Y = lim(y, false); if (("y" in X) && !("y" in Y)) Y.y = 0; return tl.fromTo(s, X, Y, t); },
+    to: function (s, y, t) { return tl.to(s, lim(y, false), t); },
+    set: function (s, y, t) { return tl.set(s, lim(y, false), t); }
+  };
+  /* Format counters in a modifier so GSAP does not parse a grouped number as a decimal. */
+  function countNumber(sel, start, end, t, dur, fmt, ease) {
+    var f = fmt || function (v) { return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, "."); };
+    tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
+      immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
+  }
+  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
+
+  function painel() {
+    T.fromTo("#martir-local-bg", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-local-bg", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+    T.fromTo("#martir-local-layer", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-local-layer", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+  }
+  function titulo(sel, t) { T.fromTo(sel, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: .42, ease: "back.out(1.7)" }, t); }
+  function sobe(sel, t, d) { T.fromTo(sel, { opacity: 0, y: d == null ? 60 : d }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }, t); }
+  function selo(sel, t) { T.fromTo(sel, { opacity: 0, rotation: -22, y: -40 }, { opacity: 1, rotation: 0, y: 0, duration: .5, ease: "back.out(2.2)" }, t); }
+  function aviso(sel, t) { T.fromTo(sel, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .36, ease: "back.out(2)" }, t); }
+  function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
+  function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
+
+  txt("l-cidade", P.cidade); txt("l-prov", P.provincia);
+  var an = document.getElementById("l-ano");
+  if (P.ano) { an.textContent = P.ano; } else { an.style.display = "none"; }
+  if (P.nota) { txt("l-nota-t", P.nota); } else { var ln = document.getElementById("l-nota"); if (ln) ln.style.display = "none"; }
+
+  painel();
+  titulo("#l-kicker", .12);
+  T.fromTo("#l-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .4, ease: "power2.out" }, .2);
+  T.fromTo("#l-campo", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }, .3);
+  if (P.ano) sobe("#l-ano", .55, 20);
+  T.fromTo("#l-haste", { opacity: 0, y: -70 }, { opacity: 1, y: 0, duration: .4, ease: "power3.in" }, .8);
+  T.fromTo("#l-ponto", { opacity: 0 }, { opacity: 1, duration: .2 }, 1.12);
+  for (var j = 0; j < 3; j++) {
+    T.fromTo("#l-r" + (j + 1), { opacity: .9, width: 0, height: 0, x: 0, y: 0 },
+      { opacity: 0, width: 300, height: 300, x: -150, y: -150, duration: 1.6, ease: "power2.out" }, 1.2 + j * .45);
+  }
+  sobe("#l-cidade", 1.5, 36);
+  sobe("#l-prov", 1.7, 22);
+  if (P.nota) aviso("#l-nota", 1.95);
+
+  tl.to({}, { duration: D }, 0);
+  window.__timelines["martir-local"] = tl;
+})();
+</script>
+</template>
+</body></html>

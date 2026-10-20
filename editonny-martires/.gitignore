@@ -1,0 +1,5 @@
+preview/*.mp4
+preview/render.log
+preview/martir-*.png
+__pycache__/
+*.pyc

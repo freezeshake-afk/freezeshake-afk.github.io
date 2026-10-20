@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><title>editonny - Persecution timeline</title></head>
+<body>
+<!-- Persecution timeline. When placing the story among the Roman persecutions: a marker travels the timeline and stops on the chosen emperor. -->
+
+<template id="martir-linha-tempo-template">
+<style>
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin-ext.woff2") format("woff2");font-weight:100 900;font-display:block;unicode-range:U+0100-02BA,U+1E00-1E9F,U+20A0-20C0}
+@font-face{font-family:"Playfair";src:url("assets/visuals/fonts/Playfair.ttf") format("truetype");font-weight:400 900;font-display:block}
+@font-face{font-family:"PlayfairIt";src:url("assets/visuals/fonts/Playfair-Italic.ttf") format("truetype");font-weight:400 900;font-display:block}
+#root *{margin:0;padding:0;box-sizing:border-box}
+#root{position:absolute;inset:0;overflow:hidden;font-family:"Inter",sans-serif;color:var(--tx);
+  --bg:#0A0B0F; --tx:#ffffff; --ac:#F0A868; --ac2:#F2A3B8; --su:rgba(255,255,255,.70); --ln:rgba(255,255,255,.11);}
+
+/* fundo medido do reel de referencia: base quase preta, grade de 90px e brilho quente no topo */
+.mt-bg{position:absolute;left:0;top:0;width:1080px;height:992px;background:var(--bg);opacity:0;overflow:hidden}
+.mt-bg i{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background-image:linear-gradient(to right,var(--ln) 1px,transparent 1px),linear-gradient(to bottom,var(--ln) 1px,transparent 1px);
+  background-size:90px 90px}
+.mt-bg u{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background:radial-gradient(ellipse 80% 46% at 50% 10%,rgba(255,135,55,.55) 0%,transparent 70%)}
+.mt-bg s{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;text-decoration:none;
+  background:radial-gradient(ellipse 85% 70% at 50% 46%,transparent 38%,rgba(0,0,0,.6) 100%)}
+.mt-layer{position:absolute;left:0;top:0;width:1080px;height:992px;opacity:0;overflow:hidden}
+
+.mt-kicker{position:absolute;left:0;top:148px;width:1080px;text-align:center;font-size:26px;font-weight:800;
+  letter-spacing:.34em;color:var(--ac);opacity:0;white-space:nowrap}
+.mt-rule{position:absolute;left:470px;top:196px;width:140px;height:2px;background:var(--su);opacity:0}
+.mt-note{position:absolute;left:0;width:1080px;text-align:center;opacity:0}
+.mt-note span{display:inline-block;padding:16px 34px;border-radius:999px;background:var(--ac);color:#2B1020;
+  font-size:30px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+#t-titulo{position:absolute;left:0;top:206px;width:1080px;text-align:center;font-family:"Playfair",serif;
+  font-weight:700;font-size:58px;letter-spacing:-.01em;opacity:0}
+#t-eixo{position:absolute;left:140px;top:560px;width:800px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)}
+#t-preenche{position:absolute;left:0;top:0;width:800px;height:4px;border-radius:2px;
+  background:linear-gradient(90deg,#F2A3B8,#F0A868)}
+.t-marco{position:absolute;top:546px;width:200px;margin-left:-100px;text-align:center;opacity:0}
+.t-marco em{position:absolute;left:98px;top:0;width:4px;height:28px;border-radius:2px;background:rgba(255,255,255,.4);font-style:normal}
+.t-marco b{position:absolute;left:0;top:44px;width:200px;font-size:34px;font-weight:800;letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums}
+.t-marco span{position:absolute;left:15px;top:-54px;width:170px;font-size:23px;font-weight:700;letter-spacing:.08em;
+  color:var(--su)}
+.t-marco.on em{background:var(--ac);height:40px;top:-6px}
+.t-marco.on b{color:var(--ac);font-size:44px;top:46px}
+.t-marco.on span{color:var(--tx)}
+#t-bola{position:absolute;top:548px;left:140px;width:30px;height:30px;margin:-13px 0 0 -15px;border-radius:50%;
+  background:#fff;box-shadow:0 0 0 10px rgba(240,168,104,.3),0 0 34px var(--ac);opacity:0}
+#t-nota{top:772px}
+</style>
+
+<div id="root" data-composition-id="martir-linha-tempo" data-width="1080" data-height="1920" data-duration="7">
+<div class="mt-bg" id="martir-linha-tempo-bg"><i></i><u></u><s></s></div>
+<div class="mt-layer" id="martir-linha-tempo-layer">
+      <div class="mt-kicker" id="t-kicker">LINHA DO TEMPO</div>
+      <div class="mt-rule" id="t-rule"></div>
+      <div id="t-titulo">Perseguicoes no Imperio</div>
+      <div id="t-eixo"><div id="t-preenche"></div></div>
+      <div id="t-marcos">
+        <div class="t-marco" id="t-m0"><span></span><em></em><b></b></div>
+        <div class="t-marco" id="t-m1"><span></span><em></em><b></b></div>
+        <div class="t-marco" id="t-m2"><span></span><em></em><b></b></div>
+        <div class="t-marco" id="t-m3"><span></span><em></em><b></b></div>
+        <div class="t-marco" id="t-m4"><span></span><em></em><b></b></div>
+        <div class="t-marco" id="t-m5"><span></span><em></em><b></b></div>
+      </div>
+      <div id="t-bola"></div>
+      <div class="mt-note" id="t-nota"><span id="t-nota-t">o ano em que Policarpo morreu</span></div>
+</div>
+</div>
+
+<script>
+(function () {
+  const C = (window.__scenes || {})["martir-linha-tempo"] || { words: [], duration: 7 };
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  var D = 7, IR = { immediateRender: false };
+
+  var P = {
+    marcos: "Nero 64|Domiciano 95|Trajano 112|Antonino 155|Decio 250", // Ate 6 marcos "Nome Ano", separados por |.
+    destaque: 4, // Qual marco acende, contando de 1.
+    titulo: "Perseguicoes no Imperio", // Titulo do painel.
+    nota: "o ano em que Policarpo morreu", // Pastilha que aparece no fim; vazio esconde.
+  };
+
+  function ext(x, y) { var o = {}, i; for (i in x) o[i] = x[i]; for (i in y) o[i] = y[i]; return o; }
+  /* Scale tweens are converted to clipping or translation for the renderer contract. */
+  function rec(axis, v) { v = Math.max(0, Math.min(1, v)); var p = (100 - v * 100).toFixed(2) + "%";
+    return axis === "x" ? "inset(0% " + p + " 0% 0%)" : "inset(" + p + " 0% 0% 0%)"; }
+  function lim(o, start) {
+    var r = {}, i;
+    for (i in o) {
+      if (i === "scale" || i === "transformOrigin" || i === "svgOrigin") continue;
+      if (i === "scaleX") { r.clipPath = rec("x", o[i]); continue; }
+      if (i === "scaleY") { r.clipPath = rec("y", o[i]); continue; }
+      r[i] = o[i];
+    }
+    if (start && ("scale" in o) && !("x" in r) && !("y" in r) && !("rotation" in r) && !("clipPath" in r)) r.y = 26;
+    return r;
+  }
+  var T = {
+    fromTo: function (s, x, y, t) { var X = lim(x, true), Y = lim(y, false); if (("y" in X) && !("y" in Y)) Y.y = 0; return tl.fromTo(s, X, Y, t); },
+    to: function (s, y, t) { return tl.to(s, lim(y, false), t); },
+    set: function (s, y, t) { return tl.set(s, lim(y, false), t); }
+  };
+  /* Format counters in a modifier so GSAP does not parse a grouped number as a decimal. */
+  function countNumber(sel, start, end, t, dur, fmt, ease) {
+    var f = fmt || function (v) { return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, "."); };
+    tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
+      immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
+  }
+  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
+
+  function painel() {
+    T.fromTo("#martir-linha-tempo-bg", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-linha-tempo-bg", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+    T.fromTo("#martir-linha-tempo-layer", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-linha-tempo-layer", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+  }
+  function titulo(sel, t) { T.fromTo(sel, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: .42, ease: "back.out(1.7)" }, t); }
+  function sobe(sel, t, d) { T.fromTo(sel, { opacity: 0, y: d == null ? 60 : d }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }, t); }
+  function selo(sel, t) { T.fromTo(sel, { opacity: 0, rotation: -22, y: -40 }, { opacity: 1, rotation: 0, y: 0, duration: .5, ease: "back.out(2.2)" }, t); }
+  function aviso(sel, t) { T.fromTo(sel, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .36, ease: "back.out(2)" }, t); }
+  function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
+  function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
+
+  txt("t-titulo", P.titulo);
+  /* Marcos sao estaticos: o apply.py renomeia IDs literais, mas nao classes
+     montadas no JS, entao nada aqui pode criar elemento ou concatenar classe. */
+  var M = partes(P.marcos).slice(0, 6); if (!M.length) M = ["Marco 1"];
+  var alvo = Math.min(Math.max(1, P.destaque | 0), M.length);
+  var passo = M.length > 1 ? 800 / (M.length - 1) : 0;
+  var larg = Math.max(90, Math.min(190, (passo || 200) - 14));
+  var marcos = [document.getElementById("t-m0"), document.getElementById("t-m1"),
+                document.getElementById("t-m2"), document.getElementById("t-m3"),
+                document.getElementById("t-m4"), document.getElementById("t-m5")];
+  for (var i = 0; i < marcos.length; i++) {
+    var el = marcos[i]; if (!el) continue;
+    if (i >= M.length) { el.style.display = "none"; continue; }
+    var corte = M[i].lastIndexOf(" "), sp = el.children[0], tick = el.children[1], bb = el.children[2];
+    el.style.left = (140 + passo * i) + "px";
+    sp.textContent = corte > 0 ? M[i].slice(0, corte) : M[i];
+    bb.textContent = corte > 0 ? M[i].slice(corte + 1) : "";
+    sp.style.width = larg + "px"; sp.style.left = ((200 - larg) / 2) + "px";
+    if (i + 1 === alvo) {
+      tick.style.background = "var(--ac)"; tick.style.height = "40px"; tick.style.top = "-6px";
+      bb.style.color = "var(--ac)"; bb.style.fontSize = "44px"; bb.style.top = "46px";
+      sp.style.color = "var(--tx)";
+    }
+  }
+  if (P.nota) { txt("t-nota-t", P.nota); } else { var tn = document.getElementById("t-nota"); if (tn) tn.style.display = "none"; }
+  var fim = 140 + passo * (alvo - 1), frac = (fim - 140) / 800;
+
+  painel();
+  titulo("#t-kicker", .12);
+  T.fromTo("#t-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .4, ease: "power2.out" }, .2);
+  sobe("#t-titulo", .3, 40);
+  T.fromTo("#t-preenche", { scaleX: 0 }, { scaleX: frac, duration: 1.5, ease: "power2.inOut" }, .9);
+  var ent = { opacity: 0, y: 24 }, sai = { opacity: 1, y: 0, duration: .34, ease: "power3.out" };
+  T.fromTo("#t-m0", ent, sai, .70); T.fromTo("#t-m1", ent, sai, .84);
+  T.fromTo("#t-m2", ent, sai, .98); T.fromTo("#t-m3", ent, sai, 1.12);
+  T.fromTo("#t-m4", ent, sai, 1.26); T.fromTo("#t-m5", ent, sai, 1.40);
+  T.fromTo("#t-bola", { opacity: 0, x: 0 }, { opacity: 1, x: 0, duration: .25 }, .85);
+  T.to("#t-bola", ext({ x: fim - 140, duration: 1.5, ease: "power2.inOut" }, IR), .9);
+  if (alvo === 1) pulsa("#t-m0", 2.5); else if (alvo === 2) pulsa("#t-m1", 2.5);
+  else if (alvo === 3) pulsa("#t-m2", 2.5); else if (alvo === 4) pulsa("#t-m3", 2.5);
+  else if (alvo === 5) pulsa("#t-m4", 2.5); else pulsa("#t-m5", 2.5);
+  if (P.nota) aviso("#t-nota", 2.8);
+
+  tl.to({}, { duration: D }, 0);
+  window.__timelines["martir-linha-tempo"] = tl;
+})();
+</script>
+</template>
+</body></html>

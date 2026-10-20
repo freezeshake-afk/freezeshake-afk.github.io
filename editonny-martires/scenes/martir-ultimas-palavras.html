@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><title>editonny - Last words quote</title></head>
+<body>
+<!-- Last words quote. For the emotional peak: the martyr's recorded words appear line by line with the attribution below. -->
+
+<template id="martir-ultimas-palavras-template">
+<style>
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin-ext.woff2") format("woff2");font-weight:100 900;font-display:block;unicode-range:U+0100-02BA,U+1E00-1E9F,U+20A0-20C0}
+@font-face{font-family:"Playfair";src:url("assets/visuals/fonts/Playfair.ttf") format("truetype");font-weight:400 900;font-display:block}
+@font-face{font-family:"PlayfairIt";src:url("assets/visuals/fonts/Playfair-Italic.ttf") format("truetype");font-weight:400 900;font-display:block}
+#root *{margin:0;padding:0;box-sizing:border-box}
+#root{position:absolute;inset:0;overflow:hidden;font-family:"Inter",sans-serif;color:var(--tx);
+  --bg:#0A0B0F; --tx:#ffffff; --ac:#F0A868; --ac2:#F2A3B8; --su:rgba(255,255,255,.70); --ln:rgba(255,255,255,.11);}
+
+/* fundo medido do reel de referencia: base quase preta, grade de 90px e brilho quente no topo */
+.mt-bg{position:absolute;left:0;top:0;width:1080px;height:992px;background:var(--bg);opacity:0;overflow:hidden}
+.mt-bg i{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background-image:linear-gradient(to right,var(--ln) 1px,transparent 1px),linear-gradient(to bottom,var(--ln) 1px,transparent 1px);
+  background-size:90px 90px}
+.mt-bg u{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background:radial-gradient(ellipse 80% 46% at 50% 10%,rgba(255,135,55,.55) 0%,transparent 70%)}
+.mt-bg s{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;text-decoration:none;
+  background:radial-gradient(ellipse 85% 70% at 50% 46%,transparent 38%,rgba(0,0,0,.6) 100%)}
+.mt-layer{position:absolute;left:0;top:0;width:1080px;height:992px;opacity:0;overflow:hidden}
+
+.mt-kicker{position:absolute;left:0;top:148px;width:1080px;text-align:center;font-size:26px;font-weight:800;
+  letter-spacing:.34em;color:var(--ac);opacity:0;white-space:nowrap}
+.mt-rule{position:absolute;left:470px;top:196px;width:140px;height:2px;background:var(--su);opacity:0}
+.mt-note{position:absolute;left:0;width:1080px;text-align:center;opacity:0}
+.mt-note span{display:inline-block;padding:16px 34px;border-radius:999px;background:var(--ac);color:#2B1020;
+  font-size:30px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+#q-aspas{position:absolute;left:0;top:188px;width:1080px;text-align:center;font-family:"Playfair",serif;
+  font-weight:900;font-size:200px;line-height:1;color:var(--ac);opacity:0}
+#q-linhas{position:absolute;left:120px;top:356px;width:840px;text-align:center}
+.q-l{font-family:"PlayfairIt",serif;font-weight:500;font-size:58px;line-height:1.3;opacity:0;white-space:nowrap}
+#q-barra{position:absolute;left:490px;top:0;width:100px;height:2px;background:var(--ac);opacity:0}
+#q-autor{position:absolute;left:120px;width:840px;text-align:center;font-size:34px;font-weight:700;
+  letter-spacing:.04em;color:var(--ac);opacity:0}
+#q-fonte{position:absolute;left:120px;width:840px;text-align:center;font-size:26px;font-weight:500;
+  letter-spacing:.08em;color:var(--su);opacity:0}
+</style>
+
+<div id="root" data-composition-id="martir-ultimas-palavras" data-width="1080" data-height="1920" data-duration="6.5">
+<div class="mt-bg" id="martir-ultimas-palavras-bg"><i></i><u></u><s></s></div>
+<div class="mt-layer" id="martir-ultimas-palavras-layer">
+      <div id="q-aspas">&ldquo;</div>
+      <div id="q-linhas">
+        <div class="q-l" id="q-l0"></div>
+        <div class="q-l" id="q-l1"></div>
+        <div class="q-l" id="q-l2"></div>
+        <div class="q-l" id="q-l3"></div>
+        <div class="q-l" id="q-l4"></div>
+      </div>
+      <div id="q-barra"></div>
+      <div id="q-autor">Policarpo de Esmirna, 155 d.C.</div>
+      <div id="q-fonte">Martirio de Policarpo, 9.3</div>
+</div>
+</div>
+
+<script>
+(function () {
+  const C = (window.__scenes || {})["martir-ultimas-palavras"] || { words: [], duration: 6.5 };
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  var D = 6.5, IR = { immediateRender: false };
+
+  var P = {
+    citacao: "Oitenta e seis anos eu o sirvo|e ele nunca me fez mal algum.|Como posso blasfemar do meu Rei,|que me salvou?", // Linhas da citacao, separadas por |.
+    autor: "Policarpo de Esmirna, 155 d.C.", // Quem disse e quando.
+    fonte: "Martirio de Policarpo, 9.3", // Referencia da fonte; vazio esconde.
+  };
+
+  function ext(x, y) { var o = {}, i; for (i in x) o[i] = x[i]; for (i in y) o[i] = y[i]; return o; }
+  /* Scale tweens are converted to clipping or translation for the renderer contract. */
+  function rec(axis, v) { v = Math.max(0, Math.min(1, v)); var p = (100 - v * 100).toFixed(2) + "%";
+    return axis === "x" ? "inset(0% " + p + " 0% 0%)" : "inset(" + p + " 0% 0% 0%)"; }
+  function lim(o, start) {
+    var r = {}, i;
+    for (i in o) {
+      if (i === "scale" || i === "transformOrigin" || i === "svgOrigin") continue;
+      if (i === "scaleX") { r.clipPath = rec("x", o[i]); continue; }
+      if (i === "scaleY") { r.clipPath = rec("y", o[i]); continue; }
+      r[i] = o[i];
+    }
+    if (start && ("scale" in o) && !("x" in r) && !("y" in r) && !("rotation" in r) && !("clipPath" in r)) r.y = 26;
+    return r;
+  }
+  var T = {
+    fromTo: function (s, x, y, t) { var X = lim(x, true), Y = lim(y, false); if (("y" in X) && !("y" in Y)) Y.y = 0; return tl.fromTo(s, X, Y, t); },
+    to: function (s, y, t) { return tl.to(s, lim(y, false), t); },
+    set: function (s, y, t) { return tl.set(s, lim(y, false), t); }
+  };
+  /* Format counters in a modifier so GSAP does not parse a grouped number as a decimal. */
+  function countNumber(sel, start, end, t, dur, fmt, ease) {
+    var f = fmt || function (v) { return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, "."); };
+    tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
+      immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
+  }
+  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
+
+  function painel() {
+    T.fromTo("#martir-ultimas-palavras-bg", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-ultimas-palavras-bg", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+    T.fromTo("#martir-ultimas-palavras-layer", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-ultimas-palavras-layer", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+  }
+  function titulo(sel, t) { T.fromTo(sel, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: .42, ease: "back.out(1.7)" }, t); }
+  function sobe(sel, t, d) { T.fromTo(sel, { opacity: 0, y: d == null ? 60 : d }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }, t); }
+  function selo(sel, t) { T.fromTo(sel, { opacity: 0, rotation: -22, y: -40 }, { opacity: 1, rotation: 0, y: 0, duration: .5, ease: "back.out(2.2)" }, t); }
+  function aviso(sel, t) { T.fromTo(sel, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .36, ease: "back.out(2)" }, t); }
+  function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
+  function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
+
+  var L = partes(P.citacao).slice(0, 5); if (!L.length) L = [" "];
+  var linhas = [document.getElementById("q-l0"), document.getElementById("q-l1"),
+                document.getElementById("q-l2"), document.getElementById("q-l3"),
+                document.getElementById("q-l4")];
+  for (var i = 0; i < linhas.length; i++) {
+    if (!linhas[i]) continue;
+    if (i < L.length) { linhas[i].textContent = L[i]; } else { linhas[i].style.display = "none"; }
+  }
+  var baseY = 356 + L.length * 58 * 1.3 + 44;
+  var ba = document.getElementById("q-barra"); if (ba) ba.style.top = baseY + "px";
+  var au = document.getElementById("q-autor"); if (au) { au.textContent = P.autor; au.style.top = (baseY + 34) + "px"; }
+  var fo = document.getElementById("q-fonte");
+  if (P.fonte && fo) { fo.textContent = P.fonte; fo.style.top = (baseY + 92) + "px"; }
+  else if (fo) { fo.style.display = "none"; }
+
+  painel();
+  T.fromTo("#q-aspas", { opacity: 0, y: -40 }, { opacity: .5, y: 0, duration: .5, ease: "power3.out" }, .15);
+  var eq = { opacity: 0, y: 34 }, sq = { opacity: 1, y: 0, duration: .46, ease: "power3.out" };
+  T.fromTo("#q-l0", eq, sq, .55); T.fromTo("#q-l1", eq, sq, .85);
+  T.fromTo("#q-l2", eq, sq, 1.15); T.fromTo("#q-l3", eq, sq, 1.45);
+  T.fromTo("#q-l4", eq, sq, 1.75);
+  var fimLinhas = .55 + L.length * .3;
+  T.fromTo("#q-barra", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .4, ease: "power2.out" }, fimLinhas + .1);
+  sobe("#q-autor", fimLinhas + .25, 22);
+  if (P.fonte) sobe("#q-fonte", fimLinhas + .45, 16);
+
+  tl.to({}, { duration: D }, 0);
+  window.__timelines["martir-ultimas-palavras"] = tl;
+})();
+</script>
+</template>
+</body></html>

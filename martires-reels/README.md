@@ -1,5 +1,16 @@
 # martires-reels
 
+> **Leia antes:** o vídeo de referência foi editado com o
+> [editonny](https://github.com/soumatheusgomes/editonny), que faz tudo o que este
+> pipeline faz e muito mais (145 cenas, transcrição, limpeza automática de pausas e
+> erros, trilha, revisão por amostra). Para o nicho de mártires, veja
+> [`editonny-martires/`](../editonny-martires/) neste mesmo repositório.
+>
+> Este pipeline continua aqui porque é simples, roda só com ffmpeg + Python e é
+> todo seu para mexer. As medições do vídeo de referência em `tema.json` também
+> valem como documentação do estilo.
+
+
 Editor automático de Reels no estilo do vídeo de referência, para o nicho de
 **mártires cristãos**. Você gera os clipes do seu clone no **Google Flow**,
 escreve o roteiro com marcadores, e o programa monta o vídeo final pronto pro

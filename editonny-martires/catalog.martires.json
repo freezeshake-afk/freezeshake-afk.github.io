@@ -1,0 +1,228 @@
+{
+ "version": "martires-1",
+ "scenes": [
+  {
+   "id": "martir-ficha",
+   "file": "compositions/scenes/visuals/martir-ficha.html",
+   "name": "Martyr record card",
+   "category": "Martires",
+   "whenToUse": "When introducing the martyr: name, years, city and a short note on a stone record card.",
+   "duration": 6.0,
+   "format": "9:16",
+   "layout": "frame",
+   "parameters": {
+    "nome": {
+     "default": "Policarpo de Esmirna",
+     "summary": "Nome do martir, como e falado."
+    },
+    "anos": {
+     "default": "c. 69 - 155 d.C.",
+     "summary": "Periodo de vida ou o ano do martirio."
+    },
+    "cidade": {
+     "default": "Esmirna, provincia da Asia",
+     "summary": "Cidade e provincia romana."
+    },
+    "nota": {
+     "default": "discipulo do apostolo Joao",
+     "summary": "Linha curta de contexto; vazio esconde a pastilha."
+    }
+   },
+   "hidesCaptions": true,
+   "texts": [
+    "MARTIR",
+    "Policarpo de Esmirna",
+    "c. 69 - 155 d.C.",
+    "Esmirna, provincia da Asia",
+    "discipulo do apostolo Joao"
+   ]
+  },
+  {
+   "id": "martir-linha-tempo",
+   "file": "compositions/scenes/visuals/martir-linha-tempo.html",
+   "name": "Persecution timeline",
+   "category": "Martires",
+   "whenToUse": "When placing the story among the Roman persecutions: a marker travels the timeline and stops on the chosen emperor.",
+   "duration": 7.0,
+   "format": "9:16",
+   "layout": "frame",
+   "parameters": {
+    "marcos": {
+     "default": "Nero 64|Domiciano 95|Trajano 112|Antonino 155|Decio 250",
+     "summary": "Ate 6 marcos \"Nome Ano\", separados por |."
+    },
+    "destaque": {
+     "default": 4,
+     "summary": "Qual marco acende, contando de 1."
+    },
+    "titulo": {
+     "default": "Perseguicoes no Imperio",
+     "summary": "Titulo do painel."
+    },
+    "nota": {
+     "default": "o ano em que Policarpo morreu",
+     "summary": "Pastilha que aparece no fim; vazio esconde."
+    }
+   },
+   "hidesCaptions": true,
+   "texts": [
+    "LINHA DO TEMPO",
+    "Perseguicoes no Imperio",
+    "Nero 64",
+    "Decio 250",
+    "o ano em que Policarpo morreu"
+   ]
+  },
+  {
+   "id": "martir-ultimas-palavras",
+   "file": "compositions/scenes/visuals/martir-ultimas-palavras.html",
+   "name": "Last words quote",
+   "category": "Martires",
+   "whenToUse": "For the emotional peak: the martyr's recorded words appear line by line with the attribution below.",
+   "duration": 6.5,
+   "format": "9:16",
+   "layout": "frame",
+   "parameters": {
+    "citacao": {
+     "default": "Oitenta e seis anos eu o sirvo|e ele nunca me fez mal algum.|Como posso blasfemar do meu Rei,|que me salvou?",
+     "summary": "Linhas da citacao, separadas por |."
+    },
+    "autor": {
+     "default": "Policarpo de Esmirna, 155 d.C.",
+     "summary": "Quem disse e quando."
+    },
+    "fonte": {
+     "default": "Martirio de Policarpo, 9.3",
+     "summary": "Referencia da fonte; vazio esconde."
+    }
+   },
+   "hidesCaptions": true,
+   "texts": [
+    "Oitenta e seis anos eu o sirvo",
+    "Como posso blasfemar do meu Rei, que me salvou?",
+    "Policarpo de Esmirna, 155 d.C.",
+    "Martirio de Policarpo, 9.3"
+   ]
+  },
+  {
+   "id": "martir-contador",
+   "file": "compositions/scenes/visuals/martir-contador.html",
+   "name": "Martyr number counter",
+   "category": "Martires",
+   "whenToUse": "When a single number carries the weight: years of service, age, how many died, how long the persecution lasted.",
+   "duration": 5.0,
+   "format": "9:16",
+   "layout": "frame",
+   "parameters": {
+    "valor": {
+     "default": 86,
+     "summary": "Numero final."
+    },
+    "de": {
+     "default": 0,
+     "summary": "Numero inicial da contagem."
+    },
+    "unidade": {
+     "default": "anos",
+     "summary": "Sufixo pequeno ao lado do numero; vazio esconde."
+    },
+    "rotulo": {
+     "default": "SERVINDO A CRISTO",
+     "summary": "Linha curta acima do numero."
+    },
+    "nota": {
+     "default": "e ele nao negaria na ultima hora",
+     "summary": "Pastilha abaixo; vazio esconde."
+    }
+   },
+   "hidesCaptions": true,
+   "texts": [
+    "O NUMERO",
+    "SERVINDO A CRISTO",
+    "86",
+    "anos",
+    "e ele nao negaria na ultima hora"
+   ]
+  },
+  {
+   "id": "martir-escolha",
+   "file": "compositions/scenes/visuals/martir-escolha.html",
+   "name": "The choice",
+   "category": "Martires",
+   "whenToUse": "When the martyr is offered a way out: two options appear, one is crossed out and the other lights up.",
+   "duration": 6.5,
+   "format": "9:16",
+   "layout": "frame",
+   "parameters": {
+    "titulo": {
+     "default": "A ESCOLHA",
+     "summary": "Linha curta no topo."
+    },
+    "opcaoA": {
+     "default": "Jurar pelo imperador",
+     "summary": "Texto da opcao da esquerda."
+    },
+    "detalheA": {
+     "default": "e sair vivo do estadio",
+     "summary": "Linha menor da opcao A; vazio esconde."
+    },
+    "opcaoB": {
+     "default": "Nao negar o Cristo",
+     "summary": "Texto da opcao da direita."
+    },
+    "detalheB": {
+     "default": "e morrer na fogueira",
+     "summary": "Linha menor da opcao B; vazio esconde."
+    },
+    "escolhida": {
+     "default": "B",
+     "summary": "Qual acende: \"A\" ou \"B\". A outra e riscada."
+    }
+   },
+   "hidesCaptions": true,
+   "texts": [
+    "A ESCOLHA",
+    "Jurar pelo imperador",
+    "Nao negar o Cristo",
+    "e sair vivo do estadio",
+    "e morrer na fogueira"
+   ]
+  },
+  {
+   "id": "martir-local",
+   "file": "compositions/scenes/visuals/martir-local.html",
+   "name": "Where it happened",
+   "category": "Martires",
+   "whenToUse": "When naming the place: a locator pulses over a map grid with the city, the Roman province and the year.",
+   "duration": 6.0,
+   "format": "9:16",
+   "layout": "frame",
+   "parameters": {
+    "cidade": {
+     "default": "ESMIRNA",
+     "summary": "Nome da cidade, como e falada."
+    },
+    "provincia": {
+     "default": "provincia romana da Asia",
+     "summary": "Provincia ou regiao."
+    },
+    "ano": {
+     "default": "155 d.C.",
+     "summary": "Ano ou periodo; vazio esconde."
+    },
+    "nota": {
+     "default": "hoje Izmir, na Turquia",
+     "summary": "Pastilha abaixo; vazio esconde."
+    }
+   },
+   "hidesCaptions": true,
+   "texts": [
+    "ONDE ACONTECEU",
+    "ESMIRNA",
+    "provincia romana da Asia",
+    "155 d.C.",
+    "hoje Izmir, na Turquia"
+   ]
+  }
+ ]
+}

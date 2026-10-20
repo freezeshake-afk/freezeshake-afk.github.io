@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><title>editonny - Martyr number counter</title></head>
+<body>
+<!-- Martyr number counter. When a single number carries the weight: years of service, age, how many died, how long the persecution lasted. -->
+
+<template id="martir-contador-template">
+<style>
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Inter";src:url("assets/visuals/fonts/inter-var-latin-ext.woff2") format("woff2");font-weight:100 900;font-display:block;unicode-range:U+0100-02BA,U+1E00-1E9F,U+20A0-20C0}
+@font-face{font-family:"Playfair";src:url("assets/visuals/fonts/Playfair.ttf") format("truetype");font-weight:400 900;font-display:block}
+@font-face{font-family:"PlayfairIt";src:url("assets/visuals/fonts/Playfair-Italic.ttf") format("truetype");font-weight:400 900;font-display:block}
+#root *{margin:0;padding:0;box-sizing:border-box}
+#root{position:absolute;inset:0;overflow:hidden;font-family:"Inter",sans-serif;color:var(--tx);
+  --bg:#0A0B0F; --tx:#ffffff; --ac:#F0A868; --ac2:#F2A3B8; --su:rgba(255,255,255,.70); --ln:rgba(255,255,255,.11);}
+
+/* fundo medido do reel de referencia: base quase preta, grade de 90px e brilho quente no topo */
+.mt-bg{position:absolute;left:0;top:0;width:1080px;height:992px;background:var(--bg);opacity:0;overflow:hidden}
+.mt-bg i{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background-image:linear-gradient(to right,var(--ln) 1px,transparent 1px),linear-gradient(to bottom,var(--ln) 1px,transparent 1px);
+  background-size:90px 90px}
+.mt-bg u{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;
+  background:radial-gradient(ellipse 80% 46% at 50% 10%,rgba(255,135,55,.55) 0%,transparent 70%)}
+.mt-bg s{position:absolute;left:0;top:0;width:1080px;height:992px;display:block;text-decoration:none;
+  background:radial-gradient(ellipse 85% 70% at 50% 46%,transparent 38%,rgba(0,0,0,.6) 100%)}
+.mt-layer{position:absolute;left:0;top:0;width:1080px;height:992px;opacity:0;overflow:hidden}
+
+.mt-kicker{position:absolute;left:0;top:148px;width:1080px;text-align:center;font-size:26px;font-weight:800;
+  letter-spacing:.34em;color:var(--ac);opacity:0;white-space:nowrap}
+.mt-rule{position:absolute;left:470px;top:196px;width:140px;height:2px;background:var(--su);opacity:0}
+.mt-note{position:absolute;left:0;width:1080px;text-align:center;opacity:0}
+.mt-note span{display:inline-block;padding:16px 34px;border-radius:999px;background:var(--ac);color:#2B1020;
+  font-size:30px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+#c-rotulo{position:absolute;left:0;top:356px;width:1080px;text-align:center;font-size:32px;font-weight:800;
+  letter-spacing:.24em;color:var(--ac);opacity:0}
+#c-num{position:absolute;left:0;top:398px;width:1080px;text-align:center;font-weight:800;font-size:250px;
+  line-height:1;letter-spacing:-.05em;font-variant-numeric:tabular-nums;opacity:0;white-space:nowrap}
+#c-num small{font-size:72px;font-weight:600;letter-spacing:-.02em;margin-left:16px;color:var(--su)}
+#c-linha{position:absolute;left:420px;top:720px;width:240px;height:2px;background:rgba(255,255,255,.2);opacity:0}
+#c-nota{top:788px}
+</style>
+
+<div id="root" data-composition-id="martir-contador" data-width="1080" data-height="1920" data-duration="5">
+<div class="mt-bg" id="martir-contador-bg"><i></i><u></u><s></s></div>
+<div class="mt-layer" id="martir-contador-layer">
+      <div class="mt-kicker" id="c-kicker">O NUMERO</div>
+      <div class="mt-rule" id="c-rule"></div>
+      <div id="c-rotulo">SERVINDO A CRISTO</div>
+      <div id="c-num"><span id="c-v">0</span><small id="c-u">anos</small></div>
+      <div id="c-linha"></div>
+      <div class="mt-note" id="c-nota"><span id="c-nota-t">e ele nao negaria na ultima hora</span></div>
+</div>
+</div>
+
+<script>
+(function () {
+  const C = (window.__scenes || {})["martir-contador"] || { words: [], duration: 5 };
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  var D = 5, IR = { immediateRender: false };
+
+  var P = {
+    valor: 86, // Numero final.
+    de: 0, // Numero inicial da contagem.
+    unidade: "anos", // Sufixo pequeno ao lado do numero; vazio esconde.
+    rotulo: "SERVINDO A CRISTO", // Linha curta acima do numero.
+    nota: "e ele nao negaria na ultima hora", // Pastilha abaixo; vazio esconde.
+  };
+
+  function ext(x, y) { var o = {}, i; for (i in x) o[i] = x[i]; for (i in y) o[i] = y[i]; return o; }
+  /* Scale tweens are converted to clipping or translation for the renderer contract. */
+  function rec(axis, v) { v = Math.max(0, Math.min(1, v)); var p = (100 - v * 100).toFixed(2) + "%";
+    return axis === "x" ? "inset(0% " + p + " 0% 0%)" : "inset(" + p + " 0% 0% 0%)"; }
+  function lim(o, start) {
+    var r = {}, i;
+    for (i in o) {
+      if (i === "scale" || i === "transformOrigin" || i === "svgOrigin") continue;
+      if (i === "scaleX") { r.clipPath = rec("x", o[i]); continue; }
+      if (i === "scaleY") { r.clipPath = rec("y", o[i]); continue; }
+      r[i] = o[i];
+    }
+    if (start && ("scale" in o) && !("x" in r) && !("y" in r) && !("rotation" in r) && !("clipPath" in r)) r.y = 26;
+    return r;
+  }
+  var T = {
+    fromTo: function (s, x, y, t) { var X = lim(x, true), Y = lim(y, false); if (("y" in X) && !("y" in Y)) Y.y = 0; return tl.fromTo(s, X, Y, t); },
+    to: function (s, y, t) { return tl.to(s, lim(y, false), t); },
+    set: function (s, y, t) { return tl.set(s, lim(y, false), t); }
+  };
+  /* Format counters in a modifier so GSAP does not parse a grouped number as a decimal. */
+  function countNumber(sel, start, end, t, dur, fmt, ease) {
+    var f = fmt || function (v) { return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, "."); };
+    tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
+      immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
+  }
+  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
+
+  function painel() {
+    T.fromTo("#martir-contador-bg", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-contador-bg", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+    T.fromTo("#martir-contador-layer", { opacity: 0 }, { opacity: 1, duration: .22 }, 0);
+    T.to("#martir-contador-layer", ext({ opacity: 0, duration: .22 }, IR), D - .22);
+  }
+  function titulo(sel, t) { T.fromTo(sel, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: .42, ease: "back.out(1.7)" }, t); }
+  function sobe(sel, t, d) { T.fromTo(sel, { opacity: 0, y: d == null ? 60 : d }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }, t); }
+  function selo(sel, t) { T.fromTo(sel, { opacity: 0, rotation: -22, y: -40 }, { opacity: 1, rotation: 0, y: 0, duration: .5, ease: "back.out(2.2)" }, t); }
+  function aviso(sel, t) { T.fromTo(sel, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .36, ease: "back.out(2)" }, t); }
+  function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
+  function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
+
+  txt("c-rotulo", P.rotulo);
+  var un = document.getElementById("c-u");
+  if (P.unidade) { un.textContent = P.unidade; } else { un.style.display = "none"; }
+  if (P.nota) { txt("c-nota-t", P.nota); } else { var cn = document.getElementById("c-nota"); if (cn) cn.style.display = "none"; }
+  var vi = Number(P.de) || 0, vf = Number(P.valor) || 0;
+
+  painel();
+  titulo("#c-kicker", .12);
+  T.fromTo("#c-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .4, ease: "power2.out" }, .2);
+  sobe("#c-rotulo", .34, 28);
+  T.fromTo("#c-num", { opacity: 0, y: 54 }, { opacity: 1, y: 0, duration: .48, ease: "expo.out" }, .54);
+  countNumber("#c-v", vi, vf, .62, 1.5, function (v) { return String(Math.round(v)); }, "power2.out");
+  pulsa("#c-num", 2.18);
+  T.fromTo("#c-linha", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .4 }, 2.3);
+  if (P.nota) aviso("#c-nota", 2.45);
+
+  tl.to({}, { duration: D }, 0);
+  window.__timelines["martir-contador"] = tl;
+})();
+</script>
+</template>
+</body></html>
