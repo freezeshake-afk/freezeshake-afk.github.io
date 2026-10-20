@@ -128,6 +128,10 @@ para o Google Flow (bloco fixo que mantém o avatar igual nos 8 clipes), a
 fórmula do gancho com banco de exemplos, a estrutura de 60–75s mapeada nas seis
 cenas, e um roteiro completo do Policarpo já fatiado em clipes de 8 segundos.
 
+**Prompts prontos pra colar no Flow:**
+[`roteiros/PROMPTS-FLOW.md`](roteiros/PROMPTS-FLOW.md) — imagem mestre do avatar
+de podcast e os 18 prompts de vídeo (Estêvão e Policarpo).
+
 Roteiros prontos em [`roteiros/`](roteiros/). O do
 [Estêvão](roteiros/estevao.md) traz também um calendário de 39 vídeos com a
 fonte primária de cada mártir e as datas que estão em disputa.
