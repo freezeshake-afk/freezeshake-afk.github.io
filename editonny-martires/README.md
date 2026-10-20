@@ -121,6 +121,13 @@ Campo vazio esconde o elemento em vez de deixar um buraco.
 
 ---
 
+## Escrever o roteiro e gerar os clipes
+
+O [guia de roteiro e Flow](roteiros/GUIA-ROTEIRO-E-FLOW.md) tem o prompt mestre
+para o Google Flow (bloco fixo que mantém o avatar igual nos 8 clipes), a
+fórmula do gancho com banco de exemplos, a estrutura de 60–75s mapeada nas seis
+cenas, e um roteiro completo do Policarpo já fatiado em clipes de 8 segundos.
+
 ## Mexer no visual
 
 Não edite os HTML em `scenes/` na mão — eles são **gerados**. O arquivo que vale
