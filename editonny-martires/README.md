@@ -138,6 +138,10 @@ para o Google Flow (bloco fixo que mantém o avatar igual nos 8 clipes), a
 fórmula do gancho com banco de exemplos, a estrutura de 60–75s mapeada nas seis
 cenas, e um roteiro completo do Policarpo já fatiado em clipes de 8 segundos.
 
+**Prompts prontos, é só copiar e colar — nada pra montar:**
+[`roteiros/PROMPTS-ANDRE-COPIAR-COLAR.md`](roteiros/PROMPTS-ANDRE-COPIAR-COLAR.md)
+— 12 blocos completos do André (1 imagem + 11 vídeos), ~1min50.
+
 **Prompts encadeados (cada clipe parte do último frame do anterior):**
 [`roteiros/PROMPTS-ESTEVAO-ENCADEADO.md`](roteiros/PROMPTS-ESTEVAO-ENCADEADO.md)
 — Estêvão em 7 clipes de 10s, ~70s de vídeo.
