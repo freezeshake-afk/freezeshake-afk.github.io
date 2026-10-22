@@ -100,3 +100,60 @@ pedra, glow na redenção, vinheta no peso. Efeito que só enfeita, tira.
 Sons de efeito ficaram **desligados** nesta versão (`apply.py --sounds` adiciona
 os 15 sugeridos). Com whoosh em todo zoom o vídeo fica barulhento; vale testar
 ligando só nos dois ou três maiores.
+
+
+---
+
+## v3: o que mudou
+
+### Cortar o ar morto vale mais que qualquer efeito
+
+Os clipes do Flow vêm com silêncio nas bordas: a fala começa depois que o clipe
+começa e acaba antes de ele terminar. No Estêvão eram **5,66 s em 70 s — 8% do
+vídeo**. Medindo a envoltória de energia de cada janela de 10 s e recortando com
+0,08 s de respiro na entrada e 0,14 s na saída, o vídeo caiu para 65,9 s e cada
+emenda passou a estalar.
+
+Faça isso **antes** de posicionar qualquer coisa.
+
+### Ancore em palavra, não em segundo
+
+Depois de reapertar o corte, todo tempo absoluto quebra. A solução é anotar o
+plano em cima do roteiro alinhado:
+
+```python
+ZOOMS = [("assassinato", 1.34, None, 0.13, "whoosh"), ...]
+TRANSICOES = [("transition-flash", round(t("apedrejar") + 0.05, 2)), ...]
+```
+
+Assim o plano sobrevive a recorte, regeração de clipe e troca de take.
+
+### Três recursos novos
+
+- **`text-two-line-title`** no gancho: linha pequena em cima, linha grande em
+  âmbar embaixo. Vale mais que legenda normal nos primeiros 3 segundos.
+- **`text-pop`** no pico: legenda de 2 palavras gigantes com a última em cor de
+  destaque. É uma cena de legenda, então usa as palavras reais do roteiro.
+- **`text-impact`** na virada: frase em duas linhas com halo.
+
+### Armadilha: parâmetro documentado que não funciona
+
+A cena `text-impact` declara o parâmetro **`glow`**, mas o código lê
+**`P.sparkle`**, que não existe no bloco `var P` — então ele cai no verde padrão
+e o botão documentado não faz nada. Até achar, o halo saía verde num vídeo
+âmbar.
+
+Contorno: renomeie a chave no bloco da cópia:
+
+```python
+if "sparkle:" not in c:
+    c = c.replace("\n    glow:", "\n    sparkle:", 1)
+```
+
+Vale conferir o `var P` da cópia contra o que o código realmente lê sempre que
+um parâmetro parecer ignorado.
+
+### E uma de bom senso
+
+`martir-contador` com `valor: 1` e `de: 0` passa a maior parte da animação
+mostrando **0**. Contar até 1 não faz sentido: use `de: 1`.
