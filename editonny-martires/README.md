@@ -146,7 +146,8 @@ cenas, e um roteiro completo do Policarpo já fatiado em clipes de 8 segundos.
 [`roteiros/PROMPTS-FLOW.md`](roteiros/PROMPTS-FLOW.md) — imagem mestre do avatar
 de podcast e os 18 prompts de vídeo (Estêvão e Policarpo).
 
-Roteiros prontos em [`roteiros/`](roteiros/). O do
+Roteiros prontos em [`roteiros/`](roteiros/): Estêvão, Policarpo e
+[André](roteiros/andre.md). O do
 [Estêvão](roteiros/estevao.md) traz também um calendário de 39 vídeos com a
 fonte primária de cada mártir e as datas que estão em disputa.
 

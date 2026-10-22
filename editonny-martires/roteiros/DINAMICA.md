@@ -157,3 +157,72 @@ um parâmetro parecer ignorado.
 
 `martir-contador` com `valor: 1` e `de: 0` passa a maior parte da animação
 mostrando **0**. Contar até 1 não faz sentido: use `de: 1`.
+
+
+---
+
+## O que dois virais de referência ensinam (medido)
+
+Dois vídeos de política brasileira usados como referência de edição. Medi em vez
+de achar, e o resultado contraria o instinto.
+
+| | referência A | referência B | meu v3 |
+|---|---|---|---|
+| duração | 2min39 | 4min12 | 1min06 |
+| cortes | 1 a cada **7,9 s** | 1 a cada **3,9 s** | 4 trocas de painel |
+| eventos de edição | poucos | quase nenhum | 1 a cada 2,3 s |
+| legenda | caixa alta pequena + gráficos | **frase minúscula**, y 0,586 | CAIXA ALTA, y 0,748 |
+| música | nenhuma | nenhuma | trilha baixa |
+
+### 1. Eles são mais calmos, não mais agitados
+
+A corta a cada 8 segundos. Nenhum dos dois tem motion graphics constante. O que
+segura não é efeito, é **densidade de informação** — eles entregam fato atrás de
+fato sem respiro de conteúdo.
+
+Conclusão desconfortável: dinamismo visual tem teto, e eu provavelmente passei
+dele no v3.
+
+### 2. A legenda deles é legível, não decorativa
+
+A referência B usa **frase inteira em caixa baixa, duas linhas, centro em 0,586
+da altura** — bem mais alta que a minha (0,748) e com cobertura de 92% do tempo,
+trocando a cada ~1,5 s.
+
+É um visual de documentário, não de viral de nicho. Para histórias de mártires
+isso provavelmente cai melhor que o bloco de 2-3 palavras em caixa alta.
+
+Para trocar, no `project.json`:
+
+```json
+"captions": {"enabled": true, "style": "standard", "maxWords": 6, "inFrame": true}
+```
+
+e suba a posição. Vale testar as duas versões do mesmo vídeo.
+
+### 3. Prova em vez de gráfico
+
+Entre 10 s e 15 s, a referência B emenda **oito clipes de outras pessoas** —
+vídeos comuns de rede social, cada um com meio segundo, legendas originais à
+mostra. É um muro de vozes como prova social.
+
+O equivalente honesto no nicho de mártires não é vídeo de terceiros: é **a
+fonte**. Versículo na tela, página do relato, mapa, ícone antigo. É o papel que
+as cenas do pacote já cumprem — e sugere usar mais delas, não mais efeito.
+
+### 4. A fala
+
+O apresentador das duas referências não é acelerado. Ele é **firme e
+articulado**: segura o olhar, gesticula sem parar com as mãos abertas perto do
+peito, e marca a palavra importante com uma **pausa curta antes dela**, não
+levantando a voz.
+
+Isso muda o bloco de entrega dos prompts do Flow. A versão nova está em
+[`andre.md`](andre.md); a antiga pedia "fala rápida e intensa", que puxa para o
+lado errado.
+
+### 5. Duração
+
+Os dois passam de 2 minutos. Não quer dizer que vídeo longo viraliza — quer
+dizer que **o limite não é o relógio, é o conteúdo**. Se a história tem fato
+novo a cada frase, ela sustenta. Se tem enchimento, 60 s já é longo.
