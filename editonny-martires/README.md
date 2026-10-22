@@ -145,6 +145,25 @@ Roteiros prontos em [`roteiros/`](roteiros/). O do
 [Estêvão](roteiros/estevao.md) traz também um calendário de 39 vídeos com a
 fonte primária de cada mártir e as datas que estão em disputa.
 
+## Erros de autoria que o motor pegou
+
+Dois bugs reais apareceram ao montar o primeiro vídeo de verdade. Os dois
+vinham de IDs renomeados e nenhum aparecia na validação com valores padrão:
+
+1. **Helper com id em string solta.** `txt("f-nome", P.nome)` fazia
+   `getElementById(id)` com variável. O `apply.py` só reescreve o id quando ele
+   aparece literal na chamada, então o helper procurava um id que não existia
+   mais e os parâmetros não apareciam — o card mostrava os valores padrão. Hoje
+   o helper recebe o **elemento**: `setTexto(document.getElementById("f-nome"), v)`.
+2. **Comentário com chamada dentro.** O `check_ids` varre o script inteiro,
+   inclusive comentários. Um comentário que citava uma chamada de busca por id
+   fez o `apply.py` recusar a cena inteira.
+
+E uma lição de layout: a legenda no modo frame ocupa a faixa logo acima da
+moldura (~y 820–890 em 1920). Conteúdo de painel precisa terminar antes de
+~810, senão o `check` reprova por sobreposição. O `validar.py` agora roda com
+legenda ligada justamente para pegar isso.
+
 ## Mexer no visual
 
 Não edite os HTML em `scenes/` na mão — eles são **gerados**. O arquivo que vale

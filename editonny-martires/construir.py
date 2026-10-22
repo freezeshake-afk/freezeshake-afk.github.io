@@ -91,7 +91,9 @@ ESQUELETO = r"""<!doctype html>
     tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
       immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
   }
-  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  /* Recebe o elemento, nunca o id em string: o apply.py renomeia os IDs e so
+     reescreve a busca quando o id aparece literal na chamada. Id solto nao casa. */
+  function setTexto(e, v) { if (e) e.textContent = v; }
   function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
 
   function painel() {
@@ -123,7 +125,7 @@ CENAS = []
 
 
 def cena(id, nome, quando, dur, params, css, html, aplicar, timeline,
-         categoria="Martires", layout="frame", esconde_legendas=True, textos=None):
+         categoria="Martires", layout="frame", esconde_legendas=False, textos=None):
     CENAS.append(dict(id=id, nome=nome, quando=quando, dur=dur, params=params, css=css,
                       html=html, aplicar=aplicar, timeline=timeline, categoria=categoria,
                       layout=layout, esconde=esconde_legendas, textos=textos or []))
@@ -140,22 +142,22 @@ cena(
     cidade: "Esmirna, provincia da Asia", // Cidade e provincia romana.
     nota: "discipulo do apostolo Joao", // Linha curta de contexto; vazio esconde a pastilha.''',
     css=r"""
-#f-card{position:absolute;left:190px;top:236px;width:700px;height:610px;border-radius:34px;
+#f-card{position:absolute;left:190px;top:236px;width:700px;height:480px;border-radius:34px;
   background:linear-gradient(160deg,#1B1320 0%,#120C16 100%);border:1px solid rgba(255,190,150,.22);
   box-shadow:0 30px 80px rgba(0,0,0,.62);opacity:0}
-#f-selo{position:absolute;left:470px;top:286px;width:140px;height:140px;border-radius:50%;
+#f-selo{position:absolute;left:470px;top:272px;width:140px;height:140px;border-radius:50%;
   background:linear-gradient(135deg,#F2A3B8,#F6C9A0);box-shadow:0 10px 36px rgba(240,150,90,.45);opacity:0}
 #f-selo b{position:absolute;left:64px;top:30px;width:12px;height:80px;border-radius:3px;background:#2B1020}
 #f-selo i{position:absolute;left:38px;top:56px;width:64px;height:12px;border-radius:3px;background:#2B1020}
-#f-nome{position:absolute;left:220px;top:448px;width:640px;height:150px;display:flex;align-items:center;
+#f-nome{position:absolute;left:220px;top:432px;width:640px;height:140px;display:flex;align-items:center;
   justify-content:center;text-align:center;font-family:"Playfair",serif;font-weight:800;font-size:76px;
   line-height:1.06;letter-spacing:-.015em;opacity:0}
-#f-anos{position:absolute;left:220px;top:618px;width:640px;text-align:center;font-size:36px;font-weight:700;
+#f-anos{position:absolute;left:220px;top:586px;width:640px;text-align:center;font-size:36px;font-weight:700;
   letter-spacing:.06em;color:var(--ac);opacity:0}
-#f-linha{position:absolute;left:420px;top:678px;width:240px;height:1px;background:rgba(255,255,255,.22);opacity:0}
-#f-cidade{position:absolute;left:220px;top:708px;width:640px;text-align:center;font-size:32px;font-weight:500;
+#f-linha{position:absolute;left:420px;top:640px;width:240px;height:1px;background:rgba(255,255,255,.22);opacity:0}
+#f-cidade{position:absolute;left:220px;top:666px;width:640px;text-align:center;font-size:32px;font-weight:500;
   color:var(--su);opacity:0}
-#f-nota{top:886px}""",
+#f-nota{top:735px}""",
     html=r"""      <div class="mt-kicker" id="f-kicker">MARTIR</div>
       <div class="mt-rule" id="f-rule"></div>
       <div id="f-card"></div>
@@ -165,11 +167,11 @@ cena(
       <div id="f-linha"></div>
       <div id="f-cidade">Esmirna, provincia da Asia</div>
       <div class="mt-note" id="f-nota"><span id="f-nota-t">discipulo do apostolo Joao</span></div>""",
-    aplicar=r"""  txt("f-nome", P.nome); txt("f-anos", P.anos); txt("f-cidade", P.cidade);
+    aplicar=r"""  setTexto(document.getElementById("f-nome"), P.nome); setTexto(document.getElementById("f-anos"), P.anos); setTexto(document.getElementById("f-cidade"), P.cidade);
   /* O nome encolhe sozinho para nunca invadir a linha dos anos. */
   var elNome = document.getElementById("f-nome"), nq = String(P.nome || "").length;
   if (elNome) elNome.style.fontSize = (nq > 30 ? 48 : nq > 22 ? 58 : nq > 16 ? 66 : 76) + "px";
-  if (P.nota) { txt("f-nota-t", P.nota); } else { var n = document.getElementById("f-nota"); if (n) n.style.display = "none"; }""",
+  if (P.nota) { setTexto(document.getElementById("f-nota-t"), P.nota); } else { var n = document.getElementById("f-nota"); if (n) n.style.display = "none"; }""",
     timeline=r"""  painel();
   titulo("#f-kicker", .12);
   T.fromTo("#f-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .4, ease: "power2.out" }, .22);
@@ -212,7 +214,7 @@ cena(
 .t-marco.on span{color:var(--tx)}
 #t-bola{position:absolute;top:548px;left:140px;width:30px;height:30px;margin:-13px 0 0 -15px;border-radius:50%;
   background:#fff;box-shadow:0 0 0 10px rgba(240,168,104,.3),0 0 34px var(--ac);opacity:0}
-#t-nota{top:772px}""",
+#t-nota{top:700px}""",
     html=r"""      <div class="mt-kicker" id="t-kicker">LINHA DO TEMPO</div>
       <div class="mt-rule" id="t-rule"></div>
       <div id="t-titulo">Perseguicoes no Imperio</div>
@@ -227,7 +229,7 @@ cena(
       </div>
       <div id="t-bola"></div>
       <div class="mt-note" id="t-nota"><span id="t-nota-t">o ano em que Policarpo morreu</span></div>""",
-    aplicar=r"""  txt("t-titulo", P.titulo);
+    aplicar=r"""  setTexto(document.getElementById("t-titulo"), P.titulo);
   /* Marcos sao estaticos: o apply.py renomeia IDs literais, mas nao classes
      montadas no JS, entao nada aqui pode criar elemento ou concatenar classe. */
   var M = partes(P.marcos).slice(0, 6); if (!M.length) M = ["Marco 1"];
@@ -251,7 +253,7 @@ cena(
       sp.style.color = "var(--tx)";
     }
   }
-  if (P.nota) { txt("t-nota-t", P.nota); } else { var tn = document.getElementById("t-nota"); if (tn) tn.style.display = "none"; }
+  if (P.nota) { setTexto(document.getElementById("t-nota-t"), P.nota); } else { var tn = document.getElementById("t-nota"); if (tn) tn.style.display = "none"; }
   var fim = 140 + passo * (alvo - 1), frac = (fim - 140) / 800;""",
     timeline=r"""  painel();
   titulo("#t-kicker", .12);
@@ -277,6 +279,7 @@ cena(
 # --------------------------------------------------------------------------
 cena(
     id="martir-ultimas-palavras", nome="Last words quote", dur=6.5,
+    esconde_legendas=True,   # o painel ja mostra a fala; legenda junto seria texto dobrado
     quando="For the emotional peak: the martyr's recorded words appear line by line with the attribution below.",
     params='''    citacao: "Oitenta e seis anos eu o sirvo|e ele nunca me fez mal algum.|Como posso blasfemar do meu Rei,|que me salvou?", // Linhas da citacao, separadas por |.
     autor: "Policarpo de Esmirna, 155 d.C.", // Quem disse e quando.
@@ -342,23 +345,23 @@ cena(
     rotulo: "SERVINDO A CRISTO", // Linha curta acima do numero.
     nota: "e ele nao negaria na ultima hora", // Pastilha abaixo; vazio esconde.''',
     css=r"""
-#c-rotulo{position:absolute;left:0;top:356px;width:1080px;text-align:center;font-size:32px;font-weight:800;
+#c-rotulo{position:absolute;left:0;top:330px;width:1080px;text-align:center;font-size:32px;font-weight:800;
   letter-spacing:.24em;color:var(--ac);opacity:0}
-#c-num{position:absolute;left:0;top:398px;width:1080px;text-align:center;font-weight:800;font-size:250px;
+#c-num{position:absolute;left:0;top:372px;width:1080px;text-align:center;font-weight:800;font-size:250px;
   line-height:1;letter-spacing:-.05em;font-variant-numeric:tabular-nums;opacity:0;white-space:nowrap}
 #c-num small{font-size:72px;font-weight:600;letter-spacing:-.02em;margin-left:16px;color:var(--su)}
-#c-linha{position:absolute;left:420px;top:720px;width:240px;height:2px;background:rgba(255,255,255,.2);opacity:0}
-#c-nota{top:788px}""",
+#c-linha{position:absolute;left:420px;top:672px;width:240px;height:2px;background:rgba(255,255,255,.2);opacity:0}
+#c-nota{top:718px}""",
     html=r"""      <div class="mt-kicker" id="c-kicker">O NUMERO</div>
       <div class="mt-rule" id="c-rule"></div>
       <div id="c-rotulo">SERVINDO A CRISTO</div>
       <div id="c-num"><span id="c-v">0</span><small id="c-u">anos</small></div>
       <div id="c-linha"></div>
       <div class="mt-note" id="c-nota"><span id="c-nota-t">e ele nao negaria na ultima hora</span></div>""",
-    aplicar=r"""  txt("c-rotulo", P.rotulo);
+    aplicar=r"""  setTexto(document.getElementById("c-rotulo"), P.rotulo);
   var un = document.getElementById("c-u");
   if (P.unidade) { un.textContent = P.unidade; } else { un.style.display = "none"; }
-  if (P.nota) { txt("c-nota-t", P.nota); } else { var cn = document.getElementById("c-nota"); if (cn) cn.style.display = "none"; }
+  if (P.nota) { setTexto(document.getElementById("c-nota-t"), P.nota); } else { var cn = document.getElementById("c-nota"); if (cn) cn.style.display = "none"; }
   var vi = Number(P.de) || 0, vf = Number(P.valor) || 0;""",
     timeline=r"""  painel();
   titulo("#c-kicker", .12);
@@ -399,7 +402,7 @@ cena(
   opacity:0;clip-path:inset(0% 100% 0% 0%)}
 #e-brilho{position:absolute;left:574px;top:282px;width:372px;height:416px;border-radius:34px;
   border:3px solid var(--ac);box-shadow:0 0 46px rgba(240,168,104,.55);opacity:0}
-#e-nota{top:756px}""",
+#e-nota{top:720px}""",
     html=r"""      <div class="mt-kicker" id="e-kicker">A ESCOLHA</div>
       <div class="mt-rule" id="e-rule"></div>
       <div class="e-card" id="e-a"><i>A</i><b id="e-at" data-layout-allow-occlusion>Jurar pelo imperador</b><span id="e-ad">e sair vivo do estadio</span></div>
@@ -407,7 +410,7 @@ cena(
       <div class="e-risco" id="e-risco"></div>
       <div id="e-brilho"></div>
       <div class="mt-note" id="e-nota"><span id="e-nota-t">ele escolheu a segunda</span></div>""",
-    aplicar=r"""  txt("e-kicker", P.titulo); txt("e-at", P.opcaoA); txt("e-bt", P.opcaoB);
+    aplicar=r"""  setTexto(document.getElementById("e-kicker"), P.titulo); setTexto(document.getElementById("e-at"), P.opcaoA); setTexto(document.getElementById("e-bt"), P.opcaoB);
   var ad = document.getElementById("e-ad"), bd = document.getElementById("e-bd");
   if (P.detalheA) { ad.textContent = P.detalheA; } else { ad.style.display = "none"; }
   if (P.detalheB) { bd.textContent = P.detalheB; } else { bd.style.display = "none"; }
@@ -441,31 +444,31 @@ cena(
     ano: "155 d.C.", // Ano ou periodo; vazio esconde.
     nota: "hoje Izmir, na Turquia", // Pastilha abaixo; vazio esconde.''',
     css=r"""
-#l-campo{position:absolute;left:140px;top:250px;width:800px;height:440px;border-radius:28px;overflow:hidden;
+#l-campo{position:absolute;left:140px;top:220px;width:800px;height:360px;border-radius:28px;overflow:hidden;
   background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(240,168,104,.14) 0%,transparent 72%),#0D0E14;
   border:1px solid rgba(255,255,255,.1);opacity:0}
-#l-campo i{position:absolute;left:0;top:0;width:800px;height:440px;display:block;
+#l-campo i{position:absolute;left:0;top:0;width:800px;height:360px;display:block;
   background-image:linear-gradient(to right,rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.07) 1px,transparent 1px);
   background-size:50px 50px}
 .l-pt{position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22)}
-.l-anel{position:absolute;left:540px;top:470px;width:0;height:0;border-radius:50%;
+.l-anel{position:absolute;left:540px;top:400px;width:0;height:0;border-radius:50%;
   box-shadow:0 0 0 3px var(--ac);opacity:0}
-#l-ponto{position:absolute;left:526px;top:456px;width:28px;height:28px;border-radius:50%;background:var(--ac);
+#l-ponto{position:absolute;left:526px;top:386px;width:28px;height:28px;border-radius:50%;background:var(--ac);
   box-shadow:0 0 30px var(--ac);opacity:0}
-#l-haste{position:absolute;left:538px;top:360px;width:4px;height:110px;background:linear-gradient(to bottom,transparent,var(--ac));opacity:0}
-#l-cidade{position:absolute;left:0;top:716px;width:1080px;text-align:center;font-family:"Playfair",serif;
+#l-haste{position:absolute;left:538px;top:290px;width:4px;height:110px;background:linear-gradient(to bottom,transparent,var(--ac));opacity:0}
+#l-cidade{position:absolute;left:0;top:606px;width:1080px;text-align:center;font-family:"Playfair",serif;
   font-weight:800;font-size:76px;letter-spacing:.03em;opacity:0}
-#l-prov{position:absolute;left:0;top:810px;width:1080px;text-align:center;font-size:32px;font-weight:500;
+#l-prov{position:absolute;left:0;top:700px;width:1080px;text-align:center;font-size:32px;font-weight:500;
   color:var(--su);opacity:0}
-#l-ano{position:absolute;left:0;top:288px;width:1080px;text-align:center;font-size:30px;font-weight:800;
+#l-ano{position:absolute;left:0;top:252px;width:1080px;text-align:center;font-size:30px;font-weight:800;
   letter-spacing:.2em;color:var(--ac);opacity:0}
-#l-nota{top:876px}""",
+#l-nota{top:752px}""",
     html=r"""      <div class="mt-kicker" id="l-kicker">ONDE ACONTECEU</div>
       <div class="mt-rule" id="l-rule"></div>
       <div id="l-campo"><i></i>
-        <b class="l-pt" style="left:118px;top:96px"></b><b class="l-pt" style="left:252px;top:318px"></b>
-        <b class="l-pt" style="left:596px;top:132px"></b><b class="l-pt" style="left:680px;top:352px"></b>
-        <b class="l-pt" style="left:430px;top:66px"></b><b class="l-pt" style="left:158px;top:238px"></b>
+        <b class="l-pt" style="left:118px;top:78px"></b><b class="l-pt" style="left:252px;top:260px"></b>
+        <b class="l-pt" style="left:596px;top:108px"></b><b class="l-pt" style="left:680px;top:288px"></b>
+        <b class="l-pt" style="left:430px;top:54px"></b><b class="l-pt" style="left:158px;top:195px"></b>
       </div>
       <div id="l-ano">155 d.C.</div>
       <div class="l-anel" id="l-r1"></div>
@@ -476,10 +479,10 @@ cena(
       <div id="l-cidade">ESMIRNA</div>
       <div id="l-prov">provincia romana da Asia</div>
       <div class="mt-note" id="l-nota"><span id="l-nota-t">hoje Izmir, na Turquia</span></div>""",
-    aplicar=r"""  txt("l-cidade", P.cidade); txt("l-prov", P.provincia);
+    aplicar=r"""  setTexto(document.getElementById("l-cidade"), P.cidade); setTexto(document.getElementById("l-prov"), P.provincia);
   var an = document.getElementById("l-ano");
   if (P.ano) { an.textContent = P.ano; } else { an.style.display = "none"; }
-  if (P.nota) { txt("l-nota-t", P.nota); } else { var ln = document.getElementById("l-nota"); if (ln) ln.style.display = "none"; }""",
+  if (P.nota) { setTexto(document.getElementById("l-nota-t"), P.nota); } else { var ln = document.getElementById("l-nota"); if (ln) ln.style.display = "none"; }""",
     timeline=r"""  painel();
   titulo("#l-kicker", .12);
   T.fromTo("#l-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .4, ease: "power2.out" }, .2);

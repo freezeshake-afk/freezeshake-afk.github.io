@@ -30,25 +30,25 @@
 .mt-note{position:absolute;left:0;width:1080px;text-align:center;opacity:0}
 .mt-note span{display:inline-block;padding:16px 34px;border-radius:999px;background:var(--ac);color:#2B1020;
   font-size:30px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
-#l-campo{position:absolute;left:140px;top:250px;width:800px;height:440px;border-radius:28px;overflow:hidden;
+#l-campo{position:absolute;left:140px;top:220px;width:800px;height:360px;border-radius:28px;overflow:hidden;
   background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(240,168,104,.14) 0%,transparent 72%),#0D0E14;
   border:1px solid rgba(255,255,255,.1);opacity:0}
-#l-campo i{position:absolute;left:0;top:0;width:800px;height:440px;display:block;
+#l-campo i{position:absolute;left:0;top:0;width:800px;height:360px;display:block;
   background-image:linear-gradient(to right,rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.07) 1px,transparent 1px);
   background-size:50px 50px}
 .l-pt{position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22)}
-.l-anel{position:absolute;left:540px;top:470px;width:0;height:0;border-radius:50%;
+.l-anel{position:absolute;left:540px;top:400px;width:0;height:0;border-radius:50%;
   box-shadow:0 0 0 3px var(--ac);opacity:0}
-#l-ponto{position:absolute;left:526px;top:456px;width:28px;height:28px;border-radius:50%;background:var(--ac);
+#l-ponto{position:absolute;left:526px;top:386px;width:28px;height:28px;border-radius:50%;background:var(--ac);
   box-shadow:0 0 30px var(--ac);opacity:0}
-#l-haste{position:absolute;left:538px;top:360px;width:4px;height:110px;background:linear-gradient(to bottom,transparent,var(--ac));opacity:0}
-#l-cidade{position:absolute;left:0;top:716px;width:1080px;text-align:center;font-family:"Playfair",serif;
+#l-haste{position:absolute;left:538px;top:290px;width:4px;height:110px;background:linear-gradient(to bottom,transparent,var(--ac));opacity:0}
+#l-cidade{position:absolute;left:0;top:606px;width:1080px;text-align:center;font-family:"Playfair",serif;
   font-weight:800;font-size:76px;letter-spacing:.03em;opacity:0}
-#l-prov{position:absolute;left:0;top:810px;width:1080px;text-align:center;font-size:32px;font-weight:500;
+#l-prov{position:absolute;left:0;top:700px;width:1080px;text-align:center;font-size:32px;font-weight:500;
   color:var(--su);opacity:0}
-#l-ano{position:absolute;left:0;top:288px;width:1080px;text-align:center;font-size:30px;font-weight:800;
+#l-ano{position:absolute;left:0;top:252px;width:1080px;text-align:center;font-size:30px;font-weight:800;
   letter-spacing:.2em;color:var(--ac);opacity:0}
-#l-nota{top:876px}
+#l-nota{top:752px}
 </style>
 
 <div id="root" data-composition-id="martir-local" data-width="1080" data-height="1920" data-duration="6">
@@ -57,9 +57,9 @@
       <div class="mt-kicker" id="l-kicker">ONDE ACONTECEU</div>
       <div class="mt-rule" id="l-rule"></div>
       <div id="l-campo"><i></i>
-        <b class="l-pt" style="left:118px;top:96px"></b><b class="l-pt" style="left:252px;top:318px"></b>
-        <b class="l-pt" style="left:596px;top:132px"></b><b class="l-pt" style="left:680px;top:352px"></b>
-        <b class="l-pt" style="left:430px;top:66px"></b><b class="l-pt" style="left:158px;top:238px"></b>
+        <b class="l-pt" style="left:118px;top:78px"></b><b class="l-pt" style="left:252px;top:260px"></b>
+        <b class="l-pt" style="left:596px;top:108px"></b><b class="l-pt" style="left:680px;top:288px"></b>
+        <b class="l-pt" style="left:430px;top:54px"></b><b class="l-pt" style="left:158px;top:195px"></b>
       </div>
       <div id="l-ano">155 d.C.</div>
       <div class="l-anel" id="l-r1"></div>
@@ -113,7 +113,9 @@
     tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
       immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
   }
-  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  /* Recebe o elemento, nunca o id em string: o apply.py renomeia os IDs e so
+     reescreve a busca quando o id aparece literal na chamada. Id solto nao casa. */
+  function setTexto(e, v) { if (e) e.textContent = v; }
   function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
 
   function painel() {
@@ -129,10 +131,10 @@
   function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
   function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
 
-  txt("l-cidade", P.cidade); txt("l-prov", P.provincia);
+  setTexto(document.getElementById("l-cidade"), P.cidade); setTexto(document.getElementById("l-prov"), P.provincia);
   var an = document.getElementById("l-ano");
   if (P.ano) { an.textContent = P.ano; } else { an.style.display = "none"; }
-  if (P.nota) { txt("l-nota-t", P.nota); } else { var ln = document.getElementById("l-nota"); if (ln) ln.style.display = "none"; }
+  if (P.nota) { setTexto(document.getElementById("l-nota-t"), P.nota); } else { var ln = document.getElementById("l-nota"); if (ln) ln.style.display = "none"; }
 
   painel();
   titulo("#l-kicker", .12);

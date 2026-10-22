@@ -46,7 +46,7 @@
 .t-marco.on span{color:var(--tx)}
 #t-bola{position:absolute;top:548px;left:140px;width:30px;height:30px;margin:-13px 0 0 -15px;border-radius:50%;
   background:#fff;box-shadow:0 0 0 10px rgba(240,168,104,.3),0 0 34px var(--ac);opacity:0}
-#t-nota{top:772px}
+#t-nota{top:700px}
 </style>
 
 <div id="root" data-composition-id="martir-linha-tempo" data-width="1080" data-height="1920" data-duration="7">
@@ -109,7 +109,9 @@
     tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
       immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
   }
-  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  /* Recebe o elemento, nunca o id em string: o apply.py renomeia os IDs e so
+     reescreve a busca quando o id aparece literal na chamada. Id solto nao casa. */
+  function setTexto(e, v) { if (e) e.textContent = v; }
   function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
 
   function painel() {
@@ -125,7 +127,7 @@
   function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
   function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
 
-  txt("t-titulo", P.titulo);
+  setTexto(document.getElementById("t-titulo"), P.titulo);
   /* Marcos sao estaticos: o apply.py renomeia IDs literais, mas nao classes
      montadas no JS, entao nada aqui pode criar elemento ou concatenar classe. */
   var M = partes(P.marcos).slice(0, 6); if (!M.length) M = ["Marco 1"];
@@ -149,7 +151,7 @@
       sp.style.color = "var(--tx)";
     }
   }
-  if (P.nota) { txt("t-nota-t", P.nota); } else { var tn = document.getElementById("t-nota"); if (tn) tn.style.display = "none"; }
+  if (P.nota) { setTexto(document.getElementById("t-nota-t"), P.nota); } else { var tn = document.getElementById("t-nota"); if (tn) tn.style.display = "none"; }
   var fim = 140 + passo * (alvo - 1), frac = (fim - 140) / 800;
 
   painel();

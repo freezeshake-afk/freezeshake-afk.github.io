@@ -64,8 +64,17 @@ def main():
     with open(os.path.join(edit, "cut_timeline.json"), "w") as f:
         json.dump({"duration": DURACAO, "width": 360, "height": 640, "fps": 24,
                    "segments": [{"out_start": 0}]}, f)
+    # transcricao sintetica cobrindo o video todo: sem legenda na tela, a
+    # colisao entre o conteudo do painel e a faixa da legenda passa batida
+    palavras, t = [], 0.3
+    vocab = ["martir", "historia", "igreja", "fogueira", "coragem", "seculo", "palavra"]
+    i = 0
+    while t < DURACAO - 0.6:
+        palavras.append({"text": vocab[i % len(vocab)], "start": round(t, 2),
+                         "end": round(t + 0.38, 2)})
+        t += 0.46; i += 1
     with open(os.path.join(edit, "transcripts", "cut.json"), "w") as f:
-        json.dump({"words": [{"text": "martires", "start": 0.3, "end": 1.0}]}, f)
+        json.dump({"words": palavras}, f)
 
     # 2. projeto
     projeto = os.path.join(trabalho, "projeto")
@@ -80,7 +89,7 @@ def main():
     cfg["blocks"] = [{"scene": "fullscreen", "start": 0, "end": ini, "zoom": 1.0},
                      {"scene": "frame", "start": ini, "end": fim},
                      {"scene": "fullscreen", "start": fim, "zoom": 1.0}]
-    cfg["captions"]["enabled"] = False
+    cfg["captions"] = {"enabled": True, "style": "standard", "maxWords": 3, "inFrame": True}
     cfg["style"] = "night"
     json.dump(cfg, open(pj, "w", encoding="utf-8"), indent=2)
 

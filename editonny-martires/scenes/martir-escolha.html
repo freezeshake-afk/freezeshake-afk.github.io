@@ -44,7 +44,7 @@
   opacity:0;clip-path:inset(0% 100% 0% 0%)}
 #e-brilho{position:absolute;left:574px;top:282px;width:372px;height:416px;border-radius:34px;
   border:3px solid var(--ac);box-shadow:0 0 46px rgba(240,168,104,.55);opacity:0}
-#e-nota{top:756px}
+#e-nota{top:720px}
 </style>
 
 <div id="root" data-composition-id="martir-escolha" data-width="1080" data-height="1920" data-duration="6.5">
@@ -102,7 +102,9 @@
     tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
       immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
   }
-  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  /* Recebe o elemento, nunca o id em string: o apply.py renomeia os IDs e so
+     reescreve a busca quando o id aparece literal na chamada. Id solto nao casa. */
+  function setTexto(e, v) { if (e) e.textContent = v; }
   function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
 
   function painel() {
@@ -118,7 +120,7 @@
   function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
   function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
 
-  txt("e-kicker", P.titulo); txt("e-at", P.opcaoA); txt("e-bt", P.opcaoB);
+  setTexto(document.getElementById("e-kicker"), P.titulo); setTexto(document.getElementById("e-at"), P.opcaoA); setTexto(document.getElementById("e-bt"), P.opcaoB);
   var ad = document.getElementById("e-ad"), bd = document.getElementById("e-bd");
   if (P.detalheA) { ad.textContent = P.detalheA; } else { ad.style.display = "none"; }
   if (P.detalheB) { bd.textContent = P.detalheB; } else { bd.style.display = "none"; }

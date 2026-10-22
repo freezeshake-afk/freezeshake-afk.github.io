@@ -30,13 +30,13 @@
 .mt-note{position:absolute;left:0;width:1080px;text-align:center;opacity:0}
 .mt-note span{display:inline-block;padding:16px 34px;border-radius:999px;background:var(--ac);color:#2B1020;
   font-size:30px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
-#c-rotulo{position:absolute;left:0;top:356px;width:1080px;text-align:center;font-size:32px;font-weight:800;
+#c-rotulo{position:absolute;left:0;top:330px;width:1080px;text-align:center;font-size:32px;font-weight:800;
   letter-spacing:.24em;color:var(--ac);opacity:0}
-#c-num{position:absolute;left:0;top:398px;width:1080px;text-align:center;font-weight:800;font-size:250px;
+#c-num{position:absolute;left:0;top:372px;width:1080px;text-align:center;font-weight:800;font-size:250px;
   line-height:1;letter-spacing:-.05em;font-variant-numeric:tabular-nums;opacity:0;white-space:nowrap}
 #c-num small{font-size:72px;font-weight:600;letter-spacing:-.02em;margin-left:16px;color:var(--su)}
-#c-linha{position:absolute;left:420px;top:720px;width:240px;height:2px;background:rgba(255,255,255,.2);opacity:0}
-#c-nota{top:788px}
+#c-linha{position:absolute;left:420px;top:672px;width:240px;height:2px;background:rgba(255,255,255,.2);opacity:0}
+#c-nota{top:718px}
 </style>
 
 <div id="root" data-composition-id="martir-contador" data-width="1080" data-height="1920" data-duration="5">
@@ -92,7 +92,9 @@
     tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
       immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
   }
-  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  /* Recebe o elemento, nunca o id em string: o apply.py renomeia os IDs e so
+     reescreve a busca quando o id aparece literal na chamada. Id solto nao casa. */
+  function setTexto(e, v) { if (e) e.textContent = v; }
   function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
 
   function painel() {
@@ -108,10 +110,10 @@
   function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
   function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
 
-  txt("c-rotulo", P.rotulo);
+  setTexto(document.getElementById("c-rotulo"), P.rotulo);
   var un = document.getElementById("c-u");
   if (P.unidade) { un.textContent = P.unidade; } else { un.style.display = "none"; }
-  if (P.nota) { txt("c-nota-t", P.nota); } else { var cn = document.getElementById("c-nota"); if (cn) cn.style.display = "none"; }
+  if (P.nota) { setTexto(document.getElementById("c-nota-t"), P.nota); } else { var cn = document.getElementById("c-nota"); if (cn) cn.style.display = "none"; }
   var vi = Number(P.de) || 0, vf = Number(P.valor) || 0;
 
   painel();

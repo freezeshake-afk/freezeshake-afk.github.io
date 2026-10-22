@@ -28,7 +28,7 @@
      "summary": "Linha curta de contexto; vazio esconde a pastilha."
     }
    },
-   "hidesCaptions": true,
+   "hidesCaptions": false,
    "texts": [
     "MARTIR",
     "Policarpo de Esmirna",
@@ -64,7 +64,7 @@
      "summary": "Pastilha que aparece no fim; vazio esconde."
     }
    },
-   "hidesCaptions": true,
+   "hidesCaptions": false,
    "texts": [
     "LINHA DO TEMPO",
     "Perseguicoes no Imperio",
@@ -135,7 +135,7 @@
      "summary": "Pastilha abaixo; vazio esconde."
     }
    },
-   "hidesCaptions": true,
+   "hidesCaptions": false,
    "texts": [
     "O NUMERO",
     "SERVINDO A CRISTO",
@@ -179,7 +179,7 @@
      "summary": "Qual acende: \"A\" ou \"B\". A outra e riscada."
     }
    },
-   "hidesCaptions": true,
+   "hidesCaptions": false,
    "texts": [
     "A ESCOLHA",
     "Jurar pelo imperador",
@@ -215,7 +215,7 @@
      "summary": "Pastilha abaixo; vazio esconde."
     }
    },
-   "hidesCaptions": true,
+   "hidesCaptions": false,
    "texts": [
     "ONDE ACONTECEU",
     "ESMIRNA",

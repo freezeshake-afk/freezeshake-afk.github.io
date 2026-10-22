@@ -30,22 +30,22 @@
 .mt-note{position:absolute;left:0;width:1080px;text-align:center;opacity:0}
 .mt-note span{display:inline-block;padding:16px 34px;border-radius:999px;background:var(--ac);color:#2B1020;
   font-size:30px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
-#f-card{position:absolute;left:190px;top:236px;width:700px;height:610px;border-radius:34px;
+#f-card{position:absolute;left:190px;top:236px;width:700px;height:480px;border-radius:34px;
   background:linear-gradient(160deg,#1B1320 0%,#120C16 100%);border:1px solid rgba(255,190,150,.22);
   box-shadow:0 30px 80px rgba(0,0,0,.62);opacity:0}
-#f-selo{position:absolute;left:470px;top:286px;width:140px;height:140px;border-radius:50%;
+#f-selo{position:absolute;left:470px;top:272px;width:140px;height:140px;border-radius:50%;
   background:linear-gradient(135deg,#F2A3B8,#F6C9A0);box-shadow:0 10px 36px rgba(240,150,90,.45);opacity:0}
 #f-selo b{position:absolute;left:64px;top:30px;width:12px;height:80px;border-radius:3px;background:#2B1020}
 #f-selo i{position:absolute;left:38px;top:56px;width:64px;height:12px;border-radius:3px;background:#2B1020}
-#f-nome{position:absolute;left:220px;top:448px;width:640px;height:150px;display:flex;align-items:center;
+#f-nome{position:absolute;left:220px;top:432px;width:640px;height:140px;display:flex;align-items:center;
   justify-content:center;text-align:center;font-family:"Playfair",serif;font-weight:800;font-size:76px;
   line-height:1.06;letter-spacing:-.015em;opacity:0}
-#f-anos{position:absolute;left:220px;top:618px;width:640px;text-align:center;font-size:36px;font-weight:700;
+#f-anos{position:absolute;left:220px;top:586px;width:640px;text-align:center;font-size:36px;font-weight:700;
   letter-spacing:.06em;color:var(--ac);opacity:0}
-#f-linha{position:absolute;left:420px;top:678px;width:240px;height:1px;background:rgba(255,255,255,.22);opacity:0}
-#f-cidade{position:absolute;left:220px;top:708px;width:640px;text-align:center;font-size:32px;font-weight:500;
+#f-linha{position:absolute;left:420px;top:640px;width:240px;height:1px;background:rgba(255,255,255,.22);opacity:0}
+#f-cidade{position:absolute;left:220px;top:666px;width:640px;text-align:center;font-size:32px;font-weight:500;
   color:var(--su);opacity:0}
-#f-nota{top:886px}
+#f-nota{top:735px}
 </style>
 
 <div id="root" data-composition-id="martir-ficha" data-width="1080" data-height="1920" data-duration="6">
@@ -103,7 +103,9 @@
     tl.fromTo(sel, { textContent: start }, { textContent: end, duration: dur, ease: ease || "power2.out",
       immediateRender: false, modifiers: { textContent: function (v) { return f(parseFloat(v)); } } }, t);
   }
-  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  /* Recebe o elemento, nunca o id em string: o apply.py renomeia os IDs e so
+     reescreve a busca quando o id aparece literal na chamada. Id solto nao casa. */
+  function setTexto(e, v) { if (e) e.textContent = v; }
   function partes(v, sep) { return String(v == null ? "" : v).split(sep || "|").map(function (s) { return s.trim(); }).filter(Boolean); }
 
   function painel() {
@@ -119,11 +121,11 @@
   function pulsa(sel, t) { T.to(sel, ext({ y: "-=10", duration: .14, yoyo: true, repeat: 1, ease: "power2.out" }, IR), t); }
   function revela(sel, t, dur) { T.fromTo(sel, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: dur || .5, ease: "power2.inOut" }, t); }
 
-  txt("f-nome", P.nome); txt("f-anos", P.anos); txt("f-cidade", P.cidade);
+  setTexto(document.getElementById("f-nome"), P.nome); setTexto(document.getElementById("f-anos"), P.anos); setTexto(document.getElementById("f-cidade"), P.cidade);
   /* O nome encolhe sozinho para nunca invadir a linha dos anos. */
   var elNome = document.getElementById("f-nome"), nq = String(P.nome || "").length;
   if (elNome) elNome.style.fontSize = (nq > 30 ? 48 : nq > 22 ? 58 : nq > 16 ? 66 : 76) + "px";
-  if (P.nota) { txt("f-nota-t", P.nota); } else { var n = document.getElementById("f-nota"); if (n) n.style.display = "none"; }
+  if (P.nota) { setTexto(document.getElementById("f-nota-t"), P.nota); } else { var n = document.getElementById("f-nota"); if (n) n.style.display = "none"; }
 
   painel();
   titulo("#f-kicker", .12);
