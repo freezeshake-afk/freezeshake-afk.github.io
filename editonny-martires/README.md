@@ -133,6 +133,10 @@ para o Google Flow (bloco fixo que mantém o avatar igual nos 8 clipes), a
 fórmula do gancho com banco de exemplos, a estrutura de 60–75s mapeada nas seis
 cenas, e um roteiro completo do Policarpo já fatiado em clipes de 8 segundos.
 
+**Prompts encadeados (cada clipe parte do último frame do anterior):**
+[`roteiros/PROMPTS-ESTEVAO-ENCADEADO.md`](roteiros/PROMPTS-ESTEVAO-ENCADEADO.md)
+— Estêvão em 7 clipes de 10s, ~70s de vídeo.
+
 **Prompts prontos pra colar no Flow:**
 [`roteiros/PROMPTS-FLOW.md`](roteiros/PROMPTS-FLOW.md) — imagem mestre do avatar
 de podcast e os 18 prompts de vídeo (Estêvão e Policarpo).
