@@ -126,6 +126,11 @@ Campo vazio esconde o elemento em vez de deixar um buraco.
 
 ---
 
+## Deixar o vídeo mais dinâmico
+
+[`roteiros/DINAMICA.md`](roteiros/DINAMICA.md) — zoom de impacto por palavra,
+transições e efeitos, quais servem ao nicho e quais barateiam a história.
+
 ## Escrever o roteiro e gerar os clipes
 
 O [guia de roteiro e Flow](roteiros/GUIA-ROTEIRO-E-FLOW.md) tem o prompt mestre
