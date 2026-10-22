@@ -1,5 +1,10 @@
 # Pacote de cenas: mártires cristãos
 
+> **Vindo de uma sessão na nuvem?** Leia
+> [`COMECAR-LOCAL.md`](COMECAR-LOCAL.md) — tem a mensagem de abertura para
+> colar numa conversa local, o estado do projeto e as regras que não convém
+> redescobrir.
+
 Seis cenas animadas para o [editonny](https://github.com/soumatheusgomes/editonny),
 feitas para o nicho de mártires cristãos. O catálogo que vem no editonny é ótimo,
 mas é de faturamento, imóveis, saúde, jurídico e criadores — não tem nada de
